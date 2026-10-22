@@ -1,0 +1,538 @@
+:root {
+    --bg: #f2f4f8;
+    --teal: #1E2A4A;
+    --teal-dark: #131a30;
+    --teal-mid: #263359;
+    --teal-dark: #131a30;
+    --teal-mid: #263359;
+    --teal-pale: #F0F4FF;
+    --gold: #F5A623;
+    --blue: #4F7FFA;
+    --blue-light: #95B3FC;
+    --blue-pale: #D9E5FE;
+    --blue-mist: #EEF3FF;
+    --coral: #FF6B6B;
+    --mint: #22C993;
+    --cream: #F0F4FF;
+    --ink: #1E2A4A;
+    --muted: #6b7a99;
+    --line: rgba(30, 42, 74, .1);
+    --sidebar-width: 250px;
+    --border: #E5EAF3;
+    --border-hover: #D9E5FE;
+    --sidebar-width: 250px;
+    --accent: #2563eb;
+    --mint: #22C993;
+    --coral: #FF6B6B;
+    --semi-white: #FAF9F6;
+    --green: #1e9e6b;
+    --green-bg: #e6f7f1;
+    --savings: #1560c0;
+    --savings-bg: #e4edff;
+    --shadow: 0 2px 12px rgba(30, 42, 74, 0.08);
+
+    --ice-blue: #E8F4FD;
+    --gold-pale: #FFF8EC;
+    --mint-pale: #EDFAF4;
+    --coral-pale: #FFF0F0;
+    --lavender-tint: #F7F8FC;
+    --navy-soft: #2D3F6B;
+}
+
+.container-fluid .rightbar {
+    /* width: calc(100% - 220px);
+    margin-left: 220px;
+    margin-top: 70px;
+    padding: 2rem 2rem 3rem; */
+    width: calc(100% - 250px);
+    margin-left: 250px;
+    /* transition: width 0.1s ease, margin-left 0.1s ease-in-out; */
+    /* position: relative; */
+    /* background-color: #1450470d; */
+    /* background-color: var(--cream); */
+}
+
+.container-fluid .rightbar .main-parent {
+    padding: 2rem;
+    height: calc(100vh - 70px);
+    overflow-y: auto;
+    background-color: #FBFBFD;
+}
+
+.container-fluid .rightbar .main-parent .main-header h3 {
+    font-size: 20px;
+    color: var(--teal);
+    margin: 0;
+    font-weight: 600;
+}
+
+.container-fluid .rightbar .main-parent .main-header p {
+    font-size: 13.5px;
+    margin: 5px 0 0;
+    color: var(--muted);
+    font-weight: normal;
+    width: 100%;
+    /* max-width: 450px; */
+}
+
+.container-fluid .rightbar .main-parent .member-card {
+    margin-top: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 30px 34px 28px;
+    background-color: #ffffff;
+    /* display: grid; */
+    /* grid-template-columns: repeat(2, 1fr); */
+    /* align-items: center; */
+    /* display: flex;
+    flex-direction: column-reverse; */
+    /* gap: 1rem; */
+    /* display: flex;
+    justify-content: space-between;
+    align-items: center; */
+}
+
+/* .container-fluid .rightbar .main-parent .member-card .member-left{
+    width: 95%;
+} */
+
+.container-fluid .rightbar .main-parent .member-card .member-left{
+    width: 100%;
+    max-width: 500px;
+}
+
+.container-fluid .rightbar .main-parent .member-card .member-left .member-tag {
+    font-size: 14.5px;
+    display: none;
+}
+
+.container-fluid .rightbar .main-parent .member-card .member-left h3 {
+    margin: 0;
+    font-size: 30px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight: 600;
+}
+
+.container-fluid .rightbar .main-parent .member-card .member-left p {
+    margin: 10px 0 8px;
+    font-size: 14.5px;
+    color: var(--muted);
+    width: 100%;
+    line-height: 25px;
+    /* max-width: 400px; */
+}
+
+.container-fluid .rightbar .main-parent .member-card .member-left span {
+    font-size: 14.5px;
+    color: var(--muted);
+    width: 100%;
+    /* max-width: 400px; */
+}
+
+.container-fluid .rightbar .main-parent .member-box-parent {
+    /* display: grid;
+    grid-template-columns: repeat(3, 1fr); */
+    /* display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap; */
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 1.5rem;
+    /* margin: 0 0 7px; */
+    /* display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center; */
+    /* justify-content: space-between; */
+    /* gap: 16px; */
+}
+
+.container-fluid .rightbar .main-parent .member-box-card {
+    /* box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04); */
+    /* background-color: #ffffff; */
+    /* background-color: var(--teal); */
+    background: #ffffff;
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+    border-radius: 20px;
+    /* padding: 1rem; */
+    padding: 18px 20px;
+    /* display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; */
+    width: 100%;
+    /* width: calc(100% / 2.1); */
+}
+
+.container-fluid .rightbar .main-parent .member-box-card p {
+    margin: 10px 0 0;
+    /* font-family: Georgia, "Times New Roman", serif; */
+    font-weight: 600;
+    font-size: 24px;
+    /* color: #ffffff; */
+    color: var(--teal);
+}
+
+.container-fluid .rightbar .main-parent .member-box-card span {
+    /* font-size: 10px; */
+    font-size: 13.5px;
+    /* text-transform: uppercase; */
+    font-weight: 600;
+    color: var(--muted);
+    /* letter-spacing: 1.5px; */
+}
+
+/* ── Seminar list ── */
+.container-fluid .rightbar .main-parent .sem-list {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.container-fluid .rightbar .main-parent .sem-item {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.container-fluid .rightbar .main-parent .sem-item-left {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.container-fluid .rightbar .main-parent .sem-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 15px;
+    color: #fff;
+}
+
+.sem-icon-completed {
+    background: var(--mint);
+}
+
+.sem-icon-scheduled {
+    background: var(--blue);
+}
+
+.sem-icon-missed {
+    background: var(--coral);
+}
+
+.sem-icon-awaiting_marking {
+    background: var(--gold);
+}
+
+.sem-icon-not_scheduled {
+    background: var(--muted);
+}
+
+.container-fluid .rightbar .main-parent .sem-text h4 {
+    margin: 0 0 4px;
+    font-size: 15.5px;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.container-fluid .rightbar .main-parent .sem-text p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.container-fluid .rightbar .main-parent .sem-schedule-line {
+    display: block;
+    margin-top: 6px;
+    font-size: 12.5px;
+    color: var(--navy-soft);
+    font-weight: 500;
+}
+
+.sem-schedule-line a {
+    color: var(--blue);
+    margin-left: 4px;
+    text-decoration: underline;
+}
+
+.sem-missed-line {
+    color: var(--coral);
+}
+
+.sem-muted-line {
+    color: var(--muted);
+    font-weight: 400;
+}
+
+.container-fluid .rightbar .main-parent .sem-status-pill {
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.sem-status-completed {
+    background: var(--mint-pale);
+    color: #0f7a55;
+}
+
+.sem-status-scheduled {
+    background: var(--blue-mist);
+    color: var(--blue);
+}
+
+.sem-status-missed {
+    background: var(--coral-pale);
+    color: var(--coral);
+}
+
+.sem-status-awaiting_marking {
+    background: var(--gold-pale);
+    color: #a1690b;
+}
+
+.sem-status-not_scheduled {
+    background: var(--lavender-tint);
+    color: var(--muted);
+}
+
+/* ── Section headers ── */
+.container-fluid .rightbar .main-parent .sem-section {
+    margin-top: 2rem;
+}
+
+.container-fluid .rightbar .main-parent .sem-section-head h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.container-fluid .rightbar .main-parent .sem-section-head p {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+/* ── Seminar list ── */
+.container-fluid .rightbar .main-parent .sem-list {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.container-fluid .rightbar .main-parent .sem-item {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    /* box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04); */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.container-fluid .rightbar .main-parent .sem-item-left {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.container-fluid .rightbar .main-parent .sem-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 15px;
+    color: var(--teal);
+}
+
+.sem-icon-attended,
+.sem-icon-completed {
+    background: var(--mint);
+}
+
+.sem-icon-scheduled {
+    /* background: var(--blue); */
+    background-color: #EDF0F5;
+}
+
+.sem-icon-missed {
+    background: var(--coral);
+}
+
+.sem-icon-pending_review {
+    background: var(--gold);
+}
+
+.container-fluid .rightbar .main-parent .sem-text h4 {
+    margin: 0 0 4px;
+    font-size: 15.5px;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.container-fluid .rightbar .main-parent .sem-schedule-line {
+    display: block;
+    font-size: 12.5px;
+    color: var(--navy-soft);
+    font-weight: 500;
+}
+
+.sem-schedule-line a {
+    color: var(--blue);
+    margin-left: 4px;
+    text-decoration: underline;
+}
+
+.container-fluid .rightbar .main-parent .sem-status-pill {
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.sem-status-attended,
+.sem-status-completed {
+    background: var(--mint-pale);
+    color: #0f7a55;
+}
+
+.sem-status-scheduled {
+    /* background: var(--blue-mist); */
+    background-color: #EDF0F5;
+    color: var(--teal);
+}
+
+.sem-status-missed {
+    background: var(--coral-pale);
+    color: var(--coral);
+}
+
+.sem-status-pending_review {
+    background: var(--gold-pale);
+    color: #a1690b;
+}
+
+/* ── Empty states ── */
+.container-fluid .rightbar .main-parent .sem-empty {
+    margin-top: 1rem;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+    border-radius: 16px;
+    padding: 32px 20px;
+    text-align: center;
+    color: var(--muted);
+}
+
+.container-fluid .rightbar .main-parent .sem-empty i {
+    font-size: 26px;
+    margin-bottom: 10px;
+    display: block;
+    color: var(--border-hover);
+}
+
+.container-fluid .rightbar .main-parent .sem-empty p {
+    margin: 0;
+    font-size: 13.5px;
+}
+
+@media only screen and (min-width: 1300px) {
+
+    .container-fluid .rightbar .main-parent p {
+        max-width: 100%;
+    }
+
+}
+
+/* ── Passcode entry + flash messages ── */
+.container-fluid .rightbar .main-parent .sem-flash-success,
+.container-fluid .rightbar .main-parent .sem-flash-error,
+.container-fluid .rightbar .main-parent .sem-flash-info {
+    margin-top: 1rem;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 13.5px;
+    font-weight: 500;
+}
+
+.container-fluid .rightbar .main-parent .sem-flash-success {
+    background: var(--mint-pale);
+    color: #0f7a55;
+    border: 1px solid var(--mint);
+}
+
+.container-fluid .rightbar .main-parent .sem-flash-error {
+    background: var(--coral-pale);
+    color: var(--coral);
+    border: 1px solid var(--coral);
+}
+
+.container-fluid .rightbar .main-parent .sem-flash-info {
+    background: var(--gold-pale);
+    color: #a1690b;
+    border: 1px solid var(--gold);
+}
+
+.container-fluid .rightbar .main-parent .sem-passcode-input {
+    margin-top: 10px;
+    width: 100%;
+    max-width: 340px;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 14px;
+    color: var(--ink);
+    background: #fff;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.container-fluid .rightbar .main-parent .sem-passcode-input:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px var(--blue-pale);
+}
+
+.container-fluid .rightbar .main-parent .sem-passcode-btn {
+    border: none;
+    padding: 9px 18px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    background: var(--teal);
+    color: #fff;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.15s ease;
+}
+
+.container-fluid .rightbar .main-parent .sem-passcode-btn:hover {
+    background: var(--teal-dark);
+}

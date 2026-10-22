@@ -1,0 +1,1041 @@
+.container-fluid {
+    /* background-color: #f5f5f8; */
+    /* background-color: #F7F9F8; */
+    /* background-color: var(--cream); */
+    /* background-color: #dfdfdf; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    /* background-color: #EAEDEB; */
+    /* background-color: #ffffff; */
+    /* background-color: #F9FAFB; */
+    position: relative;
+}
+
+/* .container-fluid .rightbar {
+    width: calc(100% - 250px);
+    margin-left: 250px;
+
+}
+
+.container-fluid .rightbar .main-parent {
+    padding: 2rem;
+    height: calc(100vh - 80px);
+    overflow-y: auto;
+    background-color: #FBFBFD;
+} */
+
+.container-fluid .rightbar .main-parent .main-header h3 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.container-fluid .rightbar .main-parent .main-header p {
+    font-size: 13.5px;
+    color: var(--muted);
+    margin: 5px 0 0;
+    width: 100%;
+    max-width: 450px;
+}
+
+
+.fin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    /* margin-bottom: 1.5rem; */
+    margin: 1.5rem 0;
+}
+
+.fin-card {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+    border: 1px solid var(--border);
+    background-color: #ffffff;
+    border-radius: 14px;
+    padding: 1.25rem;
+}
+
+.fin-card .fin-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--muted, #6b7b74);
+    font-weight: 600;
+    margin: 0 0 0.35rem;
+}
+
+.fin-card .fin-amount {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+.fin-card .fin-sub {
+    font-size: 12px;
+    color: var(--muted, #6b7b74);
+    margin: 0.25rem 0 0;
+}
+
+.fin-section {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+    border: 1px solid var(--border);
+    background-color: #ffffff;
+    border-radius: 14px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+
+.fin-section-head {
+    padding: 1.1rem 1.4rem;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    /* justify-content: space-between; */
+    align-items: center;
+    /* flex-wrap: wrap; */
+    gap: 0.75rem;
+}
+
+.fin-section-head .fin-text {
+    /* width: 70%; */
+    /* width: 350px; */
+    width: 100%;
+}
+
+.fin-section-head h4 {
+    margin: 0;
+    font-size: 15.5px;
+    font-weight: 700;
+}
+
+.fin-section-head p {
+    margin: 2px 0 0;
+    font-size: 12.5px;
+    color: var(--muted, #6b7b74);
+}
+
+.fin-year-select {
+    /* border: 1.5px solid #e0e0e0; */
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 13px;
+    background: #ffffff;
+}
+
+.fin-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.fin-table th {
+    text-align: left;
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--muted, #6b7b74);
+    padding: 10px 1.4rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.fin-table td {
+    padding: 12px 1.4rem;
+    font-size: 13.5px;
+    border-bottom: 1px solid #f5f5f5;
+    color: #333;
+}
+
+.fin-table tr:last-child td {
+    border-bottom: none;
+}
+
+.fin-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 600;
+}
+
+.fin-badge.pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.fin-badge.approved {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.fin-badge.disbursed {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.fin-empty {
+    padding: 2.5rem 1rem;
+    text-align: center;
+    color: var(--muted, #6b7b74);
+}
+
+.fin-empty i {
+    font-size: 28px;
+    opacity: 0.4;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+/* ── Pagination ── */
+.sm-pagination-wrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 16px 20px;
+    border-top: 1px solid var(--line, #E5EAF3);
+}
+
+.sm-pagination-info {
+    /*font-size: 0.82rem;*/
+    font-size: 13px;
+    color: var(--muted, #6b7a99);
+}
+
+.sm-pagination-info b {
+    font-weight: 500;
+}
+
+.sm-pagination {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+}
+
+.sm-page-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    padding: 0 8px;
+    border-radius: 8px;
+    border: 1px solid #E2E8E5;
+    background: #fff;
+    color: var(--muted, #6b7a99);
+    /*font-size: 0.85rem;*/
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.sm-page-btn:hover:not(.disabled):not(.active) {
+    border-color: var(--teal, #1E2A4A);
+    color: var(--teal, #1E2A4A);
+}
+
+.sm-page-btn.active {
+    background: var(--teal, #1E2A4A);
+    border-color: var(--teal, #1E2A4A);
+    color: #ffffff;
+    cursor: default;
+}
+
+.sm-page-btn.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.fin-filter-bar {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    gap: 10px;
+    /* flex-wrap: wrap; */
+    width: 100%;
+}
+
+.fin-filter-bar select,
+.fin-filter-bar input[type="date"] {
+    border: 1.5px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 13px;
+    background: #fff;
+    color: #333;
+}
+
+.fin-filter-clear {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--muted, #6b7b74);
+    text-decoration: none;
+    padding: 6px 4px;
+}
+
+.fin-filter-clear:hover {
+    color: #dc2626;
+}
+
+.fin-search-input {
+    border: 1.5px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 6px 10px 6px 32px;
+    font-size: 13px;
+    background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236b7b74' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 10px center;
+    /* min-width: 180px; */
+    /* width: 80%; */
+}
+
+
+/* ── Tab switcher (Share Capital / Savings) ── */
+
+.main-sub-parent {
+    width: 100%;
+    height: calc(100vh - 80px);
+    overflow-y: auto;
+    background-color: #FBFBFD;
+    padding: 2rem;
+}
+
+.fin-tabs {
+    display: flex;
+    gap: 6px;
+    background-color: #ffffff;
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+    padding: 4px;
+    border-radius: 10px;
+    width: fit-content;
+    margin: 1.5rem 0;
+}
+
+.fin-tab {
+    padding: 8px 18px;
+    border-radius: 7px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--muted, #6b7b74);
+    text-decoration: none;
+    transition: all 0.15s;
+}
+
+.fin-tab:hover {
+    color: #1a1a1a;
+}
+
+.fin-tab.active {
+    background-color: var(--teal);
+    color: #ffffff;
+}
+
+.sc-journey-card-capital {
+    padding: 18px 20px;
+    background-color: #ffffff;
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+    border-radius: 20px;
+    /* display: none; */
+}
+
+/* ── Receipt Modal Overlay (Share Capital) ── */
+#sc-receipt-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+    z-index: 99999;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 1.5rem 1rem;
+    overflow-y: auto;
+}
+
+#sc-receipt-overlay.active {
+    display: flex;
+}
+
+#sc-receipt-modal {
+    background: #fff;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
+    overflow: visible;
+    margin: auto;
+    animation: scModalIn 0.35s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+@keyframes scModalIn {
+    from {
+        opacity: 0;
+        transform: translateY(28px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.sc-receipt-header {
+    background-color: #ffffff;
+    padding: 1.5rem;
+    text-align: center;
+    border-radius: 20px 20px 0 0;
+    border-bottom: 1px solid var(--line);
+}
+
+.sc-receipt-header .check-circle {
+    width: 60px;
+    height: 60px;
+    background-color: var(--teal);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 0.8rem;
+}
+
+.sc-receipt-header .check-circle i {
+    color: #fff;
+    font-size: 26px;
+}
+
+.sc-receipt-header h2 {
+    color: #1a1a1a;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0 0 0.25rem;
+}
+
+.sc-receipt-header p {
+    color: var(--muted);
+    font-size: 0.82rem;
+    margin: 0;
+}
+
+.sc-receipt-body {
+    padding: 1.5rem;
+}
+
+.sc-receipt-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 0;
+    border-bottom: 1px dashed #e8e8e8;
+    font-size: 0.85rem;
+}
+
+.sc-receipt-row:last-child {
+    border-bottom: none;
+}
+
+.sc-receipt-row .label {
+    color: #888;
+    font-weight: 500;
+}
+
+.sc-receipt-row .value {
+    color: #1a1a1a;
+    font-weight: 700;
+    text-align: right;
+}
+
+.sc-receipt-row .value.highlight {
+    color: #1a1a1a;
+    font-size: 13.6px;
+}
+
+.sc-ref-badge {
+    background: #f4f4f4;
+    border-radius: 6px;
+    padding: 0.2rem 0.6rem;
+    letter-spacing: 0.5px;
+    color: #333;
+}
+
+.sc-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #fff8e1;
+    border: 1.5px solid #ffe082;
+    color: #b8860b;
+    border-radius: 20px;
+    padding: 0.2rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.sc-status-badge.completed {
+    background: #e8f5e9;
+    border-color: #a5d6a7;
+    color: #2e7d32;
+}
+
+.sc-status-badge .dot {
+    width: 7px;
+    height: 7px;
+    background: #e6a817;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.sc-status-badge.completed .dot {
+    background: #2e7d32;
+}
+
+.sc-receipt-footer {
+    padding: 0 1.5rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    border-radius: 0 0 20px 20px;
+    background: #fff;
+}
+
+.sc-btn-download {
+    width: 100%;
+    padding: 0.8rem;
+    background-color: var(--teal);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: opacity 0.2s;
+}
+
+.sc-btn-download:hover {
+    opacity: 0.88;
+}
+
+.sc-btn-close-modal {
+    width: 100%;
+    padding: 0.7rem;
+    background: transparent;
+    color: #888;
+    border: 1.5px solid #e8e8e8;
+    border-radius: 12px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.sc-btn-close-modal:hover {
+    background: #f5f5f5;
+    color: #333;
+}
+
+.sc-inline-error {
+    display: none;
+    align-items: flex-start;
+    gap: 8px;
+    background: #fef2f2;
+    border: 1.5px solid #fca5a5;
+    border-radius: 10px;
+    padding: 0.6rem 0.9rem;
+    font-size: 12px;
+    color: #b91c1c;
+    margin-bottom: 0.85rem;
+    line-height: 1.5;
+}
+
+.sc-inline-error.show {
+    display: flex;
+}
+
+.sc-inline-error i {
+    margin-top: 1px;
+    flex-shrink: 0;
+}
+
+/* ── Unified Transaction Modal ── */
+.tx-dest-toggle {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1.1rem;
+}
+
+.tx-dest-btn {
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1.5px solid #e0e0e0;
+    background: #fff;
+    color: #666;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.15s;
+}
+
+/* .tx-dest-btn.active {
+            background: var(--teal);
+            border-color: var(--teal);
+            color: #fff;
+        } */
+
+.tx-qbtn.active {
+    background: var(--teal) !important;
+    color: #fff !important;
+}
+
+.tx-amt-qbtn {
+    padding: 5px 13px;
+    border-radius: 7px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    background: #fff;
+    color: #808080;
+    border: 1.5px solid #ddd;
+}
+
+@media only screen and (max-width: 825px) {
+    .container-fluid #section1 .main-card-box {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
+@media only screen and (max-width: 711px) {
+    .main-sub-parent {
+        padding: 2rem 1.5rem;
+    }
+
+    .fin-tabs {
+        width: 100%;
+    }
+
+    .fin-tabs a {
+        width: 100%;
+    }
+}
+
+@media only screen and (max-width: 500px) {
+    .container-fluid #section1 .main-card-box {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE — Transaction History (Savings) + Contribution
+   History (Share Capital): tabs, search/filters, tables
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Header: title + CSV/PDF buttons wrap instead of overflowing ── */
+.container-fluid .card-box-title {
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+/* ── Savings type tabs: one row that scrolls sideways ── */
+.container-fluid .sm-tab-group {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.container-fluid .sm-tab-group::-webkit-scrollbar {
+    display: none;
+}
+
+.container-fluid .sm-tab-group .sm-tab {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+/* ── Savings search + filters ── */
+.container-fluid .sm-tx-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.container-fluid .sm-tx-toolbar .sm-search-box {
+    flex: 1 1 240px;
+    min-width: 0;
+}
+
+.container-fluid .sm-tx-toolbar .sm-search-box input {
+    width: 100%;
+    min-width: 0;
+}
+
+/* ── Share Capital search + filters ── */
+.container-fluid .contribution-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.container-fluid .contribution-search {
+    flex: 1 1 240px;
+    min-width: 0;
+}
+
+.container-fluid .sc-search-box input {
+    width: 100%;
+    min-width: 0;
+}
+
+.container-fluid .sc-filter-bar,
+.container-fluid .sc-filter-stats {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Long reference numbers break instead of stretching the table */
+.container-fluid .tx-ref,
+.container-fluid .sc-ref-text {
+    word-break: break-all;
+}
+
+.sm-page-info {
+    font-size: 13px;
+    font-weight: 500;
+    /* color: #1a1a1a; */
+    color: var(--muted);
+    min-width: 54px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* ═══════════════ PHONES / SMALL TABLETS ═══════════════ */
+@media only screen and (max-width: 768px) {
+
+    /* ── Savings toolbar: search full width, date + status side by side ── */
+    .container-fluid .sm-tx-toolbar {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .container-fluid .sm-tx-toolbar .sm-search-box {
+        grid-column: 1 / -1;
+        width: 100%;
+    }
+
+    .container-fluid .sm-tx-toolbar .sm-filter-select {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .container-fluid .sm-tx-toolbar .sm-filter-clear {
+        grid-column: 1 / -1;
+        text-align: center;
+    }
+
+    /* ── Share Capital toolbar ── */
+    .container-fluid .contribution-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .container-fluid .contribution-search,
+    .container-fluid .sc-search-box {
+        width: 100%;
+    }
+
+    .container-fluid .sc-filter-bar {
+        display: grid;
+        grid-template-columns: 1fr;
+        width: 100%;
+    }
+
+    .container-fluid .sc-filter-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        width: 100%;
+    }
+
+    .container-fluid .sc-filter-group,
+    .container-fluid .sc-filter-group input,
+    .container-fluid .sc-filter-group select {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .container-fluid #sc-filter-clear {
+        grid-column: 1 / -1;
+        width: 100%;
+    }
+
+    /* ── Both tables → stacked cards ── */
+    .container-fluid .card-box-savings .table,
+    .container-fluid .contribution-parent .parent-table .table {
+        min-width: 0 !important;
+        width: 100%;
+        table-layout: auto;
+    }
+
+    .container-fluid .card-box-savings .table thead,
+    .container-fluid .contribution-parent .parent-table .table thead {
+        display: none;
+    }
+
+    .container-fluid .card-box-savings .table tbody,
+    .container-fluid .contribution-parent .parent-table .table tbody {
+        display: block;
+        width: 100%;
+    }
+
+    /* (no !important here so the JS filter's display:none still hides rows) */
+    .container-fluid .card-box-savings .table tbody tr,
+    .container-fluid .contribution-parent .parent-table .table tbody tr {
+        display: block;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border, #e5e7eb);
+    }
+
+    .container-fluid .card-box-savings .table tbody td,
+    .container-fluid .contribution-parent .parent-table .table tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        padding: 6px 0;
+        border: none;
+        background: transparent;
+        text-align: right !important;
+        font-size: 13px;
+    }
+
+    .container-fluid .card-box-savings .table tbody td>*,
+    .container-fluid .contribution-parent .parent-table .table tbody td>* {
+        max-width: 65%;
+    }
+
+    /* Column label on the left of each line */
+    .container-fluid .card-box-savings .table tbody td::before,
+    .container-fluid .contribution-parent .parent-table .table tbody td::before {
+        flex-shrink: 0;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .4px;
+        color: var(--muted, #888);
+        text-align: left;
+    }
+
+    /* Savings columns: Type · Reference No. · Date · Amount · Status */
+    .container-fluid .card-box-savings .table tbody td:nth-child(1)::before {
+        content: "Type";
+    }
+
+    .container-fluid .card-box-savings .table tbody td:nth-child(2)::before {
+        content: "Reference No.";
+    }
+
+    .container-fluid .card-box-savings .table tbody td:nth-child(3)::before {
+        content: "Date";
+    }
+
+    .container-fluid .card-box-savings .table tbody td:nth-child(4)::before {
+        content: "Amount";
+    }
+
+    .container-fluid .card-box-savings .table tbody td:nth-child(5)::before {
+        content: "Status";
+    }
+
+    /* Share Capital columns: Date · Type · Reference No. · Shares · Amount · Status */
+    .container-fluid .contribution-parent .parent-table .table tbody td:nth-child(1)::before {
+        content: "Date";
+    }
+
+    .container-fluid .contribution-parent .parent-table .table tbody td:nth-child(2)::before {
+        content: "Type";
+    }
+
+    .container-fluid .contribution-parent .parent-table .table tbody td:nth-child(3)::before {
+        content: "Reference No.";
+    }
+
+    .container-fluid .contribution-parent .parent-table .table tbody td:nth-child(4)::before {
+        content: "Shares";
+    }
+
+    .container-fluid .contribution-parent .parent-table .table tbody td:nth-child(5)::before {
+        content: "Amount";
+    }
+
+    .container-fluid .contribution-parent .parent-table .table tbody td:nth-child(6)::before {
+        content: "Status";
+    }
+
+    /* Share Capital reference cell has a badge + text — stack them on the right */
+    .container-fluid .contribution-parent .parent-table .table tbody td:nth-child(3) {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    .container-fluid .contribution-parent .parent-table .table tbody td:nth-child(3)::before {
+        margin-right: auto;
+    }
+
+    /* Empty / "no results" rows: no label, centered */
+    .container-fluid .card-box-savings .table tbody td[colspan],
+    .container-fluid .contribution-parent .parent-table .table tbody td[colspan] {
+        flex-direction: column;
+        justify-content: center;
+        text-align: center !important;
+    }
+
+    .container-fluid .card-box-savings .table tbody td[colspan]::before,
+    .container-fluid .contribution-parent .parent-table .table tbody td[colspan]::before {
+        content: none;
+    }
+
+    .container-fluid .card-box-savings .table tbody td[colspan]>*,
+    .container-fluid .contribution-parent .parent-table .table tbody td[colspan]>* {
+        max-width: 100%;
+    }
+
+    /* ── Pagination / footers stack and center ── */
+    .container-fluid .sm-pagination-wrap,
+    .container-fluid .sc-table-footer {
+        /*flex-direction: column;*/
+        align-items: center;
+        text-align: center;
+        gap: 10px;
+    }
+
+    .container-fluid .sm-pagination,
+    .container-fluid .sc-pagination {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    /* ── Fix: search box was taking 240px of HEIGHT in column layout ── */
+    .container-fluid .contribution-search {
+        flex: 0 0 auto;
+    }
+
+    /* ── Fix: keep content clear of the fixed bottom navigation bar ── */
+    .main-sub-parent {
+        padding-bottom: calc(110px + env(safe-area-inset-bottom, 0px));
+    }
+
+    /* Last card in each table doesn't need a divider line */
+    .container-fluid .card-box-savings .table tbody tr:last-child,
+    .container-fluid .contribution-parent .parent-table .table tbody tr:last-child {
+        border-bottom: none;
+    }
+
+    /* A little breathing room around the "Showing X of Y" footers */
+    .container-fluid .sm-pagination-wrap,
+    .container-fluid .sc-table-footer {
+        padding: 14px 16px 18px;
+    }
+}
+
+/* ═══ Share Capital stat cards — responsive ═══ */
+/* .container-fluid .sc-stat-grid {
+    display: grid;
+    gap: 1rem;
+} */
+
+/* Tablets: never more than 2 per row (covers the 4-card "not eligible" state) */
+@media only screen and (max-width: 768px) {
+    .container-fluid .sc-stat-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+}
+
+/* Phones: one card per row so text has room */
+@media only screen and (max-width: 480px) {
+    .container-fluid .sc-stat-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .container-fluid .sc-stat-card .sc-stat-sub {
+        max-width: 100%;
+    }
+}
+
+/* ═══ Phones: show page title + description, buttons below ═══ */
+@media only screen and (max-width: 576px) {
+    .container-fluid .main-parent .parent-main {
+        display: flex !important;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 14px;
+    }
+
+    .container-fluid .main-parent .parent-main .parent-text {
+        display: block !important;
+        width: 100%;
+        max-width: none;
+    }
+
+    .container-fluid .main-parent .parent-main .parent-text h3 {
+        display: block !important;
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--teal);
+        margin: 0;
+    }
+
+    .container-fluid .main-parent .parent-main .parent-text p {
+        display: block !important;
+        font-size: 13.5px;
+        line-height: 1.5;
+        color: var(--muted);
+        margin: 5px 0 0;
+    }
+
+    /* Buttons share the row evenly (one button → full width) */
+    .container-fluid .main-parent .parent-main .parent-download {
+        display: flex !important;
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+    }
+
+    .container-fluid .main-parent .parent-main .parent-download .share {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .container-fluid .main-parent .parent-main .parent-download .share button {
+        width: 100%;
+        height: 100%;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .container-fluid .fin-tabs {
+        margin-top: 1.25rem;
+    }
+}

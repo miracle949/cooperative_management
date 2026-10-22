@@ -1,0 +1,128 @@
+/* @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@400..900&family=Lobster&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&family=Saira+Condensed:wght@100;200;300;400;500;600;700;800;900&family=Sekuya&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+
+* {
+    font-family: "Poppins", sans-serif;
+} */
+
+.container-fluid {
+    /* background-color: #f5f5f8; */
+    background-color: #ffffff;
+}
+
+.container-fluid main {
+    padding: 48px;
+    margin-top: 70px;
+}
+
+
+.container-fluid main h3 {
+    font-size: 19px;
+}
+
+.container-fluid main p {
+    font-size: 15.5px;
+    color: #808080;
+}
+
+.container-fluid main label {
+    font-size: 15.5px;
+}
+
+.container-fluid main input {
+    font-size: 15.5px;
+    border: 1px solid rgba(0,0,0,0.2);
+}
+
+.container-fluid main button {
+    font-size: 15.5px;
+    background-color: var(--green);
+    color: #ffffff;
+}
+
+.container-fluid main button:hover{
+    background-color: var(--green);
+    color: #ffffff;
+}
+
+.container-fluid main .contact h4 {
+    font-size: 18px;
+}
+
+.container-fluid main .contact p {
+    margin: 5px 0px;
+}
+
+.container-fluid main .contact .fa {
+    font-size: 20px;
+    /* color: #0D6EFD; */
+    /* color: var(--green); */
+    color: #ffffff;
+}
+
+.container-fluid main .contact .social .fa-brands {
+    font-size: 25px;
+    padding: 0.5rem;
+    /* color: #0D6EFD; */
+    /* color: var(--text); */
+    color: #ffffff;
+    /* color: var(--green); */
+}
+
+.container-fluid main .contact .social h4{
+    color: #ffffff;
+}
+
+.container-fluid main textarea {
+    height: 202px;
+    border: 1px solid rgba(0,0,0,0.2);
+}
+
+.container-fluid h3 {
+    font-size: 23px;
+}
+
+.container-fluid #section1 h4 {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.container-fluid #section1 h3{
+    font-weight: 600;
+}
+
+.container-fluid #section1 span,
+p {
+    font-size: 15.5px;
+}
+
+.container-fluid #section1 span {
+    /* color: #0D6EFD; */
+    color: var(--green);
+}
+
+.container-fluid #section1 .fa {
+    font-size: 20px;
+    /* color: var(--green); */
+    color: #ffffff;
+    /* color: #0D6EFD; */
+}
+
+.container-fluid #section3 .accordion p {
+    margin: 0;
+}
+
+/* .container-fluid #section1 h3{
+    font-size: 23px;
+} */
+
+@media only screen and (max-width: 768px) {
+    .container-fluid main .contact {
+        margin-top: 3rem;
+    }
+}
+
+@media only screen and (max-width: 500px) {
+    .container-fluid main {
+        padding: 50px 30px 50px 30px;
+    }
+}

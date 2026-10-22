@@ -1,0 +1,1309 @@
+.container-fluid {
+    /* background-color: #ECF6FF; */
+    /* background-color: #EAEDEB; */
+}
+
+/* .container-fluid main {
+    position: relative;
+} */
+
+.container-fluid .rightbar {
+    width: calc(100% - 250px);
+    height: 100vh;
+    margin-left: 250px;
+    /* background-color: var(--lavender-tint); */
+    background-color: #FBFBFD;
+    /* padding: 2rem; */
+}
+
+.container-fluid .rightbar .main-parent {
+    padding: 2rem;
+    height: calc(100vh - 70px);
+    overflow-y: auto;
+}
+
+.container-fluid .rightbar .main-parent h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--teal);
+    margin: 0;
+    /* font-family: Georgia, "Times New Roman", serif; */
+}
+
+.container-fluid .rightbar .main-parent p {
+    font-size: 13.5px;
+    margin: 5px 0 0;
+    color: var(--muted);
+}
+
+.container-fluid .rightbar .main-parent .main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.container-fluid .rightbar .main-parent .main-header button {
+    padding: 10px 20px;
+}
+
+.container-fluid .rightbar .main-parent .main-personal-card {
+    margin-top: 1.5rem;
+    background-color: #ffffff;
+    /* background-color: var(--teal); */
+    padding: 1.8rem 2rem 1.8rem;
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.container-fluid .rightbar .main-parent .main-personal-card .personal-header .header-parent {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.container-fluid .rightbar .main-parent .main-personal-card .personal-header .header-parent .header-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 12px;
+    /* background-color: var(--blue-mist); */
+    background-color: var(--teal);
+}
+
+.container-fluid .rightbar .main-parent .main-personal-card .personal-header .header-parent .header-icon .fa {
+    /* color: var(--blue); */
+    color: #ffffff;
+    font-size: 15px;
+}
+
+.container-fluid .rightbar .main-parent .main-personal-card .personal-header .header-parent h5 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 600;
+    /* display: flex;
+    align-items: center;
+    gap: 12px; */
+    letter-spacing: .2em;
+    /* color: #ffffff; */
+    color: #1a1a1a;
+    font-family: Georgia, "Times New Roman", serif;
+    /* color: var(--blue); */
+    /* font-family: Georgia, "Times New Roman", serif; */
+    /* letter-spacing: .16em; */
+}
+
+/* .container-fluid .rightbar .main-parent .main-personal-card .personal-header .header-parent h5::before{
+    content: '';
+    width: 20px;
+    height: 1px;
+    background-color: var(--blue);
+} */
+
+.container-fluid .rightbar .main-parent .main-personal-card .personal-header .header-parent p {
+    margin: 5px 0 0;
+    /* text-transform: uppercase; */
+    font-size: 13.5px;
+    font-weight: 500;
+}
+
+.container-fluid .rightbar .main-parent .main-personal-card .personal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.container-fluid .rightbar .main-parent .main-personal-card .personal-header .active {
+    font-size: 12.5px;
+    padding: 5px 15px 5px;
+    border-radius: 28px;
+    /* color: var(--green); */
+    /* background: rgba(34, 201, 147, .16);
+    border: 1px solid rgba(34, 201, 147, .4);
+    color: #6EE7C0; */
+    background-color: var(--mint-pale);
+    color: var(--green);
+    font-weight: 600;
+    border: 1px solid rgba(34, 201, 147, .4);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    /* border: 1px solid var(--line); */
+}
+
+.container-fluid .rightbar .main-parent .main-personal-card .personal-header .active::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background-color: var(--green);
+    border-radius: 50%;
+}
+
+.container-fluid .rightbar .main-parent .main-personal-card .personal-body .body-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    /* border-radius: 20px; */
+    /* background-color: var(--blue-mist); */
+    /* background-color: var(--blue); */
+    /* background: linear-gradient(145deg, var(--blue), var(--blue-light)); */
+    background-color: var(--teal);
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 26px;
+    font-weight: 600;
+    font-family: Georgia, "Times New Roman", serif;
+}
+
+.container-fluid .rightbar .main-parent .main-personal-card .personal-body {
+    margin-top: 1.9rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 25px;
+}
+
+.container-fluid .rightbar .main-parent .main-personal-card .personal-body .personal-sub-body {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.container-fluid .rightbar .main-parent .main-personal-card .personal-body .body-text h2 {
+    font-size: 19px;
+    margin: 0;
+    font-weight: 600;
+    color: #1a1a1a;
+    /* font-family: Georgia, "Times New Roman", serif; */
+}
+
+.container-fluid .rightbar .main-parent .main-personal-card .personal-body .body-text p {
+    font-size: 14.5px;
+}
+
+/* .container-fluid .rightbar .main-parent .main-personal-card .personal-body .body-text .since-parent{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+} */
+
+.container-fluid .rightbar .main-parent .main-personal-card .personal-body .since-sub-parent .since-parent {
+    /* margin: 10px 0 0; */
+    /* display: grid;
+    grid-template-columns: repeat(3, 1fr); */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* display: flex; */
+    gap: 34px;
+    /* flex-wrap: wrap; */
+}
+
+.container-fluid .rightbar .main-parent .main-personal-card .personal-body .since-parent .member {
+    display: flex;
+    flex-direction: column;
+}
+
+.perforation {
+    position: relative;
+    height: 1px;
+    border-top: 2px dashed var(--border);
+    margin: 1.5rem -34px 0;
+    display: none;
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-body-2 .parent-sub-progress .progress-repay .progress-body {
+    margin-top: 0.4rem;
+}
+
+/* ── Progress bar track + fill ── */
+.parent-progress {
+    width: 100%;
+    height: 15px;
+    /* background-color: var(--line, #e9e9e9); */
+    background-color: #EDF0F5;
+    border-radius: 28px;
+    overflow: hidden;
+}
+
+.parent-progress .progress {
+    height: 100%;
+    background-color: var(--teal);
+    border-radius: 28px;
+    transition: width 0.6s ease;
+}
+
+.container-fluid .rightbar .main-parent .main-personal-card .personal-body .personal-sub-body .parent-box .since-parent {
+    display: flex;
+    align-items: center;
+    gap: 34px;
+    margin: 10px 0 0;
+}
+
+.container-fluid .rightbar .main-parent .main-personal-card .personal-body .personal-sub-body .parent-box .since-parent .member span {
+    font-size: 12.5px;
+    color: var(--muted);
+    /* color: #1a1a1a; */
+    text-transform: uppercase;
+}
+
+.container-fluid .rightbar .main-parent .main-personal-card .personal-body .personal-sub-body .parent-box .since-parent .member strong {
+    margin: 0 0 0;
+    font-size: 14.5px;
+    color: #1a1a1a;
+    font-weight: 500;
+    letter-spacing: .5px;
+}
+
+/* .perforation::before,
+.perforation::after {
+    content: '';
+    position: absolute;
+    top: -11px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+} */
+
+.perforation::before {
+    left: -11px;
+}
+
+.perforation::after {
+    right: -11px;
+}
+
+.sm-btn-confirm:disabled {
+    background: #e5e7eb;
+    color: #9ca3af;
+    cursor: not-allowed;
+}
+
+.container-fluid .rightbar .main-parent .parent-information {
+    margin-top: 1.5rem;
+    display: grid;
+    /* grid-template-columns: repeat(2, 1fr); */
+    grid-template-columns: 1.2fr 1fr;
+    gap: 20px;
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-sub-information {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* "Signature on File" is a THIRD direct child of the 2-column
+   .parent-information grid (the other cards live inside the two
+   .personal-sub-information columns above it). A lone third item dropped
+   into a 2-column grid falls into column 1 of a new row and leaves column 2
+   empty beside it — that empty column is the gap next to the Signature
+   card. Spanning it across both columns removes that gap.
+   The ">" (direct child) makes this rule match only that card, not the
+   .personal-information-1 cards nested inside .personal-sub-information. */
+.container-fluid .rightbar .main-parent .parent-information>.personal-information-1 {
+    grid-column: 1 / -1;
+    /* margin-top: 1rem; */
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-1 {
+    background-color: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+    height: 100%;
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-1 .personal-information-header {
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-1 .personal-information-header .header-text {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-1 .personal-information-header .header-text .header-icon {
+    width: 35px;
+    height: 35px;
+    background-color: #EDF0F5;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-header .header-text .header-icon {
+    width: 35px;
+    height: 35px;
+    background-color: #EDF0F5;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-1 .personal-information-header .header-text h4 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-1 .personal-information-header a {
+    font-size: 14px;
+    text-decoration: none;
+    color: var(--teal);
+    font-weight: 600;
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-1 .personal-information-body {
+    padding: 24px 24px 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 24px;
+    position: relative;
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-1 .personal-information-body .information {
+    display: flex;
+    flex-direction: column;
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-1 .personal-information-body .information span {
+    margin: 0 0 3px;
+    font-size: 13.5px;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    color: var(--muted);
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-1 .personal-information-body .information strong {
+    font-size: 14px;
+    color: var(--teal);
+}
+
+/* personal information 2 */
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 {
+    background-color: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-header {
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-header .header-text {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-header .header-text h4 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-header a {
+    font-size: 13px;
+    text-decoration: none;
+    color: var(--teal);
+    font-weight: 600;
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-body {
+    padding: 20px 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 24px;
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-1 .more-button {
+    /* position: absolute;
+    right: 25px;
+    bottom: 15px; */
+    padding: 0 24px 20px;
+    display: flex;
+    justify-content: end;
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-1 .more-button button {
+    font-size: 13.5px;
+    color: var(--blue);
+    font-weight: 600;
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-body-2 {
+    padding: 12px 24px 20px;
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-body-2 .personal-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-body-2 .personal-head p {
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-body-2 .personal-parent {
+    /* margin-top: 1rem; */
+    display: flex;
+    flex-direction: column;
+    /* gap: 1rem; */
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-body-2 .personal-parent .item {
+    /* display: flex;
+    justify-content: space-between;
+    align-items: center; */
+    /* flex: 1; */
+    /* margin-top: 1rem;
+    font-size: 14px;
+    border-bottom: 1px solid var(--line);
+    padding: 0 0 12px; */
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border-bottom: 1px solid var(--line);
+    padding: 12px 0;
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-body-2 .personal-parent .item-net {
+    padding: 12px 0 0;
+    border: none;
+}
+
+/* .container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-body-2 .personal-parent .item:nth-child(1){
+    padding: 0 0 12px;
+} */
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-body-2 .personal-parent .item .item-value strong {
+    font-size: 14px;
+    color: var(--teal);
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-body-2 .personal-parent .item .stat-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 11px;
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-body-2 .personal-parent .item:nth-child(1) .stat-icon {
+    background-color: var(--gold-pale);
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-body-2 .personal-parent .item:nth-child(1) .stat-icon .fa {
+    color: var(--gold);
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-body-2 .personal-parent .item:nth-child(2) .stat-icon {
+    background-color: var(--savings-bg);
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-body-2 .personal-parent .item:nth-child(2) .stat-icon .fa {
+    color: var(--savings);
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-body-2 .personal-parent .item:nth-child(3) .stat-icon {
+    background-color: var(--mint-pale);
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-body-2 .personal-parent .item:nth-child(3) .stat-icon .fa {
+    color: var(--mint);
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-body-2 .personal-parent .item:nth-child(4) .stat-icon {
+    background-color: var(--gold-pale);
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-body-2 .personal-parent .item:nth-child(4) .stat-icon .fa {
+    color: var(--gold);
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-body-2 .personal-parent .item .stat-icon .fa {
+    font-size: 15px;
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-body-2 .personal-parent .item .item-value {
+    flex: 1;
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-body-2 .personal-parent .item .item-value span {
+    font-size: 13px;
+    color: var(--muted);
+    display: block;
+    margin: 0 0 1px;
+    font-weight: normal;
+}
+
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-body-2 .personal-parent .item-net .item-value span {
+    margin: 0;
+    font-size: 14px;
+    color: var(--teal);
+    font-weight: 600;
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-body-2 .personal-parent .item .stat-delta {
+    font-size: 11.5px;
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-body-2 .personal-parent .item-net .stat-delta {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.container-fluid .rightbar .main-parent .parent-information .fa {
+    color: var(--teal);
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-body-2 .parent-sub-progress .progress-repay {
+    padding: 12px 0 12px;
+    border-bottom: 1px solid var(--line);
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-body-2 .parent-sub-progress .progress-repay:nth-child(1) {
+    padding: 12 0 12px;
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-body-2 .parent-sub-progress .progress-repay .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-body-2 .parent-sub-progress .progress-repay .progress-header strong {
+    font-size: 14px;
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-body-2 .parent-sub-progress .progress-repay .progress-header span {
+    font-size: 13px;
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-body-2 .parent-sub-progress .progress-repay .progress-body {
+    margin-top: 0.4rem;
+}
+
+.container-fluid .rightbar .main-parent .parent-information .personal-information-1 .document-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.doc-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+    /* padding: 13px 24px; */
+}
+
+.doc-row:nth-child(1) {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 0 12px;
+    /* padding: 13px 24px; */
+}
+
+.doc-name {
+    flex: 1;
+    font-size: 13.5px;
+    font-weight: 600;
+}
+
+
+.doc-meta {
+    font-size: 11.5px;
+    color: var(--muted);
+}
+
+.doc-icon {
+    color: var(--coral);
+    font-size: 16px;
+    width: 20px;
+    text-align: center;
+}
+
+/* .container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-body-2 .item{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    font-size: 14px;
+    border-bottom: 1px solid var(--line);
+    padding: 0 0 12px;
+} */
+
+.container-fluid main .card-box-parent {
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    height: 100%;
+}
+
+.container-fluid main .card-box-parent .card-box {
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 30px;
+    background-color: #ECECF0;
+    margin: 1rem 0 0 0;
+}
+
+.container-fluid main .card-box-parent .card-box .nav {
+    gap: 8rem;
+    max-width: 1274.4px;
+    display: none;
+}
+
+.container-fluid main .card-box-parent .card-box .nav .nav-link {
+    background: transparent !important;
+    color: #000;
+    border: none;
+    padding: 12px 18px;
+    position: relative;
+    font-weight: 500;
+}
+
+.container-fluid main .card-box-parent .card-box .nav .nav-link.active {
+    color: #0d6efd;
+}
+
+.container-fluid main .card-box-parent .card-box .nav .nav-link.active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 2px;
+    background: #0d6efd;
+    border-radius: 2px;
+}
+
+.card-tab {
+    width: 480px;
+    height: 330px;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    padding: 2rem;
+}
+
+.card-tab:nth-child(1) {
+    background-color: #E5F0FF;
+}
+
+.card-tab:nth-child(2) {
+    background-color: #E6FCEE;
+}
+
+.card-tab-benefits {
+    width: 94.3%;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    padding: 2rem;
+    background-color: white;
+}
+
+.card-tab-benefits h4 {
+    font-size: 17px;
+}
+
+.transaction-tab h4 {
+    font-size: 17px;
+}
+
+.settings-tab {
+    width: 100%;
+    padding: 2rem;
+    background-color: white;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+
+.settings-tab h4 {
+    font-size: 17px;
+}
+
+.settings-tab p {
+    margin: 0px 0px 8px;
+}
+
+.security-tab {
+    width: 100%;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    padding: 2rem;
+    border-radius: 10px;
+    background-color: white;
+}
+
+.security-tab h4 {
+    font-size: 17px;
+}
+
+.security-tab .security-box {
+    padding: 1.5rem;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+label {
+    font-weight: 500;
+}
+
+.tab-pane {
+    padding: 48px;
+}
+
+.label-text {
+    margin-top: 48px;
+}
+
+.label-text p {
+    margin-top: 8px;
+}
+
+.sm-modal-content {
+    border-radius: 16px;
+    border: none;
+    overflow: hidden;
+}
+
+.sm-modal-header {
+    padding: 1.2rem 1.5rem;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sm-modal-icon {
+    width: 42px;
+    height: 42px;
+    background: var(--navy, #0f1b3d);
+    color: #fff;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.sm-modal-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #16213e;
+}
+
+.sm-modal-subtitle {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: #888;
+}
+
+.sm-modal-close {
+    background: none;
+    border: none;
+    font-size: 16px;
+    color: #999;
+    cursor: pointer;
+}
+
+.sm-modal-body {
+    padding: 1.3rem 1.5rem;
+}
+
+.sm-summary-strip {
+    background: #f0f4fa;
+    border-radius: 10px;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.2rem;
+}
+
+.sm-summary-label {
+    font-size: 12px;
+    color: #6b7fa3;
+    font-weight: 600;
+}
+
+.sm-summary-value {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #16213e;
+}
+
+.sm-field-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 0;
+}
+
+.sm-field-row .sm-field {
+    flex: 1;
+    min-width: 0;
+}
+
+.sm-field {
+    margin-bottom: 1.1rem;
+}
+
+.sm-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.sm-input {
+    width: 100%;
+    border-radius: 10px;
+    border: 1.5px solid #e0e0e0;
+    height: 46px;
+    font-size: 14px;
+    color: #333;
+    padding: 0 14px;
+    box-sizing: border-box;
+}
+
+textarea.sm-input {
+    height: auto;
+    padding: 10px 14px;
+    resize: none;
+}
+
+.sm-input-prefix {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--teal, #0f766e);
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.sm-input-prefixed {
+    padding-left: 30px;
+}
+
+.sm-current-file {
+    display: block;
+    font-size: 11px;
+    color: #aaa;
+    margin-top: 4px;
+}
+
+.sm-btn-confirm {
+    width: 100%;
+    background: var(--navy, #0f1b3d);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    height: 48px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 0.4rem;
+}
+
+.sm-btn-cancel {
+    width: 100%;
+    background: #fff;
+    color: #6b7fa3;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 10px;
+    height: 46px;
+    font-size: 14px;
+    margin-top: 0.6rem;
+}
+
+.main-personal-card-resign {
+    margin-top: 1.5rem;
+    border: 1px solid #fecaca;
+    background: #fef2f2;
+    padding: 20px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
+.main-personal-card-resign .resign-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.main-perosnal-card-resign .resign-body .resign-sub-body {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+/* @media only screen and (max-width: 1200px) {
+
+    html {
+        width: 100%;
+        height: 100%;
+        overflow-x: hidden;
+        margin: 0;
+        padding: 0;
+    }
+} */
+
+/* ── Download SOA ── */
+.soa-btn {
+    background: var(--teal, #1E2A4A);
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 13.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.soa-btn:hover { filter: brightness(1.12); }
+.soa-btn-short { display: none; }
+
+/* Monthly / Annual segmented switch */
+.soa-toggle {
+    display: flex;
+    gap: 6px;
+    background: #EDF0F5;
+    padding: 5px;
+    border-radius: 12px;
+    margin-bottom: 1.1rem;
+}
+
+.soa-toggle label { flex: 1; margin: 0; cursor: pointer; }
+.soa-toggle input { position: absolute; opacity: 0; pointer-events: none; }
+
+.soa-toggle span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 11px 8px;
+    border-radius: 9px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #6b7a99;
+    transition: .15s;
+}
+
+.soa-toggle input:checked + span {
+    background: #fff;
+    color: var(--teal, #1E2A4A);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .12);
+}
+
+.soa-hint {
+    font-size: 12px !important;
+    color: #6b7280 !important;
+    line-height: 1.5;
+    margin: 0 0 1rem !important;
+}
+
+/* Phones: compact button so it never crowds the page title */
+@media only screen and (max-width: 500px) {
+    .soa-btn { padding: 10px 14px; }
+    .soa-btn-long { display: none; }
+    .soa-btn-short { display: inline; }
+}
+
+@media only screen and (max-width: 1200px) {
+    .container-fluid .rightbar {
+        width: calc(100% - 80px);
+        margin-left: 80px;
+    }
+}
+
+@media only screen and (max-width: 1150px) {
+
+    .container-fluid main .card-box-parent .card-box .nav {
+        gap: 5rem;
+    }
+}
+
+@media only screen and (max-width: 1040px) {
+    .container-fluid main .card-box-parent .card-box .nav {
+        gap: 3.5rem;
+    }
+}
+
+@media only screen and (max-width: 955px) {
+
+    main {
+        height: calc(100dvh - 80px);
+        margin-bottom: 80px;
+    }
+
+    .container-fluid main .card-box-parent .card-box {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        overflow-x: auto;
+        border-radius: 0;
+        padding: 1rem;
+        z-index: 1;
+    }
+
+    .container-fluid main .card-box-parent .card-box .nav {
+        gap: 2rem;
+    }
+
+    .tab-pane {
+        padding: 0;
+    }
+
+}
+
+@media only screen and (max-width: 780px) {
+    .container-fluid .rightbar .main-parent .parent-information {
+        /* grid-template-columns: repeat(2, 1fr); */
+        grid-template-columns: 1fr;
+    }
+}
+
+@media only screen and (max-width: 711px) {
+    .container-fluid .rightbar .main-parent {
+        padding: 2rem 1.5rem;
+    }
+}
+
+@media only screen and (max-width: 703px) {
+    .container-fluid .rightbar {
+        width: 100%;
+        margin-left: 0;
+    }
+
+}
+
+@media only screen and (max-width: 630px) {
+    .main-personal-card-resign .resign-body {
+        flex-direction: column;
+    }
+
+    .main-perosnal-card-resign .resign-body .resign-sub-body {
+        flex-direction: column;
+    }
+
+    .main-personal-card-resign {
+        flex-direction: column;
+    }
+}
+
+@media only screen and (max-width: 530px) {
+    .container-fluid .rightbar .main-parent .main-personal-card .personal-header .active {
+        padding: 5px;
+    }
+
+    .container-fluid .rightbar .main-parent .main-personal-card .personal-header .active span {
+        display: none;
+    }
+
+}
+
+@media only screen and (max-width: 500px) {
+    .container-fluid .rightbar .main-parent {
+        padding: 1.5rem 1.5rem 7rem;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE — Profile page
+   ═══════════════════════════════════════════════════════════ */
+
+/* Long values (emails, addresses, plate numbers) wrap instead of overflowing */
+.container-fluid .rightbar .main-parent .parent-information .personal-information-body .information strong,
+.container-fluid .rightbar .main-parent .main-personal-card .personal-body .body-text p,
+.doc-meta {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.container-fluid .rightbar .main-parent .main-personal-card .personal-body .personal-sub-body .parent-box {
+    min-width: 0;
+}
+
+/* Card header: badge never pushes the title off-screen */
+.container-fluid .rightbar .main-parent .main-personal-card .personal-header {
+    gap: 12px;
+}
+
+/* ── Tablets / large phones ── */
+@media only screen and (max-width: 703px) {
+
+    /* Keep the last card clear of the fixed bottom navigation bar */
+    .container-fluid .rightbar .main-parent {
+        padding-bottom: calc(110px + env(safe-area-inset-bottom, 0px)) !important;
+    }
+
+    .container-fluid .rightbar .main-parent .main-personal-card {
+        padding: 1.5rem 1.25rem;
+    }
+
+    /* Member No / Member Since wrap instead of overflowing */
+    .container-fluid .rightbar .main-parent .main-personal-card .personal-body .personal-sub-body .parent-box .since-parent {
+        flex-wrap: wrap;
+        gap: 12px 28px;
+    }
+
+    /* Card headers / bodies: slightly tighter padding */
+    .container-fluid .rightbar .main-parent .parent-information .personal-information-1 .personal-information-header,
+    .container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-header {
+        padding: 16px 18px;
+    }
+
+    .container-fluid .rightbar .main-parent .parent-information .personal-information-1 .personal-information-body {
+        padding: 18px;
+    }
+
+    .container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-body-2 {
+        padding: 8px 18px 16px;
+    }
+
+    /* Resignation card: full-width button */
+    .main-personal-card-resign {
+        align-items: stretch;
+    }
+
+    .main-personal-card-resign button {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* ── Phones ── */
+@media only screen and (max-width: 500px) {
+
+    /* Avatar on top, name + member info underneath, centered */
+    .container-fluid .rightbar .main-parent .main-personal-card .personal-body {
+        margin-top: 1.4rem;
+    }
+
+    .container-fluid .rightbar .main-parent .main-personal-card .personal-body .personal-sub-body {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 14px;
+        width: 100%;
+    }
+
+    .container-fluid .rightbar .main-parent .main-personal-card .personal-body .personal-sub-body .parent-box .since-parent {
+        justify-content: center;
+    }
+
+    .container-fluid .rightbar .main-parent .main-personal-card .personal-body .since-parent .member {
+        align-items: center;
+    }
+
+    .container-fluid .rightbar .main-parent .main-personal-card .personal-body .body-text h2 {
+        font-size: 17px;
+    }
+
+    /* Info grids: one field per line */
+    .container-fluid .rightbar .main-parent .parent-information .personal-information-1 .personal-information-body {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .container-fluid .rightbar .main-parent .parent-information .personal-information-1 .personal-information-body .information span {
+        font-size: 11.5px;
+    }
+
+    /* Document / vehicle rows: meta text drops under the name */
+    .doc-row {
+        flex-wrap: wrap;
+    }
+
+    .doc-meta {
+        width: 100%;
+        padding-left: 32px;
+    }
+
+    /* Loan progress header wraps if the amount is long */
+    .container-fluid .rightbar .main-parent .parent-information .personal-information-2 .personal-information-body-2 .parent-sub-progress .progress-repay .progress-header {
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+
+    /* Toast fits the screen */
+    .toast-message {
+        right: 12px;
+        left: 12px;
+        width: auto !important;
+    }
+}
+
+/* ── Edit modals: stack the 2–3 field rows on small screens ── */
+@media only screen and (max-width: 576px) {
+    .sm-field-row {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .sm-modal-header {
+        padding: 1rem 1.1rem;
+    }
+
+    .sm-modal-body {
+        padding: 1.1rem;
+    }
+
+    .sm-modal-subtitle {
+        font-size: 11.5px;
+    }
+}
+
+@media only screen and (max-width: 415px){
+    .profile-side{
+        width: 200px;
+    }
+}
+
+/* @media only screen and (max-width: 703px) {
+    .container-fluid .rightbar {
+        width: 100%;
+        margin-left: 0;
+    }
+
+} */

@@ -1,0 +1,183 @@
+.container-fluid .rightbar {
+    width: calc(100% - 250px);
+    height: 100vh;
+    margin-left: 250px;
+    /* background-color: var(--lavender-tint); */
+    background-color: #FBFBFD;
+    /* padding: 2rem; */
+}
+
+.container-fluid .main-parent {
+    /* padding: 2rem 2rem 2rem; */
+    /* padding: 24px 28px; */
+    padding: 2rem;
+    height: calc(100vh - 80px);
+    overflow-y: auto;
+    /* height: 100vh;
+    overflow-y: auto; */
+    /* height: calc(100vh - 70px);
+    overflow-y: auto; */
+    /* background-color: var(--cream); */
+    /* background-color: #F5F6FA; */
+    /* background-color: var(--lavender-tint); */
+    background-color: #FBFBFD;
+    /* margin-top: 70px; */
+    /* background-color: #F8FBFC; */
+    /* background-color: #F4F6FA; */
+    /* background-color: var(--cream); */
+    /* background-color: var(--semi-white); */
+    /* background-color: var(--bg); */
+    /* background-color: #F7F9F8; */
+    /* background: #f0f6f8; */
+    /* background: #eaf3f6; */
+    /* background: #f0f6f8; */
+    /* background-color: #ffffff; */
+    /* background-color: var(--teal-pale); */
+    /* background-color: #0f1623; */
+}
+
+.container-fluid .main-parent h2 {
+    font-size: 20px;
+    /* font-family: "Playfair Display"; */
+    font-weight: 600;
+    color: var(--teal);
+}
+
+.toast-message {
+    position: fixed;
+    right: 20px;
+    top: 20px;
+    padding: 1rem 1.5rem;
+    color: var(--teal, #1E2A4A);
+    background-color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .06), 0 1px 2px rgba(0, 0, 0, .04);
+    border: 1px solid #E2E8E5;
+    width: 250px;
+    display: flex;
+    align-items: center;
+    border-radius: 10px;
+    gap: 1rem;
+    z-index: 99999;
+    overflow: hidden;
+    animation: toastSlideIn .4s cubic-bezier(.22, 1, .36, 1) forwards;
+}
+
+.toast-message.hide {
+    animation: toastFadeOut .4s ease-in forwards;
+}
+
+.toast-message::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    background-color: var(--teal, #1E2A4A);
+    width: 5px;
+}
+
+.toast-message p {
+    margin: 0;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+@keyframes toastSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(60px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes toastFadeOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateX(60px);
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE — FAQs page
+   ═══════════════════════════════════════════════════════════ */
+
+/* Long questions/answers wrap cleanly */
+.container-fluid .main-parent details summary,
+.container-fluid .main-parent details p {
+    overflow-wrap: anywhere;
+}
+
+.container-fluid .main-parent details summary {
+    line-height: 1.45;
+}
+
+/* Sidebar collapses to icons */
+@media only screen and (max-width: 1200px) {
+    .container-fluid .rightbar {
+        width: calc(100% - 80px);
+        margin-left: 80px;
+    }
+}
+
+@media only screen and (max-width: 711px) {
+    .container-fluid .main-parent {
+        padding: 2rem 1.5rem;
+    }
+}
+
+/* Sidebar hidden — page uses the full width + bottom nav */
+@media only screen and (max-width: 703px) {
+    .container-fluid .rightbar {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .container-fluid .main-parent {
+        padding-bottom: calc(110px + env(safe-area-inset-bottom, 0px));
+    }
+
+    /* Content box was capped at 760px inline — let it fill the screen */
+    .container-fluid .main-parent main>div {
+        max-width: 100% !important;
+    }
+
+    /* "Didn't find what you're looking for?" box: button full width */
+    .container-fluid .main-parent .btn-report-problem {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media only screen and (max-width: 500px) {
+    .container-fluid .main-parent {
+        padding: 1.5rem 1.25rem calc(110px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .container-fluid .main-parent h2 {
+        font-size: 18px;
+    }
+
+    .container-fluid .main-parent details summary {
+        padding: 12px 14px !important;
+        font-size: 13px !important;
+    }
+
+    .container-fluid .main-parent details p {
+        padding: 0 14px 14px !important;
+    }
+
+    .toast-message {
+        right: 12px;
+        left: 12px;
+        width: auto !important;
+    }
+}

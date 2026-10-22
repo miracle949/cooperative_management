@@ -1,0 +1,323 @@
+/* @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@400..900&family=Lobster&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&family=Saira+Condensed:wght@100;200;300;400;500;600;700;800;900&family=Sekuya&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+
+* {
+    font-family: "Poppins", sans-serif;
+} */
+
+/* .container-fluid main .blogs-content h4,p, span{
+    color: white;
+} */
+
+.container-fluid main h4 {
+    font-size: 16px;
+    width: 145px;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 28px;
+    color: white;
+}
+
+.container-fluid main .blogs-image img {
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+}
+
+.container-fluid main .blogs-content {
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    padding: 3rem;
+}
+
+.container-fluid main .content {
+    margin-top: 2rem;
+}
+
+.container-fluid main .content a {
+    background-color: white;
+}
+
+.container-fluid section .nav-pills {
+    width: 100%;
+    overflow-x: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 3rem;
+}
+
+.container-fluid section .tabcontent .sub-card-parent .card-parent {
+    width: 100%;
+}
+
+/* .container-fluid .tab-content .card{
+    width: calc(100% / 4.3);
+}
+
+.container-fluid .tab-content .card-header, img {
+    width: 100%;
+} */
+
+.container-fluid .tab-content .card-body {
+    width: 350px;
+    /* height: 280px; */
+    /* width: calc(100% / 4); */
+    /* width: 100%;
+    height: 100%; */
+    /* width: 100%; */
+}
+
+.container-fluid .tab-content .tab-pane .sub-card-parent {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container-fluid .tab-content .tab-pane .card-parent {
+    display: flex;
+    justify-content: center;
+    align-content: left;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+
+.container-fluid .tab-content .card .card-header {
+    /* width: 100%;
+    height: 500px; */
+    padding: 0px 0px;
+}
+
+.container-fluid .tab-content .card .card-header img {
+    width: 350px;
+    height: 200px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.container-fluid .tab-content .card .card-body p {
+    margin: 0.5rem 0 0 0;
+}
+
+.container-fluid .tab-content .card .card-body a:hover .fa {
+    transform: translateX(20%);
+    transition: all 0.5s ease-in-out;
+}
+
+.container-fluid .tab-content .card .card-body h4,
+p:nth-child(2),
+span {
+    color: black;
+}
+
+.container-fluid .tab-content .card .card-body p:nth-child(3) {
+    color: #808080;
+    font-size: 15px;
+}
+
+.container-fluid section button .fa {
+    font-size: 23px;
+}
+
+footer h4 {
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+footer p {
+    color: white;
+}
+
+/* footer h4, p{
+    color: white;
+} */
+
+footer input.form-control {
+    background-color: none;
+    background: transparent;
+    font-size: 15px;
+}
+
+footer button {
+    padding: 8px 30px;
+    background-color: white;
+    color: #3E8FFF;
+    border-radius: 10px;
+}
+
+/* .container-fluid section .menu-nav {
+    display: none;
+} */
+
+/* .container-fluid section .menu-nav button{
+    padding: 10px 15px;
+    background-color: white;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.container-fluid section .menu-nav .open {
+    display: none;
+}
+
+.container-fluid section .menu-nav .close {
+    display: none;
+} */
+
+.container-fluid section .nav-pills {
+    padding: 48px;
+    margin: 0 0 16px;
+}
+
+.container-fluid section .menu-sidebar {
+    position: absolute;
+    left: 0;
+    padding: 48px 0 0 0;
+}
+
+.container-fluid section .menu-sidebar .nav-pills {
+    display: none;
+    justify-content: start;
+    align-items: start;
+    flex-direction: column;
+    padding: 20px;
+    background-color: white;
+}
+
+.container-fluid section .menu-sidebar .nav-pills button {
+    padding: 0;
+    font-size: 14.5px;
+}
+
+/* .container-fluid section .menu-sidebar .nav{
+    gap: 8rem;
+} */
+
+.container-fluid section .menu-sidebar .nav .nav-link {
+    background: transparent !important;
+    color: #000;
+    border: none;
+    /* padding: 12px 18px; */
+    position: relative;
+    font-weight: 500;
+}
+
+.container-fluid section .menu-sidebar .nav .nav-link.active {
+    color: #0d6efd;
+}
+
+.container-fluid section .menu-sidebar .nav .nav-link.active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 2px;
+    background: #0d6efd;
+    border-radius: 2px;
+}
+
+footer .footer-subscribe input::placeholder {
+    color: white;
+}
+
+@media only screen and (max-width: 1200px) {
+    .container-fluid main .blogs-image img {
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+        border-bottom-left-radius: 0px;
+        height: 400px;
+    }
+
+    .container-fluid main .blogs-content {
+        border-top-right-radius: 0px;
+        border-bottom-right-radius: 20px;
+        border-bottom-left-radius: 20px;
+        padding: 3rem;
+    }
+}
+
+
+@media only screen and (max-width: 1155px) {
+
+    .container-fluid section .nav-pills {
+        padding: 5px;
+        margin: 48px 0 16px;
+    }
+
+    .container-fluid .tab-content .tab-pane .card-parent {
+        padding-top: 48px;
+    }
+
+    /* .container-fluid section .nav-pills {
+        display: none;
+    }
+
+    .container-fluid .tab-content .tab-pane .card-parent {
+        padding-top: 48px;
+    } */
+
+    /* .container-fluid section .menu-nav {
+        padding: 48px 48px 48px 0;
+    }
+
+    .container-fluid section .nav-pills {
+        display: none;
+    }
+
+    .container-fluid section .menu-nav .open {
+        display: block;
+    } */
+}
+
+@media only screen and (max-width: 1055px) {
+
+    .container-fluid section .nav-pills {
+        padding: 0px;
+        margin: 48px 0 16px;
+    }
+
+    .container-fluid .tab-content .tab-pane .card-parent {
+        padding-top: 48px;
+    }
+}
+
+
+@media only screen and (max-width: 832px) {
+
+    /* .container-fluid section .nav-pills {
+        display: none;
+    } */
+
+    /* .container-fluid section .menu-sidebar .nav-pills {
+        display: flex;
+    } */
+}
+
+@media only screen and (max-width: 640px) {
+    .container-fluid main {
+        flex-direction: column;
+    }
+}
+
+@media only screen and (max-width: 515px) {
+
+    footer p {
+        text-align: center;
+    }
+
+    footer .footer-subscribe {
+        flex-direction: column;
+        width: 100%;
+    }
+}
+
+@media only screen and (max-width: 445px) {
+
+    .container-fluid .tab-content .card-header,
+    img {
+        width: 320px;
+    }
+
+    .container-fluid .tab-content .card-body {
+        width: 320px;
+    }
+}

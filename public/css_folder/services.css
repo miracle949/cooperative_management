@@ -1,0 +1,342 @@
+main {
+    /* background-color: #f5f5f8; */
+    /* background-color: #ffffff; */
+    background-color: var(--cream);
+    /* background-color: #ECF6FF; */
+    padding: 2.5rem 0rem 0rem 0rem;
+    margin-top: 64px;
+}
+
+main .services-parent {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 2rem;
+    padding: 2rem;
+}
+
+main .services-parent .card {
+    width: calc(100% / 3.5);
+    padding: 1.5rem;
+    /* background-color: #f9f9f9; */
+    /* box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04); */
+    /* border: 1px solid #E2E8E5; */
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    cursor: pointer;
+}
+
+main .services-parent .card:hover {
+    /* border: 1px solid #1559F7; */
+    /* transform: scale(1.1); */
+    transition: all 0.3s ease-in;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    background-color: #ffffff;
+}
+
+main .services-parent .card .card-icon {
+    width: 50px;
+    height: 50px;
+    /* background-color: #DBEAFE; */
+    /* background-color: var(--green2); */
+    background-color: var(--green);
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+main .services-parent .card .card-icon .fa {
+    font-size: 19px;
+    /* color: #155DFC; */
+    color: #ffffff;
+}
+
+main .services-parent .card h3 {
+    font-size: 19px;
+    margin-top: 1rem;
+    font-weight: 600;
+}
+
+main .services-parent .card p {
+    font-size: 15.5px;
+    margin-top: 0.5rem;
+    line-height: 30px;
+}
+
+main .services-parent .card ul {
+    margin: 0;
+    padding: 0;
+}
+
+main .services-parent .card ul li {
+    line-height: 40px;
+}
+
+main .services-parent .card ul li .fa {
+    /* color: #10AC4A; */
+    color: var(--green);
+}
+
+main .services-parent .card hr {
+    color: rgba(0, 0, 0, 0.4);
+}
+
+main .services-parent .card summary {
+    font-size: 14.5px;
+    /* color: #1559F7; */
+    color: #4D8275;
+    list-style: none;
+}
+
+main .choosing-our {
+    padding: 5.5rem 3.5rem 5.5rem 3.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* background-color: #F9FAFB; */
+    /* background-color: #ffffff; */
+    /* background-color: #f9f9f9; */
+    background-color: var(--ink);
+    margin-top: 4rem;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+main .choosing-our ul .check-choose li .fa {
+    color: var(--green);
+}
+
+
+main .choosing-our .choosing-text h3 {
+    font-size: 23px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+main .choosing-our .choosing-text p {
+    max-width: 500px;
+    font-size: 15.5px;
+    line-height: 30px;
+    margin-top: 1rem;
+    color: #ffffff;
+    /* color: var(--muted); */
+}
+
+main .choosing-our .choosing-text ul {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+main .choosing-our .choosing-text ul li {
+    line-height: 40px;
+    width: 350px;
+}
+
+main .choosing-our .choosing-parent .choosing-image {
+    border: 1px solid black;
+    width: 400px;
+    height: 300px;
+    border-radius: 7px;
+    padding: 1.5rem;
+}
+
+main .how-access {
+    margin-top: 4rem;
+    padding: 4rem 4rem 4rem 4rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+main .how-access h3 {
+    font-size: 23px;
+    font-weight: 600;
+}
+
+main .how-access h3,
+main .how-access p {
+    text-align: center;
+}
+
+main .how-access p {
+    max-width: 600px;
+    margin: 0;
+    margin-top: 0.5rem;
+}
+
+main .how-access .step-by-step {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2.5rem;
+    padding: 1.5rem;
+}
+
+main .how-access .step-by-step .step-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+main .how-access .step-by-step .step-card .step-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    /* background-color: #155DFC; */
+    background-color: var(--green);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+main .how-access .step-by-step .step-card .step-icon p {
+    margin: 0;
+    color: #ffffff;
+    font-size: 15.5px;
+    font-weight: 600;
+}
+
+main .how-access .step-by-step .step-card h3 {
+    font-size: 20px;
+    margin: 0;
+}
+
+main .how-access .step-by-step .step-card p {
+    font-size: 15.5px;
+    margin: 0;
+}
+
+main .ready-started {
+    margin-top: 4rem;
+    padding: 6.5rem 3.5rem 6.5rem 3.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    /* background-color: #1559F7; */
+    background-color: var(--green);
+    color: #ffffff;
+}
+
+main .ready-started h3 {
+    font-size: 23px;
+}
+
+main .ready-started p {
+    font-size: 15.5px;
+    margin-top: 1rem;
+}
+
+main .ready-started .ready-started-acc {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+main .ready-started .ready-started-acc a {
+    text-decoration: none;
+    font-size: 15.5px;
+    font-weight: 600;
+}
+
+main .ready-started .ready-started-acc a:nth-child(1) {
+    background-color: #ffffff;
+    /* color: #155DFC; */
+    color: var(--green);
+    padding: 10px 30px;
+    border-radius: 7px;
+}
+
+main .ready-started .ready-started-acc a:nth-child(2) {
+    border: 1px solid #ffffff;
+    color: #ffffff;
+    padding: 10px 30px;
+    border-radius: 7px;
+}
+
+@media only screen and (max-width: 1245px) {
+    main .choosing-our {
+        flex-direction: column;
+        justify-content: start;
+        align-items: start;
+        gap: 2rem;
+        padding: 3.5rem 3.5rem 3.5rem 3.5rem;
+    }
+
+    main .choosing-our .choosing-parent {
+        width: 100%;
+    }
+
+    main .choosing-our .choosing-parent .choosing-image {
+        width: 100%;
+    }
+
+    main .how-access .step-by-step .step-card {
+        width: calc(100% / 3);
+    }
+}
+
+@media only screen and (max-width: 1015px) {
+    main .services-parent .card {
+        width: 100%;
+    }
+
+    main .how-access .step-by-step {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    main .how-access {
+        padding: 4rem 0rem 4rem 0rem;
+    }
+}
+
+@media only screen and (max-width: 990px) {
+    main .how-access .step-by-step .step-card {
+        width: 100%;
+    }
+}
+
+
+@media only screen and (max-width: 780px) {
+    main .choosing-our .choosing-text ul {
+        flex-direction: column;
+        justify-content: start;
+        align-items: start;
+    }
+
+    main .choosing-our {
+        padding: 3.5rem 3rem 5.5rem 3rem;
+    }
+}
+
+/* @media only screen and (max-width: 500px){
+    main .how-access .step-by-step .step-card{
+        width: 100%;
+    }
+} */
+
+
+/* @media only screen and (max-width: 665px) {
+    main .choosing-our .choosing-text ul {
+        flex-direction: column;
+        justify-content: start;
+        align-items: start;
+    }
+} */
+
+/* @media only screen and (max-width: ) */
