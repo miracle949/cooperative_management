@@ -232,23 +232,33 @@
             </div>
             <form method="POST" action="{{ route('seminars.schedule') }}" class="p-6 space-y-6">
                 @csrf
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Seminar Type <span
-                                class="text-red-500">*</span></label>
-                        <select name="seminar_type" class="input" required data-action="togglePasscodeFields">
-                            <option value="">Select...</option>
-                            @foreach($seminarTypes as $type)
-                                <option value="{{ $type->slug }}" {{ old('seminar_type') === $type->slug ? 'selected' : '' }} {{ in_array($type->slug, \App\Http\Controllers\SeminarController::CORE_TYPES) ? 'data-core="1"' : '' }}>{{ $type->label }}</option>
-                            @endforeach
-                        </select>
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="block text-sm font-medium text-gray-700">
+                            Seminar Types <span class="text-red-500">*</span>
+                        </label>
+                        <button type="button" id="toggleAllSeminarTypes"
+                            class="text-xs font-medium text-primary-600 hover:underline">Select all</button>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Schedule Date & Time <span
-                                class="text-red-500">*</span></label>
-                        <input type="datetime-local" name="schedule_datetime" class="input" required
-                            value="{{ old('schedule_datetime') }}">
+                    <div id="seminarTypeList"
+                        class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-44 overflow-y-auto border border-gray-200 rounded-lg p-3">
+                        @foreach($seminarTypes as $type)
+                            <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700">
+                                <input type="checkbox" name="seminar_types[]" value="{{ $type->slug }}"
+                                    class="w-4 h-4 rounded text-primary-600" {{ in_array($type->slug, old('seminar_types', [])) ? 'checked' : '' }}>
+                                <span>{{ $type->label }}</span>
+                            </label>
+                        @endforeach
                     </div>
+                    <p class="text-xs text-gray-400 mt-1">Tick every seminar to schedule. One session is created per type.
+                    </p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Schedule Date & Time <span
+                            class="text-red-500">*</span></label>
+                    <input type="datetime-local" name="schedule_datetime" class="input" required
+                        value="{{ old('schedule_datetime') }}">
                 </div>
 
                 <div>
@@ -348,6 +358,8 @@
                             @endforeach
                         @endif
                     </div>
+
+                    <div id="attendeePlan" class="text-xs text-gray-600 space-y-1 mb-2"></div>
                 </div>
 
                 <div id="attendeesHiddenInputs"></div>
@@ -532,33 +544,33 @@
 
             let html = '';
             html += `
-                    <div class="flex items-center gap-3 mb-5">
-                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center">
-                            <span class="text-white font-bold text-base">${(user.first_name?.[0] || '') + (user.last_name?.[0] || '')}</span>
-                        </div>
-                        <div>
-                            <span class="text-base font-semibold text-gray-900">${user.first_name} ${user.last_name || ''}</span>
-                            <p class="text-xs text-gray-400">${user.email}</p>
-                        </div>
-                    </div>`;
+                                                                                <div class="flex items-center gap-3 mb-5">
+                                                                                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center">
+                                                                                        <span class="text-white font-bold text-base">${(user.first_name?.[0] || '') + (user.last_name?.[0] || '')}</span>
+                                                                                    </div>
+                                                                                    <div>
+                                                                                        <span class="text-base font-semibold text-gray-900">${user.first_name} ${user.last_name || ''}</span>
+                                                                                        <p class="text-xs text-gray-400">${user.email}</p>
+                                                                                    </div>
+                                                                                </div>`;
 
             const scheduled = user.scheduled_seminars || [];
             if (scheduled.length) {
                 html += `<div class="mb-5 space-y-3">`;
                 scheduled.forEach(s => {
                     html += `
-                <div class="p-3 rounded-lg bg-blue-50 border border-blue-200">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-blue-700 uppercase tracking-wide">Scheduled Seminar</span>
-                        <span class="text-xs font-medium text-blue-600">${s.label}</span>
-                    </div>
-                    ${s.passcode ? `
-                    <div class="mt-2 flex items-center justify-between bg-white rounded-lg border border-blue-200 px-3 py-2">
-                        <span class="text-xs font-medium text-blue-700">Member Passcode</span>
-                        <code class="text-sm font-mono font-bold text-blue-900 tracking-wider">${s.passcode}</code>
-                    </div>` : ''}
-                    <p class="text-xs text-blue-600 mt-2">Share this code with ${user.first_name} so they can mark ${s.label} complete.</p>
-                </div>`;
+                                                                            <div class="p-3 rounded-lg bg-blue-50 border border-blue-200">
+                                                                                <div class="flex items-center justify-between">
+                                                                                    <span class="text-xs font-semibold text-blue-700 uppercase tracking-wide">Scheduled Seminar</span>
+                                                                                    <span class="text-xs font-medium text-blue-600">${s.label}</span>
+                                                                                </div>
+                                                                                ${s.passcode ? `
+                                                                                <div class="mt-2 flex items-center justify-between bg-white rounded-lg border border-blue-200 px-3 py-2">
+                                                                                    <span class="text-xs font-medium text-blue-700">Member Passcode</span>
+                                                                                    <code class="text-sm font-mono font-bold text-blue-900 tracking-wider">${s.passcode}</code>
+                                                                                </div>` : ''}
+                                                                                <p class="text-xs text-blue-600 mt-2">Share this code with ${user.first_name} so they can mark ${s.label} complete.</p>
+                                                                            </div>`;
                 });
                 html += `</div>`;
             }
@@ -573,12 +585,12 @@
                 const label = attended ? 'Attended' : 'Not attended';
 
                 html += `
-                        <div class="flex items-center justify-between p-3 border rounded-lg ${boxClass} mb-2">
-                            <span class="text-sm font-medium text-gray-800">${t.label}</span>
-                            <span class="inline-flex items-center gap-1.5 text-xs font-semibold ${iconClass}">
-                                <i data-lucide="${icon}" class="w-4 h-4"></i>${label}
-                            </span>
-                        </div>`;
+                                                                                    <div class="flex items-center justify-between p-3 border rounded-lg ${boxClass} mb-2">
+                                                                                        <span class="text-sm font-medium text-gray-800">${t.label}</span>
+                                                                                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold ${iconClass}">
+                                                                                            <i data-lucide="${icon}" class="w-4 h-4"></i>${label}
+                                                                                        </span>
+                                                                                    </div>`;
             });
 
             document.getElementById('memberSeminarBody').innerHTML = html;
@@ -623,31 +635,31 @@
                         const statusLabel = a.status === 'attended' ? 'Attended' : a.status === 'absent' ? 'Absent' : 'Pending';
 
                         html += `
-                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center">
-                                            <span class="text-white font-bold text-sm">${initials}</span>
-                                        </div>
-                                        <div>
-                                            <span class="text-sm font-medium text-gray-900">${name}</span>
-                                            <div class="flex items-center gap-1 mt-0.5">
-                                                <span class="w-2 h-2 rounded-full ${statusColor}"></span>
-                                                <span class="text-xs text-gray-500">${statusLabel}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <button data-action="markAttendance" data-arg=\'[${seminar.id}, ${a.user_id}, "attended"]\' class="btn btn-success btn-xs px-2.5 py-1.5 ${a.status === 'attended' ? 'opacity-50 cursor-not-allowed' : ''}" ${a.status === 'attended' ? 'disabled' : ''}>
-                                            <i data-lucide="check" class="w-3 h-3"></i>
-                                            Attended
-                                        </button>
-                                        <button data-action="markAttendance" data-arg=\'[${seminar.id}, ${a.user_id}, "absent"]\' class="btn btn-danger btn-xs px-2.5 py-1.5 ${a.status === 'absent' ? 'opacity-50 cursor-not-allowed' : ''}" ${a.status === 'absent' ? 'disabled' : ''}>
-                                            <i data-lucide="x" class="w-3 h-3"></i>
-                                            Absent
-                                        </button>
-                                    </div>
-                                </div>
-                            `;
+                                                                                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                                                                                <div class="flex items-center gap-3">
+                                                                                                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center">
+                                                                                                        <span class="text-white font-bold text-sm">${initials}</span>
+                                                                                                    </div>
+                                                                                                    <div>
+                                                                                                        <span class="text-sm font-medium text-gray-900">${name}</span>
+                                                                                                        <div class="flex items-center gap-1 mt-0.5">
+                                                                                                            <span class="w-2 h-2 rounded-full ${statusColor}"></span>
+                                                                                                            <span class="text-xs text-gray-500">${statusLabel}</span>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                                <div class="flex items-center gap-2">
+                                                                                                    <button data-action="markAttendance" data-arg=\'[${seminar.id}, ${a.user_id}, "attended"]\' class="btn btn-success btn-xs px-2.5 py-1.5 ${a.status === 'attended' ? 'opacity-50 cursor-not-allowed' : ''}" ${a.status === 'attended' ? 'disabled' : ''}>
+                                                                                                        <i data-lucide="check" class="w-3 h-3"></i>
+                                                                                                        Attended
+                                                                                                    </button>
+                                                                                                    <button data-action="markAttendance" data-arg=\'[${seminar.id}, ${a.user_id}, "absent"]\' class="btn btn-danger btn-xs px-2.5 py-1.5 ${a.status === 'absent' ? 'opacity-50 cursor-not-allowed' : ''}" ${a.status === 'absent' ? 'disabled' : ''}>
+                                                                                                        <i data-lucide="x" class="w-3 h-3"></i>
+                                                                                                        Absent
+                                                                                                    </button>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        `;
                     });
                     document.getElementById('attendanceList').innerHTML = html;
                     lucide.createIcons();
@@ -682,7 +694,7 @@
             @if($errors->any())
                 openModal('scheduleSeminarModal');
             @endif
-            });
+                                                                        });
 
         /* ═══════════════════════════════════════════════════════════
            ATTENDEE SEARCH WITH MEMBER SUGGESTIONS
@@ -709,15 +721,93 @@
             });
         }
 
+        const TYPE_LABELS = @json($seminarTypes->pluck('label', 'slug'));
+
+        function needsText(m) {
+            const n = m.needs || [];
+            return n.length
+                ? 'Needs: ' + n.map(function (s) { return TYPE_LABELS[s] || s; }).join(', ')
+                : 'Nothing left to schedule';
+        }
+
+        /* Tick every seminar that at least one selected member still needs (never unticks) */
+        function autoTickNeeded() {
+            const needed = new Set();
+            Object.values(selectedAttendeeMap).forEach(function (a) {
+                (a.needs || []).forEach(function (s) { needed.add(s); });
+            });
+            document.querySelectorAll('#seminarTypeList input[type="checkbox"]').forEach(function (b) {
+                if (needed.has(b.value)) b.checked = true;
+            });
+        }
+
+        /* Preview: what each member will actually be booked for */
+        function renderPlan() {
+            const ticked = Array.from(document.querySelectorAll('#seminarTypeList input:checked')).map(function (b) { return b.value; });
+            const el = document.getElementById('attendeePlan');
+            el.innerHTML = Object.values(selectedAttendeeMap).map(function (a) {
+                if (!a.needs) return '';
+                const will = ticked.filter(function (s) { return a.needs.indexOf(s) !== -1; });
+                const skip = ticked.filter(function (s) { return a.needs.indexOf(s) === -1; });
+                const name = escapeHtml(a.first_name) + ' ' + escapeHtml(a.last_name || '');
+                const willTxt = will.length
+                    ? '<span class="text-green-700">' + will.map(function (s) { return escapeHtml(TYPE_LABELS[s] || s); }).join(', ') + '</span>'
+                    : '<span class="text-red-600">nothing to schedule</span>';
+                const skipTxt = skip.length
+                    ? ' <span class="text-gray-400">(skipped: ' + skip.map(function (s) { return escapeHtml(TYPE_LABELS[s] || s); }).join(', ') + ')</span>'
+                    : '';
+                return '<div><strong>' + name + '</strong>: ' + willTxt + skipTxt + '</div>';
+            }).join('');
+        }
+
+        function positionAttendeeDropdown() {
+            const modalEl = attendeeBox.closest('.modal');
+            const boxRect = attendeeBox.getBoundingClientRect();
+            const limitBottom = modalEl ? Math.min(modalEl.getBoundingClientRect().bottom, window.innerHeight) : window.innerHeight;
+            const limitTop = modalEl ? Math.max(modalEl.getBoundingClientRect().top, 0) : 0;
+
+            const spaceBelow = limitBottom - boxRect.bottom - 12;
+            const spaceAbove = boxRect.top - limitTop - 12;
+            const wanted = Math.min(attendeeDropdown.scrollHeight, 224);
+
+            // Open upward only when it doesn't fit below and there is more room above
+            const openUp = spaceBelow < wanted && spaceAbove > spaceBelow;
+            const room = Math.max(120, openUp ? spaceAbove : spaceBelow);
+
+            attendeeDropdown.style.maxHeight = Math.min(224, room) + 'px';
+            if (openUp) {
+                attendeeDropdown.style.top = 'auto';
+                attendeeDropdown.style.bottom = '100%';
+                attendeeDropdown.style.marginTop = '0';
+                attendeeDropdown.style.marginBottom = '4px';
+            } else {
+                attendeeDropdown.style.top = '100%';
+                attendeeDropdown.style.bottom = 'auto';
+                attendeeDropdown.style.marginTop = '4px';
+                attendeeDropdown.style.marginBottom = '0';
+            }
+        }
+
+        // function selectedSeminarTypesQuery() {
+        //     return Array.from(document.querySelectorAll('#seminarTypeList input:checked'))
+        //         .map(function (b) { return '&types[]=' + encodeURIComponent(b.value); })
+        //         .join('');
+        // }
+
+        function selectedSeminarTypesQuery() {
+            return '';
+        }
+
         function loadAttendeeSuggestions(q) {
             const requestId = ++attendeeRequestId;
 
             if (attendeeDropdown.classList.contains('hidden')) {
                 attendeeDropdown.innerHTML = '<div class="px-3 py-2 text-sm text-gray-400">Loading members...</div>';
                 attendeeDropdown.classList.remove('hidden');
+                positionAttendeeDropdown();
             }
 
-            fetch(MEMBER_SEARCH_URL + '?q=' + encodeURIComponent(q), {
+            fetch(MEMBER_SEARCH_URL + '?q=' + encodeURIComponent(q) + selectedSeminarTypesQuery(), {
                 headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
                 credentials: 'same-origin'
             })
@@ -741,6 +831,7 @@
             if (!members.length) {
                 attendeeDropdown.innerHTML = '<div class="px-3 py-2 text-sm text-gray-500">No members found</div>';
                 attendeeDropdown.classList.remove('hidden');
+                positionAttendeeDropdown();
                 return;
             }
 
@@ -754,20 +845,25 @@
                 const initials = ((m.first_name || '')[0] || '') + ((m.last_name || '')[0] || '');
                 const roleBg = m.role === 'pending' ? 'from-yellow-400 to-orange-400' : 'from-primary-400 to-primary-600';
 
-                return '<div data-member-id="' + Number(m.id) + '" data-added="' + (already ? '1' : '0') + '" ' +
-                    'class="flex items-center gap-3 px-3 py-2 ' + (already ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-gray-50') + '">' +
+                const done = Array.isArray(m.needs) && m.needs.length === 0;
+                const blocked = already || done;
+
+                return '<div data-member-id="' + Number(m.id) + '" data-added="' + (blocked ? '1' : '0') + '" ' +
+                    'class="flex items-center gap-3 px-3 py-2 ' + (blocked ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-gray-50') + '">' +
                     '<div class="w-8 h-8 rounded-full bg-gradient-to-br ' + roleBg + ' flex items-center justify-center flex-shrink-0">' +
                     '<span class="text-white font-bold text-xs">' + escapeHtml(initials.toUpperCase()) + '</span>' +
                     '</div>' +
                     '<div class="min-w-0">' +
                     '<span class="text-sm font-medium text-gray-700">' + escapeHtml(m.first_name) + ' ' + escapeHtml(m.last_name || '') + '</span>' +
                     '<span class="text-xs text-gray-400 block truncate">' + escapeHtml(m.email) + '</span>' +
+                    '<span class="text-xs text-primary-600 block truncate">' + escapeHtml(needsText(m)) + '</span>' +
                     '</div>' +
                     (already ? '<span class="ml-auto text-xs text-gray-400">Added</span>' : '') +
                     '</div>';
             }).join('');
 
             attendeeDropdown.classList.remove('hidden');
+            positionAttendeeDropdown();
         }
 
         function addAttendee(id) {
@@ -775,9 +871,12 @@
             const m = attendeeCache[id];
             if (!m || selectedAttendeeMap[id]) return;
 
-            selectedAttendeeMap[id] = { id: id, first_name: m.first_name, last_name: m.last_name };
+            // in addAttendee, replace the selectedAttendeeMap line and add the two calls:
+            selectedAttendeeMap[id] = { id: id, first_name: m.first_name, last_name: m.last_name, needs: m.needs || [] };
             syncAttendeesInput();
             renderSelectedAttendees();
+            autoTickNeeded();
+            renderPlan();
 
             attendeeInput.value = '';
             loadAttendeeSuggestions('');
@@ -788,6 +887,8 @@
             delete selectedAttendeeMap[id];
             syncAttendeesInput();
             renderSelectedAttendees();
+
+            renderPlan();
 
             if (!attendeeDropdown.classList.contains('hidden')) {
                 renderAttendeeDropdown(lastAttendeeResults, attendeeInput.value.trim());
@@ -838,7 +939,9 @@
         attendeeInput.addEventListener('keydown', function (e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                const first = lastAttendeeResults.find(function (m) { return !selectedAttendeeMap[m.id]; });
+                const first = lastAttendeeResults.find(function (m) {
+                    return !selectedAttendeeMap[m.id] && !(Array.isArray(m.needs) && m.needs.length === 0);
+                });
                 if (first) addAttendee(first.id);
             } else if (e.key === 'Escape') {
                 attendeeDropdown.classList.add('hidden');
@@ -860,6 +963,14 @@
             }
         });
 
+        /* Keep the list inside the modal when the window resizes or the modal scrolls */
+        window.addEventListener('resize', function () {
+            if (!attendeeDropdown.classList.contains('hidden')) positionAttendeeDropdown();
+        });
+        attendeeBox.closest('.modal')?.addEventListener('scroll', function () {
+            if (!attendeeDropdown.classList.contains('hidden')) positionAttendeeDropdown();
+        }, true);
+
         /* Remove a selected attendee */
         selectedAttendeesEl.addEventListener('click', function (e) {
             const btn = e.target.closest('[data-remove-attendee]');
@@ -875,7 +986,22 @@
             renderSelectedAttendees();
         @endif
 
+        document.getElementById('toggleAllSeminarTypes')?.addEventListener('click', function () {
+            const boxes = document.querySelectorAll('#seminarTypeList input[type="checkbox"]');
+            const allChecked = Array.from(boxes).every(b => b.checked);
+            boxes.forEach(b => b.checked = !allChecked);
+            document.getElementById('seminarTypeList').dispatchEvent(new Event('change'));
+            this.textContent = allChecked ? 'Select all' : 'Clear all';
+        });
+
+        document.getElementById('seminarTypeList')?.addEventListener('change', renderPlan);
+
         document.querySelector('#scheduleSeminarModal form')?.addEventListener('submit', function (e) {
+            if (!document.querySelector('#seminarTypeList input:checked')) {
+                e.preventDefault();
+                showToast('Validation Error', 'Please select at least one seminar type.', 'error');
+                return;
+            }
             if (Object.keys(selectedAttendeeMap).length === 0) {
                 e.preventDefault();
                 showToast('Validation Error', 'Please select at least one attendee.', 'error');

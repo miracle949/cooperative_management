@@ -23,6 +23,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
 
+use Illuminate\Support\Facades\Storage;
+
 class UsersHandle extends Controller
 {
     private function isLockedOutStatus($user): bool
@@ -2862,9 +2864,9 @@ class UsersHandle extends Controller
         $user = Users_tbl::find($userId);
         $existingInfo = Otherinfo_tbl::where('user_id', $userId)->first();
         $membergovernIds = Membergovern_ids_tbl::where('user_id', $userId)->first();
-        $family = Family_tbl::where('user_id', $userId)->first();
+        $form = $request->_form;
 
-        if ($request->_form === 'vehicle') {
+        if ($form === 'vehicle') {
             $request->validate([
                 'vehicle_type' => 'required|string|max:50',
                 'plate_no' => 'required|string|max:50',
@@ -2878,25 +2880,28 @@ class UsersHandle extends Controller
             ]);
         }
 
-        if ($request->_form === 'personal') {
+        if ($form === 'personal') {
             $request->validate([
                 'first_name' => 'required|string|max:255',
                 'last_name' => 'required|string|max:255',
-                'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // ← add this
+                'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            ], [
+                'profile_picture.image' => 'The profile photo must be an image.',
+                'profile_picture.mimes' => 'The profile photo must be a JPG, PNG or WEBP file.',
+                'profile_picture.max' => 'The profile photo must not be larger than 2MB.',
+                'profile_picture.uploaded' => 'Upload failed. The file is too large for the server.',
             ]);
 
             $user->first_name = $request->first_name;
             $user->middle_name = $request->middle_name;
             $user->last_name = $request->last_name;
             $user->save();
-        }
 
-        if ($request->_form === 'personal') {
             $updateData = [
                 'contact_no' => $request->contact_no,
                 'present_address' => $request->present_address,
                 'permanent_address' => $request->permanent_address,
-                'date_of_birth' => $request->date_of_birth,
+                'date_of_birth' => $request->date_of_birth ?: ($existingInfo->date_of_birth ?? null),
                 'sex' => $request->sex,
                 'civil_status' => $request->civil_status,
                 'citizenship' => $request->citizenship,
@@ -2905,24 +2910,18 @@ class UsersHandle extends Controller
                 'blood_type' => $request->blood_type,
             ];
 
-            foreach ($updateData as $key => $value) {
-                if (empty($value) && !empty($existingInfo->$key)) {
-                    $updateData[$key] = $existingInfo->$key;
-                }
-            }
-
-            // ← add this block
             if ($request->hasFile('profile_picture')) {
+                if (!empty($existingInfo->profile_picture)) {
+                    Storage::disk('public')->delete($existingInfo->profile_picture);
+                }
                 $updateData['profile_picture'] = $request->file('profile_picture')->store('profile_pictures', 'public');
             }
 
             Otherinfo_tbl::updateOrCreate(['user_id' => $userId], $updateData);
         }
 
-        if ($request->_form === 'employment') {
-            $request->validate([
-                'monthly_income' => 'nullable|numeric|min:0',
-            ]);
+        if ($form === 'employment') {
+            $request->validate(['monthly_income' => 'nullable|numeric|min:0']);
 
             if ($request->filled('monthly_income')) {
                 Otherinfo_tbl::updateOrCreate(
@@ -2932,15 +2931,18 @@ class UsersHandle extends Controller
             }
         }
 
-        if ($request->_form === 'documents') {
-            $govIdsData = [];
-            $idFields = ['sss_id', 'philhealth_id', 'pagibig_id', 'tin_id'];
+        if ($form === 'documents') {
+            $request->validate([
+                'sss_id' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+                'philhealth_id' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+                'pagibig_id' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+                'tin_id' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+            ]);
 
-            foreach ($idFields as $field) {
+            $govIdsData = [];
+            foreach (['sss_id', 'philhealth_id', 'pagibig_id', 'tin_id'] as $field) {
                 if ($request->hasFile($field)) {
                     $govIdsData[$field] = $request->file($field)->store('government_ids', 'public');
-                } elseif (!empty($membergovernIds->$field)) {
-                    $govIdsData[$field] = $membergovernIds->$field;
                 }
             }
 
@@ -2949,22 +2951,24 @@ class UsersHandle extends Controller
             }
         }
 
-        $familyData = [
-            'spouse_name' => $request->spouse_name,
-            'spouse_date_birth' => $request->spouse_date_birth,
-            'spouse_place_birth' => $request->spouse_place_birth,
-            'number_son' => $request->number_son,
-            'number_daughter' => $request->number_daughter,
-            'other_spec' => $request->other_spec,
-        ];
+        if ($form === 'family') {
+            $request->validate([
+                'spouse_name' => 'nullable|string|max:255',
+                'spouse_date_birth' => 'nullable|date',
+                'spouse_place_birth' => 'nullable|string|max:255',
+                'number_son' => 'nullable|integer|min:0',
+                'number_daughter' => 'nullable|integer|min:0',
+                'other_spec' => 'nullable|string|max:255',
+            ]);
 
-        if (!empty(array_filter($familyData))) {
-            foreach ($familyData as $key => $value) {
-                if (empty($value) && !empty($family->$key)) {
-                    $familyData[$key] = $family->$key;
-                }
-            }
-            Family_tbl::updateOrCreate(['user_id' => $userId], $familyData);
+            Family_tbl::updateOrCreate(['user_id' => $userId], [
+                'spouse_name' => $request->spouse_name,
+                'spouse_date_birth' => $request->spouse_date_birth ?: null,
+                'spouse_place_birth' => $request->spouse_place_birth,
+                'number_son' => (int) $request->number_son,
+                'number_daughter' => (int) $request->number_daughter,
+                'other_spec' => $request->other_spec,
+            ]);
         }
 
         AuditLog::log(
@@ -3075,6 +3079,7 @@ class UsersHandle extends Controller
                 'message' => $n->message,
                 'time' => $n->created_at->diffForHumans(),
                 'sort_at' => $n->created_at,
+                'clickable' => !str_contains(strtolower($n->title), 'login attempt'),   // ← add
             ]);
         }
 
@@ -3401,7 +3406,7 @@ class UsersHandle extends Controller
                     . " · {$deliveryText}.",
                 'time' => $sessionDate->diffForHumans(),
                 'sort_at' => $sessionDate,
-                'url' => route('Seminars'),
+                'clickable' => false,   // ← replaces 'url' => route('Seminars')
             ]);
         }
 
@@ -3429,7 +3434,7 @@ class UsersHandle extends Controller
                 'message' => "{$displayLabel} is still required to complete your membership training. No session has been scheduled yet — check back soon.",
                 'time' => 'Pending',
                 'sort_at' => $today->copy()->addDays(90),
-                'url' => route('Seminars'),
+                'clickable' => false,   // ← replaces 'url' => route('Seminars')
             ]);
         }
 
@@ -3487,7 +3492,7 @@ class UsersHandle extends Controller
         return response()->json(['success' => true]);
     }
 
-        /**
+    /**
      * Marks every notification currently shown in the bell as read:
      * stored ones (Notifications_tbl) AND the computed reminders.
      */
@@ -3695,19 +3700,11 @@ class UsersHandle extends Controller
         if (auth()->validate($credentials)) {
             $user = Users_tbl::find($user->id);
 
-            // ── One active session per member ──────────────────────────
-            if (
-                method_exists($user, 'isMemberBased') && $user->isMemberBased()
-                && \App\Services\SingleSession::activeElsewhere($user->id)
-            ) {
-
-                \App\Services\SingleSession::notifyBlockedAttempt($user, $request);
+            // after
+            if (\App\Services\SingleSession::activeElsewhere($user->id)) {
+                \App\Services\SingleSession::createSwitchRequest($user, $request);
 
                 return redirect()->back()
-                    ->withErrors([
-                        'login' => 'This account is already logged in on another browser or device. '
-                            . 'The account owner has been notified.'
-                    ])
                     ->withInput($request->only('login'));
             }
 

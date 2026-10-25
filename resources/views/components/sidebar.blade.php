@@ -165,8 +165,15 @@
             </div> --}}
 
             <div class="account">
-                <div class="first-last">
-                    <p>{{ strtoupper(substr(Auth::user()->first_name, 0, 1)) }}</p>
+                @php $navPhoto = Auth::user()->otherinfo->profile_picture ?? null; @endphp
+                <div
+                    style="width:40px; height:40px; border-radius:50%; overflow:hidden; background:#EDF0F5; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-weight:600; color:#1E2A4A;">
+                    @if($navPhoto)
+                        <img src="{{ url('proof/' . $navPhoto) }}" alt=""
+                            style="width:100%; height:100%; object-fit:cover;">
+                    @else
+                        {{ strtoupper(substr(Auth::user()->first_name, 0, 1)) }}
+                    @endif
                 </div>
                 <div class="first-name">
                     <div class="fullname">

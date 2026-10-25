@@ -15,6 +15,7 @@ use App\Http\Controllers\AlliedWorkerController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\LoginSwitchController;
 
 Route::get("/", [UserController::class, "UserDirection"]);
 
@@ -189,7 +190,9 @@ Route::get("/profile-member", [UsersHandle::class, "ProfileMember"])
     ->name("ProfileMember")
     ->middleware("auth", "resigned.redirect", "member.active");
 
-Route::get('/profile-member/soa', [UsersHandle::class, 'DownloadSoa'])->name('DownloadSoa');
+Route::get('/profile-member/soa', [UsersHandle::class, 'DownloadSoa'])
+    ->name('DownloadSoa')
+    ->middleware('auth', 'member.active');
 
 Route::get('/member/status-ping', [UsersHandle::class, 'AccountStatusPing'])
     ->name('member.statusPing')
@@ -245,6 +248,8 @@ Route::post("/registration", [UsersHandle::class, "registration"])->name("regist
 Route::post('/approve-user/{id}', [UserController::class, 'approveUser'])->name('approve.user')->middleware('admin');
 
 Route::post('/messageAboutShare/{id}', [UserController::class, "messageAboutShare"])->name("message.user")->middleware('admin');
+
+Route::post('/admin/backups/{filename}/restore', [App\Http\Controllers\UserController::class, 'restoreBackup'])->name('admin.backup.restore');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/share-capital-form', [ShareCapital::class, 'index'])->name('share_capital.index');
@@ -507,3 +512,14 @@ Route::post('/members/{id}/force-logout', [UserController::class, 'forceLogoutMe
 
 Route::post('/notifications/mark-all-read', [UsersHandle::class, 'MarkAllNavNotificationsRead'])
     ->name('notifications.markAllRead');
+
+// New device (NOT logged in), do not put these inside the 'auth' group
+Route::get('/login-switch/status', [LoginSwitchController::class, 'status'])->name('login.switch.status')->middleware('throttle:60,1');
+Route::post('/login-switch/complete', [LoginSwitchController::class, 'complete'])->name('login.switch.complete')->middleware('throttle:10,1');
+Route::post('/login-switch/cancel', [LoginSwitchController::class, 'cancel'])->name('login.switch.cancel')->middleware('throttle:10,1');
+
+// Current device (logged in)
+Route::middleware('auth')->group(function () {
+    Route::get('/login-switch/pending', [LoginSwitchController::class, 'pending'])->name('login.switch.pending');
+    Route::post('/login-switch/respond', [LoginSwitchController::class, 'respond'])->name('login.switch.respond');
+});

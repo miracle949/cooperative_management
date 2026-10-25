@@ -1,7 +1,33 @@
 <div class="card">
-    <div class="p-4 border-b border-gray-100">
-        <h3 class="text-lg font-bold text-gray-900">Member Dividends — {{ $year }}</h3>
-        <p class="text-sm text-gray-500">{{ $dividends->total() }} members</p>
+    @php
+        $dividendPool = (float) ($distribution->dividend_pool ?? $totalSumRecommended);
+        $effectiveRate = $totalSumShareCapital > 0 ? ($dividendPool / $totalSumShareCapital) * 100 : 0;
+    @endphp
+
+    <div class="px-4 py-3 bg-gray-50 border-b border-gray-100">
+        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Annual Distribution Formula</p>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+            <div>
+                <span class="text-gray-500">Dividend Pool</span>
+                <p class="font-bold text-gray-900">₱{{ number_format($dividendPool, 2) }}</p>
+                <p class="text-xs text-gray-400">remaining surplus × dividend fund %</p>
+            </div>
+            <div>
+                <span class="text-gray-500">Total Share Capital</span>
+                <p class="font-bold text-gray-900">₱{{ number_format($totalSumShareCapital, 2) }}</p>
+                <p class="text-xs text-gray-400">sum of all members</p>
+            </div>
+            <div>
+                <span class="text-gray-500">Effective Dividend Rate</span>
+                <p class="font-bold text-gray-900">{{ number_format($effectiveRate, 2) }}%</p>
+                <p class="text-xs text-gray-400">pool ÷ total share capital</p>
+            </div>
+            <div>
+                <span class="text-gray-500">Member Dividend</span>
+                <p class="font-bold text-gray-900">Share % × Pool</p>
+                <p class="text-xs text-gray-400">(member SC ÷ total SC) × pool</p>
+            </div>
+        </div>
     </div>
 
     <div class="table-container">
@@ -11,6 +37,7 @@
                     <th>#</th>
                     <th>Member</th>
                     <th>Share Capital</th>
+                    <th>Member Share</th>
                     <th>Recommended</th>
                     <th>Approved Amount</th>
                     <th>Status</th>
@@ -33,8 +60,24 @@
                             </span>
                         </div>
                     </td>
+                    @php
+                        $memberSharePct = $totalSumShareCapital > 0
+                            ? ($dividend->share_capital_amount / $totalSumShareCapital) * 100
+                            : 0;
+                    @endphp
                     <td class="text-sm font-medium text-gray-900">₱{{ number_format($dividend->share_capital_amount, 2) }}</td>
-                    <td class="text-sm text-gray-900">₱{{ number_format($dividend->recommended_amount, 2) }}</td>
+                    <td class="text-sm text-gray-900">
+                        {{ number_format($memberSharePct, 2) }}%
+                        <div class="w-20 h-1.5 bg-gray-100 rounded-full mt-1">
+                            <div class="h-1.5 bg-primary-600 rounded-full" style="width: {{ min(100, $memberSharePct) }}%"></div>
+                        </div>
+                    </td>
+                    <td class="text-sm text-gray-900">
+                        ₱{{ number_format($dividend->recommended_amount, 2) }}
+                        <p class="text-xs text-gray-400">
+                            {{ number_format($memberSharePct, 2) }}% × ₱{{ number_format($dividendPool, 2) }}
+                        </p>
+                    </td>
                     <td>
                         @if($dividend->status === 'pending')
                             <div class="flex items-center gap-1">
@@ -82,7 +125,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="7" class="text-center py-8">
+                    <td colspan="8" class="text-center py-8">
                         <div class="flex flex-col items-center text-gray-500">
                             <i data-lucide="inbox" class="w-12 h-12 mb-3 opacity-50"></i>
                             <p>No dividend records found for {{ $year }}</p>

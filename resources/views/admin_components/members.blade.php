@@ -360,10 +360,10 @@
                 <div>
                     <p class="text-sm text-gray-500 mb-1">Members</p>
                     <p class="text-2xl font-bold text-gray-900">{{ $memberCategoryCounts->sum() }}</p>
-                    <p class="text-xs text-primary-500 mt-1 flex items-center">
+                    <!-- <p class="text-xs text-primary-500 mt-1 flex items-center">
                         <i data-lucide="users" class="w-3 h-3 mr-1"></i>
                         Click to view breakdown
-                    </p>
+                    </p> -->
                 </div>
                 <div
                     class="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center group-hover:bg-primary-200 transition-colors">

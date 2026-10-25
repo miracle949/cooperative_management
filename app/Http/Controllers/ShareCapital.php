@@ -275,6 +275,13 @@ class ShareCapital extends Controller
         $referenceNo = $this->generateReferenceNo();
         $type = $validated['type'];
 
+        // Minimum deposit of ₱50
+        if ($type === 'Deposit' && $totalAmount < 50) {
+            return redirect()->back()
+                ->with('error', 'The minimum share capital deposit is ₱50.')
+                ->withInput();
+        }
+
         $account = DB::table('share_capital_account_tbls')
             ->where('user_id', $memberId)
             ->first();

@@ -278,6 +278,11 @@
                                             class="text-primary-600 hover:text-primary-700 mr-3">
                                             <i data-lucide="download" class="w-4 h-4 inline-block"></i>
                                         </a>
+
+                                        <button type="button" class="text-amber-600 hover:text-amber-700 mr-3" title="Restore"
+                                            data-action="openRestoreModal" data-arg='["{{ $backup['name'] }}"]'>
+                                            <i data-lucide="rotate-ccw" class="w-4 h-4 inline-block"></i>
+                                        </button>
                                         @if(auth()->user()->isMainAdmin())
                                             <button type="button" class="text-danger-600 hover:text-danger-700"
                                                 data-action="deleteBackup" data-arg='["{{ $backup['name'] }}"]'>
@@ -298,6 +303,25 @@
 
                 <p class="text-xs text-gray-400 mt-3">Backups are full <code>mysqldump</code> exports stored on the server.
                     Download regularly and keep at least one copy off-server.</p>
+            </div>
+
+            <div id="restoreModal"
+                style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;">
+                <div style="background:#fff; border-radius:14px; padding:24px; width:94%; max-width:440px;">
+                    <h3 style="margin:0 0 6px; font-size:17px; font-weight:700; color:#b91c1c;">Restore Database</h3>
+                    <p style="margin:0 0 6px; font-size:13px; color:#444;">
+                        This will <strong>replace all current data</strong> with the backup
+                        <strong id="restoreFileName"></strong>. A safety backup of the current data is created first.
+                    </p>
+                    <p style="margin:0 0 14px; font-size:13px; color:#444;">Enter your password to confirm.</p>
+                    <input type="password" id="restorePassword" class="input" placeholder="Your password">
+                    <div id="restoreError" style="display:none; margin-top:10px; font-size:13px; color:#b91c1c;"></div>
+                    <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:16px;">
+                        <button type="button" class="btn" data-action="closeRestoreModal">Cancel</button>
+                        <button type="button" id="restoreConfirmBtn" class="btn btn-danger"
+                            data-action="submitRestore">Restore</button>
+                    </div>
+                </div>
             </div>
         @endif
 
@@ -469,21 +493,24 @@
 
                                 const deleteBtn = isMainAdminUser
                                     ? `<button type="button" class="text-danger-600 hover:text-danger-700" data-action="deleteBackup" data-arg='["${data.backup.name}"]'>
-                                                                                                               <i data-lucide="trash-2" class="w-4 h-4 inline-block"></i>
-                                                                                                           </button>`
+                                                                                                                       <i data-lucide="trash-2" class="w-4 h-4 inline-block"></i>
+                                                                                                                   </button>`
                                     : '';
 
                                 row.innerHTML = `
-                                                                                                        <td class="px-4 py-2 text-gray-900">${data.backup.name}</td>
-                                                                                                        <td class="px-4 py-2 text-gray-600">${data.backup.size}</td>
-                                                                                                        <td class="px-4 py-2 text-gray-600">${data.backup.created_at}</td>
-                                                                                                        <td class="px-4 py-2 text-right">
-                                                                                                            <a href="/admin/backups/${data.backup.name}/download" class="text-primary-600 hover:text-primary-700 mr-3">
-                                                                                                                <i data-lucide="download" class="w-4 h-4 inline-block"></i>
-                                                                                                            </a>
-                                                                                                            ${deleteBtn}
-                                                                                                        </td>
-                                                                                                    `;
+                                                                                                                <td class="px-4 py-2 text-gray-900">${data.backup.name}</td>
+                                                                                                                <td class="px-4 py-2 text-gray-600">${data.backup.size}</td>
+                                                                                                                <td class="px-4 py-2 text-gray-600">${data.backup.created_at}</td>
+                                                                                                                <td class="px-4 py-2 text-right">
+                                                                                                                <button type="button" class="text-amber-600 hover:text-amber-700 mr-3" title="Restore" data-action="openRestoreModal" data-arg='["${data.backup.name}"]'>
+                                                                                                                    <i data-lucide="rotate-ccw" class="w-4 h-4 inline-block"></i>
+                                                                                                                </button>
+                                                                                                                    <a href="/admin/backups/${data.backup.name}/download" class="text-primary-600 hover:text-primary-700 mr-3">
+                                                                                                                        <i data-lucide="download" class="w-4 h-4 inline-block"></i>
+                                                                                                                    </a>
+                                                                                                                    ${deleteBtn}
+                                                                                                                </td>
+                                                                                                            `;
                                 tbody.prepend(row);
                                 if (typeof lucide !== 'undefined') lucide.createIcons();
                             } else {
@@ -520,11 +547,76 @@
                         })
                         .catch(() => showToast('Error', 'An error occurred. Please try again.', 'error'));
                 }
+
+                let restoreTarget = null;
+
+                function openRestoreModal(filename) {
+                    restoreTarget = filename;
+                    document.getElementById('restoreFileName').textContent = filename;
+                    document.getElementById('restorePassword').value = '';
+                    document.getElementById('restoreError').style.display = 'none';
+                    document.getElementById('restoreModal').style.display = 'flex';
+                }
+
+                function closeRestoreModal() {
+                    document.getElementById('restoreModal').style.display = 'none';
+                    restoreTarget = null;
+                }
+
+                function submitRestore() {
+                    const pw = document.getElementById('restorePassword').value;
+                    const errBox = document.getElementById('restoreError');
+                    const btn = document.getElementById('restoreConfirmBtn');
+
+                    if (!pw) {
+                        errBox.textContent = 'Please enter your password.';
+                        errBox.style.display = 'block';
+                        return;
+                    }
+
+                    btn.disabled = true;
+                    btn.textContent = 'Restoring...';
+                    errBox.style.display = 'none';
+
+                    const fd = new FormData();
+                    fd.append('password', pw);
+
+                    fetch(`/admin/backups/${encodeURIComponent(restoreTarget)}/restore`, {
+                        method: 'POST',
+                        body: fd,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        }
+                    })
+                        .then(res => res.json().then(data => ({ ok: res.ok, data })))
+                        .then(({ ok, data }) => {
+                            if (ok && data.success) {
+                                closeRestoreModal();
+                                showToast('Success', data.message, 'success');
+                                setTimeout(() => window.location.reload(), 1800);
+                            } else {
+                                errBox.textContent = data.message || 'Restore failed.';
+                                errBox.style.display = 'block';
+                            }
+                        })
+                        .catch(() => {
+                            errBox.textContent = 'An error occurred. Please try again.';
+                            errBox.style.display = 'block';
+                        })
+                        .finally(() => {
+                            btn.disabled = false;
+                            btn.textContent = 'Restore';
+                        });
+                }
             </script>
         @endif
 
         @if($canManageFaqs)
-            @include('admin_components.partials.faqs_tab')
+        @include('admin_components.partials.faqs_tab')
         @endif
 
     </div>

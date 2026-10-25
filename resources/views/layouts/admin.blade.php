@@ -567,7 +567,7 @@
                         <a href="{{ route('dashboard.members') }}"
                             class="sidebar-link justify-start {{ request()->routeIs('dashboard.members') ? 'active' : '' }}">
                             <i data-lucide="users" class="w-5 h-5"></i>
-                            <span>Accounts</span>
+                            <span>Members</span>
                         </a>
                     @endif
                     @if($hasFullAccess || in_array('lendings', $perms))
@@ -669,14 +669,6 @@
                             <i data-lucide="user" class="w-4 h-4 text-gray-500"></i>
                             <span class="text-sm">View Profile</span>
                         </a>
-                        @if(auth()->user()?->isGeneralManager() || auth()->user()?->isMainAdmin())
-                            <hr class="my-2 border-gray-100">
-                            <a href="{{ route('2fa.manage') }}"
-                                class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
-                                <i data-lucide="shield-check" class="w-4 h-4 text-gray-500"></i>
-                                <span class="text-sm">Two-Factor Auth</span>
-                            </a>
-                        @endif
                         <hr class="my-2 border-gray-100">
                         <a href="{{ route('logout') }}"
                             class="flex items-center gap-3 px-4 py-3 text-danger-600 hover:bg-red-50 transition-colors">
@@ -750,6 +742,10 @@
             <i data-lucide="x" class="w-4 h-4 text-gray-400"></i>
         </button>
     </div>
+
+    @auth
+        @include('components.login-switch-modal')
+    @endauth
 
     <script nonce="{{ csp_nonce() }}">
         // Initialize Lucide icons

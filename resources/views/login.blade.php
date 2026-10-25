@@ -18,6 +18,80 @@
 
     {{-- font awesome cdn link --}}
     <link rel="stylesheet" href="font-awesome-icon/css/all.min.css">
+
+    <style nonce="{{ csp_nonce() }}">
+        #switchWait {
+            display: none;
+            margin: 1.25rem 46px 1.75rem;
+            padding: 1.5rem 1.25rem;
+            background: #f3f6ff;
+            border: 1.5px solid #c9d6ff;
+            border-radius: 12px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        #switchWait .sw-icon {
+            font-size: 1.8rem;
+            color: #1f2a52;
+            margin-bottom: .5rem;
+        }
+
+        #switchWait .sw-title {
+            margin: 0 0 .4rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1f2a52;
+            text-transform: none;
+            letter-spacing: normal;
+        }
+
+        #switchWait .sw-text {
+            margin: 0 0 1.2rem;
+            font-size: .85rem;
+            line-height: 1.5;
+            color: #555;
+        }
+
+        #switchWait .sw-btn {
+            display: inline-block;
+            width: auto;
+            padding: .6rem 1.4rem;
+            font-size: .85rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background .15s, color .15s;
+        }
+
+        #switchWait .sw-btn-outline {
+            background: #fff;
+            color: #1f2a52;
+            border: 1.5px solid #1f2a52;
+        }
+
+        #switchWait .sw-btn-outline:hover {
+            background: #1f2a52;
+            color: #fff;
+        }
+
+        #switchWait .sw-btn-solid {
+            display: none;
+            background: #1f2a52;
+            color: #fff;
+            border: 1.5px solid #1f2a52;
+        }
+
+        #switchWait .sw-btn-solid:hover {
+            background: #2d3a6b;
+        }
+
+        @media (max-width: 576px) {
+            #switchWait {
+                margin: 1rem 20px 1.5rem;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -209,6 +283,16 @@
                     <div class="form-nav-divider"></div>
                 </div>
 
+                <div id="switchWait">
+                    <i class="fa-solid fa-mobile-screen-button sw-icon"></i>
+                    <h3 id="switchTitle" class="sw-title">Waiting for approval…</h3>
+                    <p id="switchText" class="sw-text">
+                        This account is already open on another device or browser. We asked it to approve this login.
+                    </p>
+                    <button type="button" id="switchCancel" class="sw-btn sw-btn-outline">Cancel request</button>
+                    <button type="button" id="switchBack" class="sw-btn sw-btn-solid">Back to sign in</button>
+                </div>
+
                 <form action="{{ route("UserLogin") }}" method="post" id="loginForm">
                     @csrf
                     <div class="form-sub-parent">
@@ -331,7 +415,7 @@
                 }
             }
         </script>
-        
+
         <script nonce="{{ csp_nonce() }}">
             (function () {
                 var form = document.getElementById('loginForm');
@@ -352,6 +436,99 @@
                         text.textContent = 'Sign In';
                     }
                 });
+            })();
+        </script>
+
+        <script nonce="{{ csp_nonce() }}">
+            (function () {
+                var STATUS_URL = "{{ route('login.switch.status') }}";
+                var COMPLETE_URL = "{{ route('login.switch.complete') }}";
+                var CANCEL_URL = "{{ route('login.switch.cancel') }}";
+
+                var form = document.getElementById('loginForm');
+                var panel = document.getElementById('switchWait');
+                var title = document.getElementById('switchTitle');
+                var text = document.getElementById('switchText');
+                var cancel = document.getElementById('switchCancel');
+                var back = document.getElementById('switchBack');
+                var csrf = form.querySelector('input[name="_token"]').value;
+                var timer = null;
+
+                function stop() { if (timer) { clearInterval(timer); timer = null; } }
+
+                function showWaiting() {
+                    form.style.display = 'none';
+                    panel.style.display = 'block';
+                    cancel.style.display = 'inline-block';
+                    back.style.display = 'none';
+                    title.textContent = 'Waiting for approval…';
+                    text.textContent = 'This account is already open on another device or browser. We asked it to approve this login.';
+                    if (!timer) timer = setInterval(check, 2500);
+                }
+
+                function showResult(t, msg) {
+                    stop();
+                    form.style.display = 'none';
+                    panel.style.display = 'block';
+                    cancel.style.display = 'none';
+                    back.style.display = 'inline-block';
+                    title.textContent = t;
+                    text.textContent = msg;
+                }
+
+                function showForm() {
+                    stop();
+                    panel.style.display = 'none';
+                    form.style.display = '';
+                    cancel.style.display = '';
+                    back.style.display = '';
+                    var btn = document.getElementById('login');
+                    btn.disabled = false;
+                    btn.classList.remove('loading');
+                    btn.querySelector('.btn-text').textContent = 'Sign In';
+                }
+
+                function post(url) {
+                    return fetch(url, {
+                        method: 'POST',
+                        credentials: 'same-origin',
+                        headers: { 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' }
+                    });
+                }
+
+                function complete() {
+                    title.textContent = 'Approved! Signing you in…';
+                    post(COMPLETE_URL).then(function (r) { return r.json(); }).then(function (d) {
+                        if (d.redirect) { window.location.href = d.redirect; }
+                        else { showResult('Could not sign in', 'Please try signing in again.'); }
+                    }).catch(function () {
+                        showResult('Could not sign in', 'Please try signing in again.');
+                    });
+                }
+
+                function check() {
+                    fetch(STATUS_URL, { credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
+                        .then(function (r) {
+                            if (!r.ok) throw new Error('bad status');
+                            return r.json();
+                        })
+                        .then(function (d) {
+                            if (d.state === 'pending') { showWaiting(); }
+                            else if (d.state === 'approved') { stop(); complete(); }
+                            else if (d.state === 'denied') { showResult('Request denied', 'The account owner did not allow this login.'); }
+                            else if (d.state === 'expired') { showResult('No response', 'Nobody approved in time. If the other device is no longer available, the account unlocks automatically after 5 minutes of inactivity.'); }
+                            // state === 'none' → do nothing, keep the form visible
+                        })
+                        .catch(function () { /* keep the form visible */ });
+                }
+
+                cancel.addEventListener('click', function () {
+                    stop();
+                    post(CANCEL_URL).finally(showForm);
+                });
+                back.addEventListener('click', showForm);
+
+                check(); // on page load: are we already waiting?
             })();
         </script>
 

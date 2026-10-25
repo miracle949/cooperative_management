@@ -13,7 +13,16 @@ use Illuminate\Support\Facades\DB;
 
 class lendingController extends Controller
 {
-    const PAYMENT_INTERVAL_DAYS = 5;
+    const PAYMENT_INTERVAL_MONTHS = 1;
+
+    /**
+     * Due date for installment offset $n from an anchor date.
+     * addMonthsNoOverflow keeps month-end dates sane (Jan 31 -> Feb 28, not Mar 3).
+     */
+    private function dueDateFromAnchor(\Carbon\Carbon $anchor, int $offset): \Carbon\Carbon
+    {
+        return $anchor->copy()->addMonthsNoOverflow($offset * self::PAYMENT_INTERVAL_MONTHS);
+    }
 
     private function loanChargeTotals($loan): array
     {
@@ -74,7 +83,7 @@ class lendingController extends Controller
         $nextInstallmentNumber = $paymentsMade + 1;
         $anchorDueDate = $status->due_date
             ? \Carbon\Carbon::parse($status->due_date)
-            : \Carbon\Carbon::parse($loan->created_at)->addDays($nextInstallmentNumber * self::PAYMENT_INTERVAL_DAYS);
+            : \Carbon\Carbon::parse($loan->created_at)->addMonthsNoOverflow($nextInstallmentNumber * self::PAYMENT_INTERVAL_MONTHS);
 
         for ($i = 1; $i <= $totalPayments; $i++) {
             $row = $scheduleByNumber[$i] ?? null;
@@ -86,8 +95,7 @@ class lendingController extends Controller
                 continue;
             }
 
-            $dueDateForRow = $anchorDueDate->copy()
-                ->addDays(($i - $nextInstallmentNumber) * self::PAYMENT_INTERVAL_DAYS);
+            $dueDateForRow = $this->dueDateFromAnchor($anchorDueDate, $i - $nextInstallmentNumber);
 
             return $dueDateForRow->lt($today) ? 'Overdue' : 'Active';
         }
@@ -772,7 +780,7 @@ class lendingController extends Controller
             $nextDueDate = $status->due_date
                 ? \Carbon\Carbon::parse($status->due_date)
                 : \Carbon\Carbon::parse($loan->created_at)
-                    ->addDays(((int) $status->payments_made + 1) * self::PAYMENT_INTERVAL_DAYS);
+                    ->addMonthsNoOverflow(((int) $status->payments_made + 1) * self::PAYMENT_INTERVAL_MONTHS);
 
             $isOverdue = $nextDueDate->lt(now()->timezone('Asia/Manila'));
             $alreadyPenalized = $status->last_penalty_date
@@ -984,7 +992,8 @@ class lendingController extends Controller
         $nextNo = $paymentsMade + 1;
         $anchor = $status->due_date
             ? \Carbon\Carbon::parse($status->due_date)
-            : \Carbon\Carbon::parse($loan->created_at)->addDays($nextNo * self::PAYMENT_INTERVAL_DAYS);
+            : \Carbon\Carbon::parse($loan->created_at)->addMonthsNoOverflow($nextNo * self::PAYMENT_INTERVAL_MONTHS);
+
 
         $rows = collect();
 
@@ -997,7 +1006,7 @@ class lendingController extends Controller
                 continue;
             }
 
-            $due = $anchor->copy()->addDays(($i - $nextNo) * self::PAYMENT_INTERVAL_DAYS);
+            $due = $this->dueDateFromAnchor($anchor, $i - $nextNo);
             $overdue = $due->lt($today);
 
             $penalty = 0;
@@ -1185,7 +1194,8 @@ class lendingController extends Controller
                 'payments_made' => 0,
                 'total_payments' => $termMonths,
                 'interest_rate' => $interestRate,
-                'due_date' => \Carbon\Carbon::parse($selectedLoan->created_at)->addDays(self::PAYMENT_INTERVAL_DAYS)->format('Y-m-d'),
+                'due_date' => \Carbon\Carbon::parse($selectedLoan->created_at)
+                    ->addMonthsNoOverflow(self::PAYMENT_INTERVAL_MONTHS)->format('Y-m-d'),
                 'status' => 'Active',
             ]);
 
@@ -1368,11 +1378,10 @@ class lendingController extends Controller
             $nextInstallmentNumber = $paymentsMade + 1;
             $anchorDueDate = $lendingStatus->due_date
                 ? \Carbon\Carbon::parse($lendingStatus->due_date)
-                : $startDate->copy()->addDays($nextInstallmentNumber * self::PAYMENT_INTERVAL_DAYS);
+                : $startDate->copy()->addMonthsNoOverflow($nextInstallmentNumber * self::PAYMENT_INTERVAL_MONTHS);
 
             for ($i = 1; $i <= $totalPayments; $i++) {
-                $dueDateForRow = $anchorDueDate->copy()
-                    ->addDays(($i - $nextInstallmentNumber) * self::PAYMENT_INTERVAL_DAYS);
+                $dueDateForRow = $this->dueDateFromAnchor($anchorDueDate, $i - $nextInstallmentNumber);
 
                 $scheduleRow = $scheduleByNumber[$i] ?? null;
                 $installmentAmount = $scheduleRow ? (float) $scheduleRow->amount_due : $monthlyDue;

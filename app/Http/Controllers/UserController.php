@@ -3597,6 +3597,109 @@ class UserController extends Controller
         return response()->download($filePath);
     }
 
+    public function restoreBackup(Request $request, $filename)
+    {
+        if (!(auth()->user()->isMainAdmin() || auth()->user()->isGeneralManager())) {
+            return response()->json(['success' => false, 'message' => 'You are not authorized to restore backups.'], 403);
+        }
+
+        $request->validate(['password' => 'required|string']);
+
+        if (!Hash::check($request->password, auth()->user()->password)) {
+            return response()->json(['success' => false, 'message' => 'Incorrect password.'], 422);
+        }
+
+        $filename = basename($filename);
+        $backupDir = storage_path('app/backups');
+        $filePath = $backupDir . '/' . $filename;
+
+        if (!str_ends_with($filename, '.sql') || !file_exists($filePath)) {
+            return response()->json(['success' => false, 'message' => 'Backup file not found.'], 404);
+        }
+
+        @set_time_limit(0);
+
+        $dbHost = config('database.connections.mysql.host');
+        $dbPort = config('database.connections.mysql.port', 3306);
+        $dbName = config('database.connections.mysql.database');
+        $dbUser = config('database.connections.mysql.username');
+        $dbPass = config('database.connections.mysql.password');
+
+        $mysqldumpPath = env('MYSQLDUMP_PATH', 'mysqldump');
+        $mysqlPath = env('MYSQL_PATH', 'mysql');
+
+        // 1) Safety backup of the current database
+        $safetyName = 'pre_restore_' . now()->format('Y_m_d_His') . '.sql';
+        $safetyPath = $backupDir . '/' . $safetyName;
+
+        $dumpCmd = sprintf(
+            '"%s" --host=%s --port=%s --user=%s --password=%s --single-transaction --quick %s > %s 2>&1',
+            $mysqldumpPath,
+            escapeshellarg($dbHost),
+            escapeshellarg($dbPort),
+            escapeshellarg($dbUser),
+            escapeshellarg($dbPass),
+            escapeshellarg($dbName),
+            escapeshellarg($safetyPath)
+        );
+
+        exec($dumpCmd, $dumpOut, $dumpRet);
+
+        if ($dumpRet !== 0 || !file_exists($safetyPath) || filesize($safetyPath) === 0) {
+            if (file_exists($safetyPath)) {
+                unlink($safetyPath);
+            }
+            return response()->json([
+                'success' => false,
+                'message' => 'Restore cancelled: could not create a safety backup first. ' . implode(' ', $dumpOut),
+            ], 500);
+        }
+
+        // 2) Restore the chosen file
+        $restoreCmd = sprintf(
+            '"%s" --host=%s --port=%s --user=%s --password=%s %s < %s 2>&1',
+            $mysqlPath,
+            escapeshellarg($dbHost),
+            escapeshellarg($dbPort),
+            escapeshellarg($dbUser),
+            escapeshellarg($dbPass),
+            escapeshellarg($dbName),
+            escapeshellarg($filePath)
+        );
+
+        exec($restoreCmd, $restoreOut, $restoreRet);
+
+        if ($restoreRet !== 0) {
+            \Log::error('Restore failed', [
+                'return_var' => $restoreRet,
+                'output' => implode("\n", $restoreOut),
+                'file' => $filename,
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Restore failed: ' . (implode(' ', $restoreOut) ?: 'mysql client not found.')
+                    . " Your previous data was saved as {$safetyName}.",
+            ], 500);
+        }
+
+        try {
+            AuditLog::log(
+                'Restored System Backup',
+                "Restored database from {$filename}. Safety backup: {$safetyName}",
+                'system_backup',
+                null
+            );
+        } catch (\Throwable $e) {
+            // audit table may not exist in the restored data; ignore
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => "Database restored from {$filename}. Safety backup saved as {$safetyName}.",
+        ]);
+    }
+
     public function deleteBackup(Request $request, $filename)
     {
         if (!auth()->user()->isMainAdmin()) {
@@ -4691,7 +4794,8 @@ class UserController extends Controller
         $nextInstallmentNumber = $paymentsMade + 1;
         $anchorDueDate = $status->due_date
             ? \Carbon\Carbon::parse($status->due_date)
-            : \Carbon\Carbon::parse($loan->created_at)->addDays($nextInstallmentNumber * self::PAYMENT_INTERVAL_DAYS);
+            : \Carbon\Carbon::parse($loan->created_at)
+            ->addMonthsNoOverflow($nextInstallmentNumber * lendingController::PAYMENT_INTERVAL_MONTHS);
 
         for ($i = 1; $i <= $totalPayments; $i++) {
             $row = $scheduleByNumber[$i] ?? null;
@@ -4704,7 +4808,7 @@ class UserController extends Controller
             }
 
             $dueDateForRow = $anchorDueDate->copy()
-                ->addDays(($i - $nextInstallmentNumber) * self::PAYMENT_INTERVAL_DAYS);
+            ->addMonthsNoOverflow(($i - $nextInstallmentNumber) * lendingController::PAYMENT_INTERVAL_MONTHS);
 
             return $dueDateForRow->lt($today) ? 'Overdue' : 'Active';
         }
@@ -5374,7 +5478,7 @@ class UserController extends Controller
                         $status->remaining_balance = 0;
                         $status->due_date = $loan->created_at
                             ? \Carbon\Carbon::parse($loan->created_at)
-                                ->addDays(((int) $status->total_payments) * lendingController::PAYMENT_INTERVAL_DAYS)
+                                ->addMonthsNoOverflow(((int) $status->total_payments) * lendingController::PAYMENT_INTERVAL_MONTHS)
                                 ->format('Y-m-d')
                             : $status->due_date;
 
@@ -5414,8 +5518,8 @@ class UserController extends Controller
                             ->update(['status' => 'Completed']);
                     } else {
                         $status->due_date = \Carbon\Carbon::parse($loan->created_at)
-                            ->addDays(($status->payments_made + 1) * lendingController::PAYMENT_INTERVAL_DAYS)
-                            ->format('Y-m-d');
+    ->addMonthsNoOverflow(($status->payments_made + 1) * lendingController::PAYMENT_INTERVAL_MONTHS)
+    ->format('Y-m-d');
                     }
 
                     $status->save();

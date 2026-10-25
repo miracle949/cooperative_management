@@ -97,7 +97,7 @@
                             <div class="body-icon-wrap">
                                 <div class="body-icon" style="overflow:hidden; padding:0;">
                                     @if($otherinfo && $otherinfo->profile_picture)
-                                        <img src="{{ asset('storage/' . $otherinfo->profile_picture) }}" alt="Profile Photo"
+                                        <img src="{{ url('proof/' . $otherinfo->profile_picture) }}" alt="Profile Photo"
                                             style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
                                     @else
                                         {{ strtoupper(substr(Auth::user()->first_name, 0, 1)) }}
@@ -228,11 +228,11 @@
                                     </div>
                                 </div>
                                 <!-- <div class="more-button">
-                                                                                                                        <button>
-                                                                                                                            View More
-                                                                                                                            <i class="fa fa-arrow-right"></i>
-                                                                                                                        </button>
-                                                                                                                    </div> -->
+                                                                                                                                                                        <button>
+                                                                                                                                                                            View More
+                                                                                                                                                                            <i class="fa fa-arrow-right"></i>
+                                                                                                                                                                        </button>
+                                                                                                                                                                    </div> -->
                             </div>
 
                             <div class="personal-information-1">
@@ -402,9 +402,9 @@
                                 </div>
                                 <div class="personal-information-body-2">
                                     <!-- <div class="personal-head">
-                                                                                                                            <p>Description</p>
-                                                                                                                            <p>Balance</p>
-                                                                                                                        </div> -->
+                                                                                                                                                                            <p>Description</p>
+                                                                                                                                                                            <p>Balance</p>
+                                                                                                                                                                        </div> -->
                                     <div class="personal-parent">
                                         <div class="item item-share">
                                             <div class="stat-icon">
@@ -444,15 +444,15 @@
                                         </div>
                                     </div>
                                     <!-- <div class="personal-footer">
-                                                                                                                            <div class="item item-net"> 
-                                                                                                                                <div class="fw-bold item-category-net">
-                                                                                                                                    <span>Net Standing</span>
+                                                                                                                                                                            <div class="item item-net"> 
+                                                                                                                                                                                <div class="fw-bold item-category-net">
+                                                                                                                                                                                    <span>Net Standing</span>
 
-                                                                                                                                    <strong>₱51,930.00</strong>
-                                                                                                                                </div>
-                                                                                                                                <div class="fw-bold item-value-net">₱51,930.00</div>
-                                                                                                                            </div>
-                                                                                                                        </div> -->
+                                                                                                                                                                                    <strong>₱51,930.00</strong>
+                                                                                                                                                                                </div>
+                                                                                                                                                                                <div class="fw-bold item-value-net">₱51,930.00</div>
+                                                                                                                                                                            </div>
+                                                                                                                                                                        </div> -->
                                 </div>
                             </div>
 
@@ -658,6 +658,11 @@
                         id="personalInfoForm">
                         @csrf
                         <input type="hidden" name="_form" value="personal">
+                        @if ($errors->any() && old('_form') === 'personal')
+                            <div class="alert alert-danger" style="border-radius:10px; font-size:13px;">
+                                {{ $errors->first() }}
+                            </div>
+                        @endif
 
                         {{-- Profile Photo upload --}}
                         <div class="sm-field">
@@ -666,7 +671,7 @@
                                 <div id="avatarPreviewWrap"
                                     style="width:60px; height:60px; border-radius:50%; overflow:hidden; background:#EDF0F5; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
                                     <img id="avatarPreviewImg"
-                                        src="{{ ($otherinfo && $otherinfo->profile_picture) ? asset('storage/' . $otherinfo->profile_picture) : '' }}"
+                                        src="{{ ($otherinfo && $otherinfo->profile_picture) ? url('proof/' . $otherinfo->profile_picture) : '' }}"
                                         style="width:100%; height:100%; object-fit:cover; {{ ($otherinfo && $otherinfo->profile_picture) ? '' : 'display:none;' }}">
                                     <span id="avatarPreviewInitial"
                                         style="font-weight:600; color:#1E2A4A; font-size:20px; {{ ($otherinfo && $otherinfo->profile_picture) ? 'display:none;' : '' }}">
@@ -674,7 +679,7 @@
                                     </span>
                                 </div>
                                 <label for="upload_profile_picture" class="doc-upload-box"
-                                    id="uploadBox_profile_picture" style="flex:1;">
+                                    id="uploadBox_profile_picture" style="flex:1; min-width:0;">
                                     <div class="doc-upload-icon"><i class="fa fa-cloud-upload-alt"></i></div>
                                     <div class="doc-upload-text">
                                         <span class="doc-upload-title" id="uploadTitle_profile_picture">
@@ -685,7 +690,7 @@
                                     </div>
                                 </label>
                                 <input type="file" id="upload_profile_picture" name="profile_picture"
-                                    class="doc-upload-input" accept="image/*" onchange="handleAvatarUploadChange(this)">
+                                    class="doc-upload-input" accept="image/*">
                             </div>
                         </div>
 
@@ -782,12 +787,6 @@
                         <button type="button" class="sm-btn-cancel" data-bs-dismiss="modal">Cancel</button>
                     </form>
                 </div>
-
-                @if ($errors->any() && old('_form') === 'personal')
-                    <div class="alert alert-danger" style="border-radius:10px; font-size:13px; margin-bottom:1rem;">
-                        {{ $errors->first() }}
-                    </div>
-                @endif
             </div>
         </div>
     </div>
@@ -865,6 +864,35 @@
                         id="documentsForm">
                         @csrf
                         <input type="hidden" name="_form" value="documents">
+                        @if ($errors->any() && old('_form') === 'documents')
+                            <div class="alert alert-danger" style="border-radius:10px; font-size:13px;">
+                                {{ $errors->first() }}
+                            </div>
+                        @endif
+                        @if ($errors->any())
+                            @php
+                                $reopen = [
+                                    'personal' => 'editPersonalInfoModal',
+                                    'documents' => 'editDocumentsModal',
+                                    'family' => 'editFamilyModal',
+                                    'employment' => 'editEmploymentModal',
+                                    'vehicle' => 'editVehicleModal',
+                                ][old('_form')] ?? null;
+                            @endphp
+                            @if($reopen)
+                                <script nonce="{{ csp_nonce() }}">
+                                    document.addEventListener('DOMContentLoaded', function () {
+                                        const b = document.createElement('button');
+                                        b.type = 'button';
+                                        b.style.display = 'none';
+                                        b.dataset.bsToggle = 'modal';
+                                        b.dataset.bsTarget = '#{{ $reopen }}';
+                                        document.body.appendChild(b);
+                                        b.click();
+                                    });
+                                </script>
+                            @endif
+                        @endif
 
                         @php
                             $docFields = [
@@ -881,7 +909,7 @@
                                     style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
                                     <label class="sm-label" style="margin-bottom:0;">{{ $doc['label'] }}</label>
                                     @if($doc['value'])
-                                        <a href="#" class="doc-view-link" data-doc-src="{{ asset('storage/' . $doc['value']) }}"
+                                        <a href="#" class="doc-view-link" data-doc-src="{{ url('proof/' . $doc['value']) }}"
                                             data-doc-label="{{ $doc['label'] }}"
                                             style="font-size:12px; font-weight:600; color:#1E2A4A; text-decoration:none; display:flex; align-items:center; gap:4px;">
                                             <i class="fa fa-eye"></i> View current file
@@ -900,8 +928,7 @@
                                     </div>
                                 </label>
                                 <input type="file" id="upload_{{ $fieldName }}" name="{{ $fieldName }}"
-                                    class="doc-upload-input" accept="image/*"
-                                    onchange="handleDocUploadChange('{{ $fieldName }}', this)">
+                                    class="doc-upload-input doc-file-input" accept="image/*" data-field="{{ $fieldName }}">
                             </div>
                         @endforeach
 
@@ -1050,7 +1077,8 @@
                 <div class="modal-body sm-modal-body">
                     @if(session('soa_error'))
                         <div class="alert alert-danger" style="border-radius:10px; font-size:13px;">
-                            {{ session('soa_error') }}</div>
+                            {{ session('soa_error') }}
+                        </div>
                     @endif
 
                     <form id="soaForm" action="{{ route('DownloadSoa') }}" method="GET">
@@ -1124,6 +1152,9 @@
             cursor: pointer;
             background: #f9fafb;
             transition: border-color .15s, background .15s;
+            min-width: 0;
+            max-width: 100%;
+            overflow: hidden;
         }
 
         .doc-upload-box:hover {
@@ -1160,6 +1191,8 @@
             flex-direction: column;
             gap: 2px;
             min-width: 0;
+            flex: 1;
+            overflow: hidden;
         }
 
         .doc-upload-title {
@@ -1215,6 +1248,13 @@
     </style>
 
     <script nonce="{{ csp_nonce() }}">
+        function shortName(name, max = 28) {
+            if (name.length <= max) return name;
+            const dot = name.lastIndexOf('.');
+            const ext = dot > -1 ? name.slice(dot) : '';
+            return name.slice(0, max - ext.length - 3) + '...' + ext;
+        }
+
         function handleDocUploadChange(fieldName, input) {
             const box = document.getElementById('uploadBox_' + fieldName);
             const title = document.getElementById('uploadTitle_' + fieldName);
@@ -1224,13 +1264,23 @@
                 const file = input.files[0];
                 box.classList.add('has-file');
                 title.textContent = 'File selected';
-                sub.textContent = file.name;
+                sub.textContent = shortName(file.name);
             } else {
                 box.classList.remove('has-file');
                 title.textContent = 'Click to upload';
                 sub.textContent = 'JPG or PNG, max 2MB';
             }
         }
+
+        document.getElementById('upload_profile_picture')?.addEventListener('change', function () {
+            handleAvatarUploadChange(this);
+        });
+
+        document.querySelectorAll('.doc-file-input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                handleDocUploadChange(this.dataset.field, this);
+            });
+        });
 
         // Same pattern as handleDocUploadChange, plus it swaps the small round
         // avatar preview inside the modal so the member can see the photo
@@ -1244,8 +1294,15 @@
 
             if (input.files && input.files.length > 0) {
                 const file = input.files[0];
+
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('Photo is too large. Maximum size is 2MB.');
+                    input.value = '';
+                    return;
+                }
+
                 box.classList.add('has-file');
-                title.textContent = 'File selected';
+                title.textContent = 'Photo selected';
                 sub.textContent = file.name;
 
                 const reader = new FileReader();

@@ -17,7 +17,7 @@
     <h3>KPMPCATS</h3> -->
         {{-- <h2 class="mw-100 m-0" style="font-size: 14px; width: 200px;">Kingsland Pala-Pala MPC & Transport Service
         </h2> --}}
-        
+
         <img src="images/logo2.png" width="45px" height="45px" style="border-radius: 50%" alt="" class="logo-navbar">
 
         <!-- <div class="nav-menu">
@@ -131,14 +131,41 @@
             }
         }
 
-        #nb-notif-panel { z-index: 1100; }
+        #nb-notif-panel {
+            z-index: 1100;
+        }
 
-        .nb-notif-item { cursor: pointer; transition: background .15s; }
+        .nb-notif-item {
+            cursor: pointer;
+            transition: background .15s;
+        }
+
         .nb-notif-item:hover,
-        .nb-notif-item:focus-visible { background: #f8fafc; outline: none; }
+        .nb-notif-item:focus-visible {
+            background: #f8fafc;
+            outline: none;
+        }
 
-        #nb-mark-all:hover { background: #eff6ff; }
+        #nb-mark-all:hover {
+            background: #eff6ff;
+        }
+
+        /* Non-clickable notifications (seminars, login attempt) */
+        .nb-notif-item.nb-notif-static {
+            cursor: default;
+        }
+
+        .nb-notif-item.nb-notif-static:hover {
+            background: transparent;
+        }
+
+        /* After "Mark all as read": keep the item, just dim it */
+        .nb-notif-item.nb-read {
+            opacity: .55;
+        }
     </style>
+
+    @include('components.login-switch-modal')
 
     <div class="nav-menu dashboard">
         <i class="fa fa-bars" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu2"
@@ -174,6 +201,8 @@
                     <div id="nb-notif-list" style="max-height:360px; overflow-y:auto;">
                         @foreach($navNotifications as $n)
                             @php
+                                $nClickable = $n['clickable'] ?? true;
+
                                 $nTitle = strtolower($n['title'] ?? '');
                                 $nIcon = $n['icon'] ?? 'fa-bell';
                                 $nColor = $n['color'] ?? 'green';
@@ -184,8 +213,9 @@
                                     $nColor = 'red';
                                 }
                             @endphp
-                            <a href="{{ $n['url'] ?? '#' }}" class="nb-notif-item"
-                                data-notif-id="{{ $n['id'] }}" data-url="{{ $n['url'] ?? '#' }}"
+                            <a @if($nClickable) href="{{ $n['url'] ?? '#' }}" data-url="{{ $n['url'] ?? '#' }}" @endif
+                                class="nb-notif-item {{ $nClickable ? '' : 'nb-notif-static' }}"
+                                data-notif-id="{{ $n['id'] }}"
                                 style="display:flex; gap:10px; padding:12px 16px; border-bottom:1px solid #f5f5f5; text-decoration:none; color:inherit;">
                                 <div
                                     style="width:32px; height:32px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; background: {{ $nColor === 'red' ? '#fee2e2' : ($nColor === 'gold' ? '#fef3c7' : '#d1fae5') }};">
@@ -193,8 +223,11 @@
                                         style="font-size:13px; color: {{ $nColor === 'red' ? '#dc2626' : ($nColor === 'gold' ? '#b45309' : '#059669') }};"></i>
                                 </div>
                                 <div style="flex:1; min-width:0;">
-                                    <p style="margin:0; font-size:13px; font-weight:600; color:#1a1a1a;">{{ $n['title'] }}</p>
-                                    <p style="margin:2px 0 0; font-size:12px; color:#666; line-height:1.4;">{{ $n['message'] }}</p>
+                                    <p style="margin:0; font-size:13px; font-weight:600; color:#1a1a1a;">{{ $n['title'] }}
+                                    </p>
+                                    <p style="margin:2px 0 0; font-size:12px; color:#666; line-height:1.4;">
+                                        {{ $n['message'] }}
+                                    </p>
                                     <p style="margin:4px 0 0; font-size:11px; color:#999;">{{ $n['time'] }}</p>
                                 </div>
                             </a>
@@ -276,13 +309,22 @@
                     list.addEventListener('click', function (e) {
                         const item = e.target.closest('.nb-notif-item');
                         if (!item) return;
+
+                        // Seminar / login-attempt notifications do nothing when clicked
+                        if (item.classList.contains('nb-notif-static')) {
+                            e.preventDefault();
+                            return;
+                        }
+
                         e.preventDefault();
 
                         const id = item.getAttribute('data-notif-id');
                         const url = item.getAttribute('data-url');
 
                         const badge = document.getElementById('nb-notif-badge');
-                        if (badge) setBadge((parseInt(badge.textContent.trim(), 10) || 0) - 1);
+                        if (badge && !item.classList.contains('nb-read')) {
+                            setBadge((parseInt(badge.textContent.trim(), 10) || 0) - 1);
+                        }
 
                         post(URL_MARK_ONE, { id: id }).catch(function () { });
 
@@ -294,7 +336,7 @@
                         window.location.href = url;
                     });
 
-                    // Mark all as read
+                    // Mark all as read — keep the items in the list, just dim them
                     const markAll = document.getElementById('nb-mark-all');
                     if (markAll) {
                         markAll.addEventListener('click', function (e) {
@@ -307,7 +349,11 @@
                                 .then(function (res) { return res.json(); })
                                 .then(function (data) {
                                     if (data && data.success) {
-                                        showEmpty();
+                                        list.querySelectorAll('.nb-notif-item').forEach(function (el) {
+                                            el.classList.add('nb-read');
+                                        });
+                                        setBadge(0);          // remove the red badge
+                                        markAll.remove();     // nothing left to mark
                                     } else {
                                         markAll.disabled = false;
                                         markAll.textContent = 'Mark all as read';
@@ -389,9 +435,14 @@
             <li>
                 <a href="#" data-action="toggleDropdown" data-arg='["|event|"]'
                     class="tw:flex tw:justify-center tw:items-center tw:gap-x-[0.7rem] position-relative">
-                    <div class="first-last">
-                        <p>{{ strtoupper(substr(Auth::user()->first_name, 0, 1)) }}</p>
-                    
+                    @php $navPhoto = Auth::user()->otherinfo->profile_picture ?? null; @endphp
+                    <div class="first-last" style="overflow:hidden; padding:0;">
+                        @if($navPhoto)
+                            <img src="{{ url('proof/' . $navPhoto) }}" alt=""
+                                style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+                        @else
+                            <p>{{ strtoupper(substr(Auth::user()->first_name, 0, 1)) }}</p>
+                        @endif
                     </div>
                     <div class="name-email">
                         <p>
@@ -463,22 +514,21 @@
                 <ul>
                     @if($email)
                         <li>
-                            <div class="card-icon">
-                                <p>{{ strtoupper(substr(Auth::user()->first_name, 0, 1)) }}</p>
+                            <div class="card-icon" style="overflow:hidden; padding:0;">
+                                @if($navPhoto)
+                                    <img src="{{ url('proof/' . $navPhoto) }}" alt=""
+                                        style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+                                @else
+                                    <p>{{ strtoupper(substr(Auth::user()->first_name, 0, 1)) }}</p>
+                                @endif
                             </div>
                             <p>{{ $email }}</p>
                         </li>
                     @endif
                     <hr>
-                    <li style="position: relative;">
+                    <li>
                         <div class="card-icon"><i class="fa fa-user"></i></div>
-                        <a href="{{ route('ProfileMember') }}">Profile</a>
-                        @if($navMissingCount > 0)
-                            <span class="start-50 translate-middle badge rounded-pill bg-danger"
-                                style="font-size: 12px; padding: 4px 8px;">
-                                {{ $navMissingCount }}
-                            </span>
-                        @endif
+                        <a href="{{ route('ProfileMember') }}">My Profile</a>
                     </li>
                     <li>
                         <div class="card-icon"><i class="fa fa-lock"></i></div>
