@@ -585,6 +585,14 @@
                     <option value="technical_error">System / technical error</option>
                     <option value="other">Other</option>
                 </select>
+                <div id="voidOtherWrap" class="hidden mt-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Please specify the reason <span
+                            class="text-danger-600">*</span></label>
+                    <textarea id="voidOtherReason" rows="3" maxlength="255"
+                        class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-danger-500 focus:border-danger-500"
+                        placeholder="Enter the reason for returning this deposit..."></textarea>
+                    <p class="text-xs text-gray-400 mt-1 text-right"><span id="voidOtherCount">0</span>/255</p>
+                </div>
             </div>
         </div>
         <div class="p-6 border-t border-gray-100 flex justify-end gap-3">
@@ -725,7 +733,7 @@
         var memberProofSection = document.getElementById('depositDetailMemberProof');
         var proofImg = document.getElementById('depositDetailMemberProofImg');
         var proofMissing = document.getElementById('depositDetailMemberProofMissing');
-        
+
         if (proofPath) {
             var cleanPath = String(proofPath).replace(/^\/?(storage|public)\//, '');
             proofMissing.classList.add('hidden');
@@ -783,7 +791,9 @@
         document.getElementById('voidConfirmTxId').value = id;
         document.getElementById('voidConfirmMemberName').textContent = name;
         document.getElementById('voidConfirmAmount').textContent = amount;
-        document.getElementById('voidConfirmReason').value = '';
+        document.getElementById('voidOtherReason').value = '';
+        document.getElementById('voidOtherCount').textContent = '0';
+        document.getElementById('voidOtherWrap').classList.add('hidden');
         document.getElementById('voidConfirmSubmitBtn').disabled = true;
 
         closeModal('depositDetailModal');
@@ -802,16 +812,40 @@
         openModal('depositDetailModal');
     }
 
+    function updateVoidSubmitState() {
+        var reason = document.getElementById('voidConfirmReason').value;
+        var other = document.getElementById('voidOtherReason').value.trim();
+        var ok = reason && (reason !== 'other' || other.length > 0);
+        document.getElementById('voidConfirmSubmitBtn').disabled = !ok;
+    }
+
     document.getElementById('voidConfirmReason').addEventListener('change', function () {
-        document.getElementById('voidConfirmSubmitBtn').disabled = !this.value;
+        var wrap = document.getElementById('voidOtherWrap');
+        if (this.value === 'other') {
+            wrap.classList.remove('hidden');
+            document.getElementById('voidOtherReason').focus();
+        } else {
+            wrap.classList.add('hidden');
+        }
+        updateVoidSubmitState();
+    });
+
+    document.getElementById('voidOtherReason').addEventListener('input', function () {
+        document.getElementById('voidOtherCount').textContent = this.value.length;
+        updateVoidSubmitState();
     });
 
     function submitSavingsDepositVoid() {
         var id = document.getElementById('voidConfirmTxId').value;
         var reason = document.getElementById('voidConfirmReason').value;
 
+        var otherText = document.getElementById('voidOtherReason').value.trim();
         if (!reason) {
             showToast('Error', 'Please select a reason for voiding.');
+            return;
+        }
+        if (reason === 'other' && !otherText) {
+            showToast('Error', 'Please specify the reason.');
             return;
         }
 
@@ -823,6 +857,10 @@
         var formData = new FormData();
         formData.append('_token', '{{ csrf_token() }}');
         formData.append('void_reason', reason);
+
+        if (reason === 'other') {
+            formData.append('void_reason_other', otherText);
+        }
 
         fetch('/savings/' + id + '/void-deposit', {
             method: 'POST',

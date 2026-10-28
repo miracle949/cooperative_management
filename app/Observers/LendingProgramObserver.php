@@ -7,6 +7,8 @@ use App\Models\lending_status_tbl;
 
 class LendingProgramObserver
 {
+    public const PAYMENT_INTERVAL_DAYS = 7;
+
     public function updated(lending_program_tbl $loan)
     {
         if ($loan->isDirty('status') && $loan->status === 'Approved') {
@@ -27,7 +29,7 @@ class LendingProgramObserver
                 'total_payments' => $termMonths,
                 'interest_rate' => \App\Models\Loan_settings_tbl::getRate($loan->lending_type),
                 'due_date' => \Carbon\Carbon::parse($loan->created_at)
-                    ->addDays(\App\Http\Controllers\lendingController::PAYMENT_INTERVAL_DAYS)
+                    ->addDays(lending_program_tbl::PAYMENT_INTERVAL_DAYS)
                     ->format('Y-m-d'),
                 'status' => 'Active',
             ]);

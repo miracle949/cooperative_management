@@ -28,5 +28,6 @@ class Otherinfo_tbl extends Model
         'signature',
         'approval_status',
         'membership_status',
+        'monthly_income',
     ];
 }

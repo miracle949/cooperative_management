@@ -203,6 +203,7 @@
                         'members'             => ['label' => 'Accounts / Members',     'icon' => 'users', 'desc' => 'View and manage member accounts and roles.'],
                         'officers-committees' => ['label' => 'Officers & Committees',  'icon' => 'users-round', 'desc' => 'Manage officers and committee listings.'],
                         'seminars'            => ['label' => 'Seminars',               'icon' => 'graduation-cap', 'desc' => 'Manage seminars, training and attendance.'],
+                        'member-appeal'       => ['label' => 'Member Appeal',          'icon' => 'life-buoy', 'desc' => 'Review and respond to member appeals.'],
                     ],
                 ],
                 'financial' => [

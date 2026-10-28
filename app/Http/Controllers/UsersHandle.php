@@ -2171,7 +2171,9 @@ class UsersHandle extends Controller
     {
         $ref = trim((string) $request->query('ref', ''));
 
-        $used = $ref !== '' && preg_match('/^\d{13}$/', $ref) && (
+        // Length is validated per payment method on the front end and in each store();
+        // here we only check the format and look for duplicates.
+        $used = $ref !== '' && preg_match('/^[A-Za-z0-9\-]{4,50}$/', $ref) && (
             DB::table('share_capital_transaction_tbls')
                 ->where('gcash_reference_no', $ref)
                 ->where('status', '!=', 'voided')
@@ -2921,14 +2923,11 @@ class UsersHandle extends Controller
         }
 
         if ($form === 'employment') {
-            $request->validate(['monthly_income' => 'nullable|numeric|min:0']);
+            $request->validate(['monthly_income' => 'required|numeric|min:0']);
 
-            if ($request->filled('monthly_income')) {
-                Otherinfo_tbl::updateOrCreate(
-                    ['user_id' => $userId],
-                    ['monthly_income' => $request->monthly_income]
-                );
-            }
+            $info = Otherinfo_tbl::firstOrNew(['user_id' => $userId]);
+            $info->monthly_income = $request->monthly_income;
+            $info->save();
         }
 
         if ($form === 'documents') {

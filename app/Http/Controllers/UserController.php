@@ -2490,6 +2490,7 @@ class UserController extends Controller
     {
         $request->validate([
             'void_reason' => 'required|string|in:wrong_amount,duplicate_payment,fraudulent,other_member,technical_error,other',
+            'void_reason_other' => 'nullable|required_if:void_reason,other|string|max:255',
         ]);
 
         $transaction = savings_transaction_tbl::findOrFail($id);
@@ -2509,9 +2510,13 @@ class UserController extends Controller
             return response()->json(['success' => false, 'message' => 'Only pending deposits can be returned.'], 400);
         }
 
+        $storedReason = $request->void_reason === 'other'
+        ? trim($request->void_reason_other)
+        : $request->void_reason;
+
         $transaction->update([
             'status' => 'voided',
-            'void_reason' => $request->void_reason,
+            'void_reason' => $storedReason,
             'voided_by' => Auth::id(),
             'voided_at' => now(),
         ]);
@@ -3184,15 +3189,21 @@ class UserController extends Controller
             return response()->json(['success' => false, 'message' => 'Only pending deposits can be returned.'], 400);
         }
 
+        $storedReason = $request->void_reason === 'other'
+            ? trim($request->void_reason_other)
+            : $request->void_reason;
+
         $transaction->update([
             'status' => 'voided',
-            'void_reason' => $request->void_reason,
+            'void_reason' => $storedReason,
             'voided_by' => Auth::id(),
             'voided_at' => now(),
         ]);
 
         $scAccount = share_capital_account_tbl::findOrFail($transaction->share_capital_account_id);
-        $reasonText = $this->returnReasonLabel($request->void_reason);
+        $reasonText = $request->void_reason === 'other'
+        ? trim($request->void_reason_other)
+        : $this->returnReasonLabel($request->void_reason);
 
         \App\Models\Notifications_tbl::create([
             'user_id' => $scAccount->user_id,
@@ -3503,7 +3514,7 @@ class UserController extends Controller
 
         // return view('admin_components.settings', compact('adminUser', 'companySettings', 'adminList', 'roles', 'roleCounts') + $financeData);
     }
-    
+
     /**
      * Pure-PHP database dump (no exec/mysqldump needed — works on shared hosting).
      * Writes DROP/CREATE statements + batched INSERTs. Every statement ends with ";"
@@ -3512,19 +3523,19 @@ class UserController extends Controller
     private function phpDumpDatabase(string $filePath): void
     {
         @set_time_limit(0);
-    
+
         $pdo = DB::connection()->getPdo();
         $fh = fopen($filePath, 'wb');
         if (!$fh) {
             throw new \RuntimeException('Cannot write to the backup folder.');
         }
-    
+
         $quoteId = fn($name) => '`' . str_replace('`', '``', $name) . '`';
-    
+
         try {
             fwrite($fh, "-- PHP database backup\n-- Generated: " . now()->toDateTimeString() . "\n\n");
             fwrite($fh, "SET NAMES utf8mb4;\nSET FOREIGN_KEY_CHECKS=0;\nSET SQL_MODE='NO_AUTO_VALUE_ON_ZERO';\n\n");
-    
+
             $tables = [];
             $views = [];
             foreach ($pdo->query('SHOW FULL TABLES')->fetchAll(\PDO::FETCH_NUM) as $row) {
@@ -3534,61 +3545,61 @@ class UserController extends Controller
                     $tables[] = $row[0];
                 }
             }
-    
+
             foreach ($tables as $table) {
                 $q = $quoteId($table);
-    
+
                 $create = $pdo->query("SHOW CREATE TABLE {$q}")->fetch(\PDO::FETCH_NUM)[1];
                 fwrite($fh, "DROP TABLE IF EXISTS {$q};\n{$create};\n\n");
-    
+
                 // Stream rows so big tables don't exhaust memory
                 $pdo->setAttribute(\PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, false);
                 try {
                     $stmt = $pdo->query("SELECT * FROM {$q}");
                     $columns = null;
                     $batch = [];
-    
+
                     while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
                         if ($columns === null) {
                             $columns = implode(', ', array_map($quoteId, array_keys($row)));
                         }
-    
+
                         $values = [];
                         foreach ($row as $value) {
                             $values[] = $value === null ? 'NULL' : $pdo->quote((string) $value);
                         }
                         $batch[] = '(' . implode(', ', $values) . ')';
-    
+
                         if (count($batch) >= 100) {
                             fwrite($fh, "INSERT INTO {$q} ({$columns}) VALUES " . implode(",\n", array_map(fn($b) => $b, $batch)) . ";\n");
                             $batch = [];
                         }
                     }
                     $stmt->closeCursor();
-    
+
                     if ($batch) {
                         fwrite($fh, "INSERT INTO {$q} ({$columns}) VALUES " . implode(",\n", $batch) . ";\n");
                     }
                 } finally {
                     $pdo->setAttribute(\PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
                 }
-    
+
                 fwrite($fh, "\n");
             }
-    
+
             foreach ($views as $view) {
                 $q = $quoteId($view);
                 $create = $pdo->query("SHOW CREATE VIEW {$q}")->fetch(\PDO::FETCH_NUM)[1];
                 $create = preg_replace('/\s+/', ' ', $create); // keep on one line
                 fwrite($fh, "DROP VIEW IF EXISTS {$q};\n{$create};\n\n");
             }
-    
+
             fwrite($fh, "SET FOREIGN_KEY_CHECKS=1;\n");
         } finally {
             fclose($fh);
         }
     }
-    
+
     /**
      * Pure-PHP restore: reads the .sql file and executes it statement by statement.
      * Works with files made by phpDumpDatabase() and standard mysqldump files.
@@ -3596,34 +3607,34 @@ class UserController extends Controller
     private function phpRestoreDatabase(string $filePath): void
     {
         @set_time_limit(0);
-    
+
         $pdo = DB::connection()->getPdo();
         $fh = fopen($filePath, 'rb');
         if (!$fh) {
             throw new \RuntimeException('Cannot read the backup file.');
         }
-    
+
         try {
             $pdo->exec('SET FOREIGN_KEY_CHECKS=0');
-    
+
             $buffer = '';
             while (($line = fgets($fh)) !== false) {
                 $trim = trim($line);
-    
+
                 // Skip blank lines and comments (but keep /*! ... */ executable comments)
                 if ($buffer === '' && ($trim === '' || str_starts_with($trim, '--') || (str_starts_with($trim, '/*') && !str_starts_with($trim, '/*!')))) {
                     continue;
                 }
-    
+
                 $buffer .= $line;
-    
+
                 // Statement complete when a line ends with ";"
                 if (str_ends_with($trim, ';')) {
                     $pdo->exec($buffer);
                     $buffer = '';
                 }
             }
-    
+
             if (trim($buffer) !== '') {
                 $pdo->exec($buffer);
             }
@@ -3638,56 +3649,56 @@ class UserController extends Controller
     }
 
     public function createBackup(Request $request)
-{
-    if (!(auth()->user()->isMainAdmin() || auth()->user()->isGeneralManager())) {
-        return response()->json(['success' => false, 'message' => 'You are not authorized to create backups.'], 403);
-    }
-
-    $backupDir = storage_path('app/backups');
-    if (!file_exists($backupDir)) {
-        mkdir($backupDir, 0755, true);
-    }
-
-    $filename = 'backup_' . now()->format('Y_m_d_His') . '.sql';
-    $filePath = $backupDir . '/' . $filename;
-
-    try {
-        $this->phpDumpDatabase($filePath);
-    } catch (\Throwable $e) {
-        if (file_exists($filePath)) {
-            @unlink($filePath);
+    {
+        if (!(auth()->user()->isMainAdmin() || auth()->user()->isGeneralManager())) {
+            return response()->json(['success' => false, 'message' => 'You are not authorized to create backups.'], 403);
         }
 
-        \Log::error('Backup failed', ['error' => $e->getMessage()]);
+        $backupDir = storage_path('app/backups');
+        if (!file_exists($backupDir)) {
+            mkdir($backupDir, 0755, true);
+        }
+
+        $filename = 'backup_' . now()->format('Y_m_d_His') . '.sql';
+        $filePath = $backupDir . '/' . $filename;
+
+        try {
+            $this->phpDumpDatabase($filePath);
+        } catch (\Throwable $e) {
+            if (file_exists($filePath)) {
+                @unlink($filePath);
+            }
+
+            \Log::error('Backup failed', ['error' => $e->getMessage()]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Backup failed: ' . $e->getMessage(),
+            ], 500);
+        }
+
+        if (!file_exists($filePath) || filesize($filePath) === 0) {
+            @unlink($filePath);
+            return response()->json(['success' => false, 'message' => 'Backup failed: the file was empty.'], 500);
+        }
+
+        AuditLog::log(
+            'Created System Backup',
+            "Created database backup file {$filename} (" . round(filesize($filePath) / 1024 / 1024, 2) . ' MB)',
+            'system_backup',
+            null
+        );
 
         return response()->json([
-            'success' => false,
-            'message' => 'Backup failed: ' . $e->getMessage(),
-        ], 500);
+            'success' => true,
+            'message' => 'Backup created successfully.',
+            'backup' => [
+                'name' => $filename,
+                'size' => round(filesize($filePath) / 1024 / 1024, 2) . ' MB',
+                'created_at' => now()->format('M d, Y g:i A'),
+            ],
+        ]);
     }
-
-    if (!file_exists($filePath) || filesize($filePath) === 0) {
-        @unlink($filePath);
-        return response()->json(['success' => false, 'message' => 'Backup failed: the file was empty.'], 500);
-    }
-
-    AuditLog::log(
-        'Created System Backup',
-        "Created database backup file {$filename} (" . round(filesize($filePath) / 1024 / 1024, 2) . ' MB)',
-        'system_backup',
-        null
-    );
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Backup created successfully.',
-        'backup' => [
-            'name' => $filename,
-            'size' => round(filesize($filePath) / 1024 / 1024, 2) . ' MB',
-            'created_at' => now()->format('M d, Y g:i A'),
-        ],
-    ]);
-}
 
     public function downloadBackup($filename)
     {
@@ -3713,69 +3724,69 @@ class UserController extends Controller
     }
 
     public function restoreBackup(Request $request, $filename)
-{
-    if (!(auth()->user()->isMainAdmin() || auth()->user()->isGeneralManager())) {
-        return response()->json(['success' => false, 'message' => 'You are not authorized to restore backups.'], 403);
-    }
-
-    $request->validate(['password' => 'required|string']);
-
-    if (!Hash::check($request->password, auth()->user()->password)) {
-        return response()->json(['success' => false, 'message' => 'Incorrect password.'], 422);
-    }
-
-    $filename = basename($filename);
-    $backupDir = storage_path('app/backups');
-    $filePath = $backupDir . '/' . $filename;
-
-    if (!str_ends_with($filename, '.sql') || !file_exists($filePath)) {
-        return response()->json(['success' => false, 'message' => 'Backup file not found.'], 404);
-    }
-
-    // 1) Safety backup of the current database
-    $safetyName = 'pre_restore_' . now()->format('Y_m_d_His') . '.sql';
-    $safetyPath = $backupDir . '/' . $safetyName;
-
-    try {
-        $this->phpDumpDatabase($safetyPath);
-    } catch (\Throwable $e) {
-        if (file_exists($safetyPath)) {
-            @unlink($safetyPath);
+    {
+        if (!(auth()->user()->isMainAdmin() || auth()->user()->isGeneralManager())) {
+            return response()->json(['success' => false, 'message' => 'You are not authorized to restore backups.'], 403);
         }
+
+        $request->validate(['password' => 'required|string']);
+
+        if (!Hash::check($request->password, auth()->user()->password)) {
+            return response()->json(['success' => false, 'message' => 'Incorrect password.'], 422);
+        }
+
+        $filename = basename($filename);
+        $backupDir = storage_path('app/backups');
+        $filePath = $backupDir . '/' . $filename;
+
+        if (!str_ends_with($filename, '.sql') || !file_exists($filePath)) {
+            return response()->json(['success' => false, 'message' => 'Backup file not found.'], 404);
+        }
+
+        // 1) Safety backup of the current database
+        $safetyName = 'pre_restore_' . now()->format('Y_m_d_His') . '.sql';
+        $safetyPath = $backupDir . '/' . $safetyName;
+
+        try {
+            $this->phpDumpDatabase($safetyPath);
+        } catch (\Throwable $e) {
+            if (file_exists($safetyPath)) {
+                @unlink($safetyPath);
+            }
+            return response()->json([
+                'success' => false,
+                'message' => 'Restore cancelled: could not create a safety backup first. ' . $e->getMessage(),
+            ], 500);
+        }
+
+        // 2) Restore the chosen file
+        try {
+            $this->phpRestoreDatabase($filePath);
+        } catch (\Throwable $e) {
+            \Log::error('Restore failed', ['error' => $e->getMessage(), 'file' => $filename]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Restore failed: ' . $e->getMessage() . " Your previous data was saved as {$safetyName}.",
+            ], 500);
+        }
+
+        try {
+            AuditLog::log(
+                'Restored System Backup',
+                "Restored database from {$filename}. Safety backup: {$safetyName}",
+                'system_backup',
+                null
+            );
+        } catch (\Throwable $e) {
+            // audit table may not exist in the restored data; ignore
+        }
+
         return response()->json([
-            'success' => false,
-            'message' => 'Restore cancelled: could not create a safety backup first. ' . $e->getMessage(),
-        ], 500);
+            'success' => true,
+            'message' => "Database restored from {$filename}. Safety backup saved as {$safetyName}.",
+        ]);
     }
-
-    // 2) Restore the chosen file
-    try {
-        $this->phpRestoreDatabase($filePath);
-    } catch (\Throwable $e) {
-        \Log::error('Restore failed', ['error' => $e->getMessage(), 'file' => $filename]);
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Restore failed: ' . $e->getMessage() . " Your previous data was saved as {$safetyName}.",
-        ], 500);
-    }
-
-    try {
-        AuditLog::log(
-            'Restored System Backup',
-            "Restored database from {$filename}. Safety backup: {$safetyName}",
-            'system_backup',
-            null
-        );
-    } catch (\Throwable $e) {
-        // audit table may not exist in the restored data; ignore
-    }
-
-    return response()->json([
-        'success' => true,
-        'message' => "Database restored from {$filename}. Safety backup saved as {$safetyName}.",
-    ]);
-}
 
     public function deleteBackup(Request $request, $filename)
     {
@@ -4872,7 +4883,7 @@ class UserController extends Controller
         $anchorDueDate = $status->due_date
             ? \Carbon\Carbon::parse($status->due_date)
             : \Carbon\Carbon::parse($loan->created_at)
-            ->addMonthsNoOverflow($nextInstallmentNumber * lendingController::PAYMENT_INTERVAL_MONTHS);
+                ->addMonthsNoOverflow($nextInstallmentNumber * lendingController::PAYMENT_INTERVAL_MONTHS);
 
         for ($i = 1; $i <= $totalPayments; $i++) {
             $row = $scheduleByNumber[$i] ?? null;
@@ -4885,7 +4896,7 @@ class UserController extends Controller
             }
 
             $dueDateForRow = $anchorDueDate->copy()
-            ->addMonthsNoOverflow(($i - $nextInstallmentNumber) * lendingController::PAYMENT_INTERVAL_MONTHS);
+                ->addMonthsNoOverflow(($i - $nextInstallmentNumber) * lendingController::PAYMENT_INTERVAL_MONTHS);
 
             return $dueDateForRow->lt($today) ? 'Overdue' : 'Active';
         }
@@ -5595,8 +5606,8 @@ class UserController extends Controller
                             ->update(['status' => 'Completed']);
                     } else {
                         $status->due_date = \Carbon\Carbon::parse($loan->created_at)
-    ->addMonthsNoOverflow(($status->payments_made + 1) * lendingController::PAYMENT_INTERVAL_MONTHS)
-    ->format('Y-m-d');
+                            ->addMonthsNoOverflow(($status->payments_made + 1) * lendingController::PAYMENT_INTERVAL_MONTHS)
+                            ->format('Y-m-d');
                     }
 
                     $status->save();

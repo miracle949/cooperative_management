@@ -302,12 +302,36 @@ class SeminarController extends Controller
             'exact_venue' => 'nullable|string|max:255|required_if:delivery_type,f2f',
             'attendees' => 'required|array|min:1',
             'attendees.*' => 'exists:users_tbls,id',
-            'passcode' => 'required|string|max:64',
+            'passcode' => 'nullable|string|max:64',
+            'passcodes' => 'nullable|array',
+            'passcodes.*' => 'nullable|string|max:64',
             'valid_days' => 'nullable|integer|min:1|max:365',
         ], [
             'seminar_types.required' => 'Please select at least one seminar type.',
             'seminar_types.min' => 'Please select at least one seminar type.',
         ]);
+
+        // One passcode per seminar type:
+        // - several types ticked -> passcodes[slug] from the "Seminar Passcodes" modal
+        // - one type ticked      -> the single "passcode" field
+        $codes = [];
+        foreach ($validated['seminar_types'] as $slug) {
+            $code = trim((string) (data_get($validated, "passcodes.$slug") ?: ($validated['passcode'] ?? '')));
+
+            if ($code === '') {
+                return redirect()->back()
+                    ->with('error', 'Every seminar type needs a passcode. Click Generate to create them.')
+                    ->withInput();
+            }
+
+            $codes[$slug] = $code;
+        }
+
+        if (count($codes) > 1 && count(array_unique($codes)) !== count($codes)) {
+            return redirect()->back()
+                ->with('error', 'Each seminar type must have a different passcode.')
+                ->withInput();
+        }
 
         $blockedMap = $this->blockedTypeMap($validated['attendees'], $validated['seminar_types']);
 
@@ -361,7 +385,7 @@ class SeminarController extends Controller
                 SeminarPasscodes_tbl::updateOrCreate(
                     ['seminar_type' => $slug],
                     [
-                        'passcode' => $validated['passcode'],
+                        'passcode' => $codes[$slug],
                         'expires_at' => now()->addDays((int) ($validated['valid_days'] ?? 1)),
                     ]
                 );
@@ -385,7 +409,7 @@ class SeminarController extends Controller
                 DB::rollBack();
 
                 return redirect()->back()
-                    ->with('error', 'Nothing was scheduled. Every selected member has already completed or is already scheduled for the chosen seminar(s).' . $skipNote)
+                    ->with('error', 'Nothing was scheduled. Every selected member has already completed or is already scheduled for the chosen seminar(s).')
                     ->withInput();
             }
 
@@ -399,10 +423,13 @@ class SeminarController extends Controller
                 $createdIds[0]
             );
 
-            return redirect()->route('seminars.index')->with(
-                'success',
-                count($createdIds) . " seminar session(s) scheduled ({$attendeeTotal} attendee slot(s))." . $skipNote
-            );
+            $message = 'Seminar scheduled successfully!';
+            if ($skipped) {
+                $message .= ' Some members were skipped because they already completed or are already scheduled.';
+            }
+
+            return redirect()->route('seminars.index')->with('success', $message);
+
         } catch (\Exception $e) {
             DB::rollBack();
 

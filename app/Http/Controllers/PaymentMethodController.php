@@ -23,6 +23,7 @@ class PaymentMethodController extends Controller
             'qr_code_image'  => 'required_if:has_qr_code,1|nullable|image|mimes:png,jpg,jpeg|max:2048',
             'account_name'   => 'nullable|string|max:255',
             'account_number' => 'nullable|string|max:255',
+            'reference_length' => 'nullable|integer|min:4|max:50',
             'instructions'   => 'nullable|string|max:1000',
         ]);
 
@@ -31,6 +32,7 @@ class PaymentMethodController extends Controller
             'has_qr_code'    => $request->boolean('has_qr_code'),
             'account_name'   => $request->account_name,
             'account_number' => $request->account_number,
+            'reference_length' => $request->filled('reference_length') ? (int) $request->reference_length : null,
             'instructions'   => $request->instructions,
             'is_active'      => true,
         ];
@@ -64,6 +66,7 @@ class PaymentMethodController extends Controller
             ],
             'account_name'   => 'nullable|string|max:255',
             'account_number' => 'nullable|string|max:255',
+            'reference_length' => 'nullable|integer|min:4|max:50',
             'instructions'   => 'nullable|string|max:1000',
         ]);
 
@@ -72,6 +75,7 @@ class PaymentMethodController extends Controller
             'has_qr_code'    => $request->boolean('has_qr_code'),
             'account_name'   => $request->account_name,
             'account_number' => $request->account_number,
+            'reference_length' => $request->filled('reference_length') ? (int) $request->reference_length : null,
             'instructions'   => $request->instructions,
         ];
 

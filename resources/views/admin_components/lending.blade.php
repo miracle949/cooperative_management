@@ -400,11 +400,42 @@
 
                     <!-- Decline Reason (hidden by default) -->
                     <div id="declineReasonSection" class="hidden">
-                        <h4 class="font-medium text-gray-900 mb-3">Decline Reason</h4>
-                        <textarea name="decline_reason" id="declineReasonInput" class="form-control" rows="3" placeholder="Enter reason for declining this loan application..."></textarea>
-                        @error('decline_reason')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
+                        <div class="rounded-xl border border-red-200 bg-red-50/60 p-4">
+                            <div class="flex items-start gap-3 mb-4">
+                                <div class="w-9 h-9 rounded-lg bg-red-100 flex items-center justify-center shrink-0">
+                                    <i data-lucide="alert-triangle" class="w-5 h-5 text-red-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">Decline Reason</h4>
+                                    <p class="text-xs text-gray-500">The member will see this reason. Pick a quick reason or write your own.</p>
+                                </div>
+                            </div>
+
+                            <!-- Quick reasons -->
+                            <div class="flex flex-wrap gap-2 mb-3">
+                                <button type="button" data-decline-chip="Incomplete or unclear documents submitted."
+                                    class="px-3 py-1.5 text-xs font-medium rounded-full border border-red-200 bg-white text-red-700 hover:bg-red-100 transition-colors">Incomplete documents</button>
+                                <button type="button" data-decline-chip="Insufficient monthly income to support the requested loan amount."
+                                    class="px-3 py-1.5 text-xs font-medium rounded-full border border-red-200 bg-white text-red-700 hover:bg-red-100 transition-colors">Insufficient income</button>
+                                <button type="button" data-decline-chip="Existing unpaid loan or outstanding balance."
+                                    class="px-3 py-1.5 text-xs font-medium rounded-full border border-red-200 bg-white text-red-700 hover:bg-red-100 transition-colors">Existing balance</button>
+                                <button type="button" data-decline-chip="Does not meet the loan eligibility requirements."
+                                    class="px-3 py-1.5 text-xs font-medium rounded-full border border-red-200 bg-white text-red-700 hover:bg-red-100 transition-colors">Not eligible</button>
+                            </div>
+
+                            <textarea name="decline_reason" id="declineReasonInput" rows="4" maxlength="500"
+                                class="input w-full bg-white" style="resize: vertical; min-height: 96px;"
+                                placeholder="Enter reason for declining this loan application..."></textarea>
+
+                            <div class="flex items-center justify-between mt-2">
+                                @error('decline_reason')
+                                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                                @else
+                                    <span></span>
+                                @enderror
+                                <span class="text-xs text-gray-400"><span id="declineReasonCount">0</span>/500</span>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Declined Reason Display (if already declined) -->
@@ -726,11 +757,9 @@
         const serviceFee = parseFloat(loan.service_fee_rate || 0);
         const protectionFee = parseFloat(loan.loan_protection_fee || 0);
         const retentionFee = parseFloat(loan.retention_paid_rate || 0) + parseFloat(loan.retention_unpaid_rate || 0);
+        // Total Charges = fees only (interest is shown separately in Total Payables)
         const feesOnly = processingFee + serviceFee + protectionFee + retentionFee;
-
-        // Total Charges = Interest + Fees, matching the member LoanStatus hero stat
-        const loanInterest = parseFloat(loan.total_interest || 0);
-        const totalChargesWithInterest = feesOnly + loanInterest;
+        const totalChargesWithInterest = feesOnly;
 
         const chargeMoney = n => '₱' + n.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
@@ -795,6 +824,7 @@
             document.getElementById('actionButtons').classList.remove('hidden');
             declineBtn.innerHTML = '<i data-lucide="x-circle" class="w-4 h-4"></i> Decline';
             declineReasonInput.value = '';
+            declineReasonInput.dispatchEvent(new Event('input'));
             declineReasonInput.removeAttribute('required');
             approveBtn.formAction = '/loan/approve/' + loan.id;
         } else {
@@ -907,6 +937,25 @@
         form.action = '/loan/decline/' + window.currentLoanId;
         form.submit();
     };
+
+    // Decline reason: quick-pick chips + character counter
+    (function () {
+        const input = document.getElementById('declineReasonInput');
+        const counter = document.getElementById('declineReasonCount');
+        if (!input || !counter) return;
+
+        input.addEventListener('input', function () {
+            counter.textContent = input.value.length;
+        });
+
+        document.querySelectorAll('[data-decline-chip]').forEach(function (chip) {
+            chip.addEventListener('click', function () {
+                input.value = chip.dataset.declineChip;
+                input.dispatchEvent(new Event('input'));
+                input.focus();
+            });
+        });
+    })();
 
     // Close preview on Escape key
     document.addEventListener('keydown', function(e) {

@@ -726,6 +726,8 @@ class lendingController extends Controller
         // Any method with a QR or account details needs proof + reference, not just GCash
         $needsProof = strtolower(trim((string) $request->payment_method)) !== 'cash';
 
+        $refLength = (int) ($selectedMethod->reference_length ?? 0);
+
         $rules = [
             'lending_id' => 'required|exists:lending_program_tbls,id',
             'amount_paid' => 'required|numeric|min:1',
@@ -748,10 +750,10 @@ class lendingController extends Controller
             if ($ref === '') {
                 return redirect()->back()->with('error', "{$request->payment_method} reference number is required.");
             }
-            if ($isGcash && strlen($ref) !== 13) {
-                return redirect()->back()->with('error', 'GCash reference number must be exactly 13 characters.');
+            if ($refLength > 0 && strlen($ref) !== $refLength) {
+                return redirect()->back()->with('error', "{$request->payment_method} reference number must be exactly {$refLength} characters.");
             }
-            if (!$isGcash && strlen($ref) < 4) {
+            if ($refLength === 0 && strlen($ref) < 4) {
                 return redirect()->back()->with('error', 'Please enter a valid reference number.');
             }
             if (
@@ -764,7 +766,7 @@ class lendingController extends Controller
         }
 
         $proofPath = $request->hasFile('gcash_proof')
-        ? $request->file('gcash_proof')->store('documents/gcash_proofs', 'public')
+            ? $request->file('gcash_proof')->store('documents/gcash_proofs', 'public')
             : null;
 
         $loan = lending_program_tbl::findOrFail($request->lending_id);

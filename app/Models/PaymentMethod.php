@@ -15,6 +15,7 @@ class PaymentMethod extends Model
         'method_name',
         'account_name',
         'account_number',
+        'reference_length',
         'instructions',
         'has_qr_code',
         'qr_code_image_path',

@@ -372,8 +372,6 @@
                     <option value="Dispatcher">Dispatcher - (Assigns trips and coordinates drivers.)</option>
                     <option value="Driver-Operator">Driver-Operator - (Drives and manages their own operations.)
                     </option>
-                    <option value="Allied Workers">Allied Workers - (Supports operations (e.g., mechanic, staff,
-                        helper).)</option>
                     <option value="Transport Entrepreneur">Transport Entrepreneur - (Owns or manages multiple
                         transport
                         units.)</option>

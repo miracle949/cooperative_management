@@ -626,7 +626,7 @@
                             <span>Allied Workers</span>
                         </a>
                     @endif
-                    @if($hasFullAccess || in_array('support-reports', $perms ?? []) || $user?->isGeneralManager() || $user?->isMainAdmin())
+                    @if($hasFullAccess || in_array('member-appeal', $perms ?? []) || in_array('support-reports', $perms ?? []) || $user?->isGeneralManager() || $user?->isMainAdmin())
                         <a href="{{ route('admin.support-reports.index') }}"
                             class="sidebar-link justify-start {{ request()->routeIs('admin.support-reports.*') ? 'active' : '' }}">
                             <i data-lucide="life-buoy" class="w-5 h-5"></i>

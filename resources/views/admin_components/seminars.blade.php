@@ -363,6 +363,7 @@
                 </div>
 
                 <div id="attendeesHiddenInputs"></div>
+                <div id="passcodesHiddenInputs"></div>
 
                 <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
                     <button type="button" data-action="closeModal" data-arg='["scheduleSeminarModal"]'
@@ -411,6 +412,44 @@
             <div class="p-6 border-t border-gray-100 flex justify-end">
                 <button data-action="closeModal" data-arg='["attendanceModal"]'
                     class="px-5 py-2.5 text-gray-700 font-medium rounded-lg hover:bg-gray-100 transition-colors">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Generated Passcodes Modal (one passcode per seminar type) -->
+    <div id="passcodeListModal" class="modal-overlay hidden" style="z-index: 70;">
+        <div class="modal max-w-lg">
+            <div style="background: linear-gradient(135deg, #1E2A4A 0%, #25335A 100%); padding: 1.25rem 1.5rem;">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div
+                            style="width: 40px; height: 40px; background: rgba(255,255,255,0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                            <i data-lucide="key-round" class="w-5 h-5" style="color: #fff;"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold" style="color: #fff; margin: 0;">Seminar Passcodes</h2>
+                            <p style="margin: 4px 0 0 0; color: rgba(255,255,255,0.7); font-size: 12px;">Each seminar type
+                                has its own passcode</p>
+                        </div>
+                    </div>
+                    <button type="button" id="passcodeListCloseX"
+                        style="background: rgba(255,255,255,0.1); border: none; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                        <i data-lucide="x" class="w-5 h-5" style="color: #fff;"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6">
+                <p class="text-xs text-gray-500 mb-3">You can edit, copy or regenerate any code. Members must use the code
+                    that matches the seminar they attend.</p>
+                <div id="passcodeListBody" class="space-y-2 max-h-80 overflow-y-auto"></div>
+            </div>
+            <div class="p-6 border-t border-gray-100 flex justify-between gap-3">
+                <button type="button" id="passcodeRegenAll"
+                    class="px-4 py-2.5 text-gray-700 font-medium rounded-lg hover:bg-gray-100 transition-colors flex items-center gap-2">
+                    <i data-lucide="dices" class="w-4 h-4"></i> Regenerate all
+                </button>
+                <button type="button" id="passcodeListDone"
+                    class="px-5 py-2.5 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors">Done</button>
             </div>
         </div>
     </div>
@@ -519,6 +558,133 @@
             input.focus();
         }
 
+        /* ═══════════ PASSCODES (one per seminar type) ═══════════ */
+        const generatedPasscodes = {};   // { slug: 'coopABC' }
+        let passcodeMultiMode = false;
+
+        function getTickedTypes() {
+            return Array.from(document.querySelectorAll('#seminarTypeList input:checked')).map(function (b) {
+                const span = b.closest('label').querySelector('span');
+                return { slug: b.value, label: span ? span.textContent.trim() : b.value };
+            });
+        }
+
+        function randomPasscode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            const arr = new Uint32Array(3);
+            crypto.getRandomValues(arr);
+            return 'coop' + Array.from(arr, function (n) { return chars[n % chars.length]; }).join('');
+        }
+
+        function uniquePasscode(exceptSlug) {
+            const used = new Set(Object.keys(generatedPasscodes)
+                .filter(function (s) { return s !== exceptSlug; })
+                .map(function (s) { return generatedPasscodes[s]; }));
+            let code;
+            do { code = randomPasscode(); } while (used.has(code));
+            return code;
+        }
+
+        function generatePasscode() {
+            const types = getTickedTypes();
+
+            if (types.length > 1) {
+                types.forEach(function (t) { generatedPasscodes[t.slug] = uniquePasscode(t.slug); });
+                applyPasscodeMode();
+                openPasscodeListModal();
+                return;
+            }
+
+            // single seminar type -> one code in the field, as before
+            const input = document.getElementById('passcodeInput');
+            input.value = randomPasscode();
+            input.focus();
+        }
+
+        function openPasscodeListModal() {
+            renderPasscodeList();
+            const modal = document.getElementById('passcodeListModal');
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+            lucide.createIcons();
+        }
+
+        function closePasscodeListModal() {
+            const modal = document.getElementById('passcodeListModal');
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+        }
+
+        function renderPasscodeList() {
+            const body = document.getElementById('passcodeListBody');
+            body.innerHTML = getTickedTypes().map(function (t) {
+                return '<div class="flex items-center gap-2 p-3 border border-gray-200 rounded-lg bg-gray-50" data-slug="' + escapeHtml(t.slug) + '">' +
+                    '<div class="flex-1 min-w-0">' +
+                    '<p class="text-sm font-medium text-gray-800 truncate">' + escapeHtml(t.label) + '</p>' +
+                    '<input type="text" maxlength="64" data-passcode-input="' + escapeHtml(t.slug) + '" ' +
+                    'class="input mt-1 font-mono font-bold tracking-wider" value="' + escapeHtml(generatedPasscodes[t.slug] || '') + '">' +
+                    '</div>' +
+                    '<button type="button" data-passcode-copy="' + escapeHtml(t.slug) + '" class="btn btn-primary btn-xs px-2 py-1" title="Copy">' +
+                    '<i data-lucide="copy" class="w-3.5 h-3.5"></i></button>' +
+                    '<button type="button" data-passcode-regen="' + escapeHtml(t.slug) + '" class="btn btn-primary btn-xs px-2 py-1" title="Regenerate">' +
+                    '<i data-lucide="dices" class="w-3.5 h-3.5"></i></button>' +
+                    '</div>';
+            }).join('');
+            lucide.createIcons();
+        }
+
+        /* Keeps the passcode field + hidden inputs in sync with the ticked seminar types */
+        function applyPasscodeMode() {
+            const types = getTickedTypes();
+            const slugs = types.map(function (t) { return t.slug; });
+            const input = document.getElementById('passcodeInput');
+            const hint = document.getElementById('passcodeHint');
+            const hidden = document.getElementById('passcodesHiddenInputs');
+
+            // forget codes of types that are no longer ticked
+            Object.keys(generatedPasscodes).forEach(function (s) {
+                if (slugs.indexOf(s) === -1) delete generatedPasscodes[s];
+            });
+
+            const multi = types.length > 1;
+
+            if (multi) {
+                const complete = slugs.every(function (s) { return (generatedPasscodes[s] || '').trim() !== ''; });
+                input.readOnly = true;
+                input.removeAttribute('name');            // single "passcode" is not sent in multi mode
+                input.style.cursor = 'pointer';
+                input.value = complete ? types.length + ' passcodes generated (click to view)' : '';
+                input.placeholder = 'Click Generate to create ' + types.length + ' passcodes';
+                hint.textContent = 'Each selected seminar type gets its own passcode. Click Generate to create them all, then review them in the list.';
+
+                hidden.innerHTML = '';
+                slugs.forEach(function (s) {
+                    const h = document.createElement('input');
+                    h.type = 'hidden';
+                    h.name = 'passcodes[' + s + ']';
+                    h.value = generatedPasscodes[s] || '';
+                    hidden.appendChild(h);
+                });
+            } else {
+                if (passcodeMultiMode) input.value = '';  // leaving multi mode: clear the summary text
+                input.readOnly = false;
+                input.setAttribute('name', 'passcode');
+                input.style.cursor = '';
+                input.placeholder = 'Generate a code';
+                hint.textContent = 'Enter a passcode members will use to mark this seminar complete. The code expires after the set number of days.';
+                hidden.innerHTML = '';
+                Object.keys(generatedPasscodes).forEach(function (s) { delete generatedPasscodes[s]; });
+            }
+
+            input.required = true;
+            passcodeMultiMode = multi;
+        }
+
+        function togglePasscodeFields() {
+            document.getElementById('passcodeRequiredStar').textContent = '*';
+            applyPasscodeMode();
+        }
+
         function togglePasscodeFields() {
             const input = document.getElementById('passcodeInput');
             const star = document.getElementById('passcodeRequiredStar');
@@ -544,33 +710,33 @@
 
             let html = '';
             html += `
-                                                                                <div class="flex items-center gap-3 mb-5">
-                                                                                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center">
-                                                                                        <span class="text-white font-bold text-base">${(user.first_name?.[0] || '') + (user.last_name?.[0] || '')}</span>
-                                                                                    </div>
-                                                                                    <div>
-                                                                                        <span class="text-base font-semibold text-gray-900">${user.first_name} ${user.last_name || ''}</span>
-                                                                                        <p class="text-xs text-gray-400">${user.email}</p>
-                                                                                    </div>
-                                                                                </div>`;
+                                                                                                <div class="flex items-center gap-3 mb-5">
+                                                                                                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center">
+                                                                                                        <span class="text-white font-bold text-base">${(user.first_name?.[0] || '') + (user.last_name?.[0] || '')}</span>
+                                                                                                    </div>
+                                                                                                    <div>
+                                                                                                        <span class="text-base font-semibold text-gray-900">${user.first_name} ${user.last_name || ''}</span>
+                                                                                                        <p class="text-xs text-gray-400">${user.email}</p>
+                                                                                                    </div>
+                                                                                                </div>`;
 
             const scheduled = user.scheduled_seminars || [];
             if (scheduled.length) {
                 html += `<div class="mb-5 space-y-3">`;
                 scheduled.forEach(s => {
                     html += `
-                                                                            <div class="p-3 rounded-lg bg-blue-50 border border-blue-200">
-                                                                                <div class="flex items-center justify-between">
-                                                                                    <span class="text-xs font-semibold text-blue-700 uppercase tracking-wide">Scheduled Seminar</span>
-                                                                                    <span class="text-xs font-medium text-blue-600">${s.label}</span>
-                                                                                </div>
-                                                                                ${s.passcode ? `
-                                                                                <div class="mt-2 flex items-center justify-between bg-white rounded-lg border border-blue-200 px-3 py-2">
-                                                                                    <span class="text-xs font-medium text-blue-700">Member Passcode</span>
-                                                                                    <code class="text-sm font-mono font-bold text-blue-900 tracking-wider">${s.passcode}</code>
-                                                                                </div>` : ''}
-                                                                                <p class="text-xs text-blue-600 mt-2">Share this code with ${user.first_name} so they can mark ${s.label} complete.</p>
-                                                                            </div>`;
+                                                                                            <div class="p-3 rounded-lg bg-blue-50 border border-blue-200">
+                                                                                                <div class="flex items-center justify-between">
+                                                                                                    <span class="text-xs font-semibold text-blue-700 uppercase tracking-wide">Scheduled Seminar</span>
+                                                                                                    <span class="text-xs font-medium text-blue-600">${s.label}</span>
+                                                                                                </div>
+                                                                                                ${s.passcode ? `
+                                                                                                <div class="mt-2 flex items-center justify-between bg-white rounded-lg border border-blue-200 px-3 py-2">
+                                                                                                    <span class="text-xs font-medium text-blue-700">Member Passcode</span>
+                                                                                                    <code class="text-sm font-mono font-bold text-blue-900 tracking-wider">${s.passcode}</code>
+                                                                                                </div>` : ''}
+                                                                                                <p class="text-xs text-blue-600 mt-2">Share this code with ${user.first_name} so they can mark ${s.label} complete.</p>
+                                                                                            </div>`;
                 });
                 html += `</div>`;
             }
@@ -585,12 +751,12 @@
                 const label = attended ? 'Attended' : 'Not attended';
 
                 html += `
-                                                                                    <div class="flex items-center justify-between p-3 border rounded-lg ${boxClass} mb-2">
-                                                                                        <span class="text-sm font-medium text-gray-800">${t.label}</span>
-                                                                                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold ${iconClass}">
-                                                                                            <i data-lucide="${icon}" class="w-4 h-4"></i>${label}
-                                                                                        </span>
-                                                                                    </div>`;
+                                                                                                    <div class="flex items-center justify-between p-3 border rounded-lg ${boxClass} mb-2">
+                                                                                                        <span class="text-sm font-medium text-gray-800">${t.label}</span>
+                                                                                                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold ${iconClass}">
+                                                                                                            <i data-lucide="${icon}" class="w-4 h-4"></i>${label}
+                                                                                                        </span>
+                                                                                                    </div>`;
             });
 
             document.getElementById('memberSeminarBody').innerHTML = html;
@@ -635,31 +801,31 @@
                         const statusLabel = a.status === 'attended' ? 'Attended' : a.status === 'absent' ? 'Absent' : 'Pending';
 
                         html += `
-                                                                                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                                                                                                <div class="flex items-center gap-3">
-                                                                                                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center">
-                                                                                                        <span class="text-white font-bold text-sm">${initials}</span>
-                                                                                                    </div>
-                                                                                                    <div>
-                                                                                                        <span class="text-sm font-medium text-gray-900">${name}</span>
-                                                                                                        <div class="flex items-center gap-1 mt-0.5">
-                                                                                                            <span class="w-2 h-2 rounded-full ${statusColor}"></span>
-                                                                                                            <span class="text-xs text-gray-500">${statusLabel}</span>
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                                <div class="flex items-center gap-2">
-                                                                                                    <button data-action="markAttendance" data-arg=\'[${seminar.id}, ${a.user_id}, "attended"]\' class="btn btn-success btn-xs px-2.5 py-1.5 ${a.status === 'attended' ? 'opacity-50 cursor-not-allowed' : ''}" ${a.status === 'attended' ? 'disabled' : ''}>
-                                                                                                        <i data-lucide="check" class="w-3 h-3"></i>
-                                                                                                        Attended
-                                                                                                    </button>
-                                                                                                    <button data-action="markAttendance" data-arg=\'[${seminar.id}, ${a.user_id}, "absent"]\' class="btn btn-danger btn-xs px-2.5 py-1.5 ${a.status === 'absent' ? 'opacity-50 cursor-not-allowed' : ''}" ${a.status === 'absent' ? 'disabled' : ''}>
-                                                                                                        <i data-lucide="x" class="w-3 h-3"></i>
-                                                                                                        Absent
-                                                                                                    </button>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        `;
+                                                                                                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                                                                                                <div class="flex items-center gap-3">
+                                                                                                                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center">
+                                                                                                                        <span class="text-white font-bold text-sm">${initials}</span>
+                                                                                                                    </div>
+                                                                                                                    <div>
+                                                                                                                        <span class="text-sm font-medium text-gray-900">${name}</span>
+                                                                                                                        <div class="flex items-center gap-1 mt-0.5">
+                                                                                                                            <span class="w-2 h-2 rounded-full ${statusColor}"></span>
+                                                                                                                            <span class="text-xs text-gray-500">${statusLabel}</span>
+                                                                                                                        </div>
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                                <div class="flex items-center gap-2">
+                                                                                                                    <button data-action="markAttendance" data-arg=\'[${seminar.id}, ${a.user_id}, "attended"]\' class="btn btn-success btn-xs px-2.5 py-1.5 ${a.status === 'attended' ? 'opacity-50 cursor-not-allowed' : ''}" ${a.status === 'attended' ? 'disabled' : ''}>
+                                                                                                                        <i data-lucide="check" class="w-3 h-3"></i>
+                                                                                                                        Attended
+                                                                                                                    </button>
+                                                                                                                    <button data-action="markAttendance" data-arg=\'[${seminar.id}, ${a.user_id}, "absent"]\' class="btn btn-danger btn-xs px-2.5 py-1.5 ${a.status === 'absent' ? 'opacity-50 cursor-not-allowed' : ''}" ${a.status === 'absent' ? 'disabled' : ''}>
+                                                                                                                        <i data-lucide="x" class="w-3 h-3"></i>
+                                                                                                                        Absent
+                                                                                                                    </button>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        `;
                     });
                     document.getElementById('attendanceList').innerHTML = html;
                     lucide.createIcons();
@@ -694,7 +860,7 @@
             @if($errors->any())
                 openModal('scheduleSeminarModal');
             @endif
-                                                                        });
+                                                                                        });
 
         /* ═══════════════════════════════════════════════════════════
            ATTENDEE SEARCH WITH MEMBER SUGGESTIONS
@@ -1005,6 +1171,71 @@
             if (Object.keys(selectedAttendeeMap).length === 0) {
                 e.preventDefault();
                 showToast('Validation Error', 'Please select at least one attendee.', 'error');
+            }
+        });
+
+        /* ═══════════ Passcode list modal wiring ═══════════ */
+        document.getElementById('seminarTypeList')?.addEventListener('change', applyPasscodeMode);
+
+        document.getElementById('passcodeInput')?.addEventListener('click', function () {
+            if (passcodeMultiMode && getTickedTypes().every(function (t) { return generatedPasscodes[t.slug]; })) {
+                openPasscodeListModal();
+            }
+        });
+
+        document.getElementById('passcodeListCloseX')?.addEventListener('click', closePasscodeListModal);
+
+        document.getElementById('passcodeRegenAll')?.addEventListener('click', function () {
+            getTickedTypes().forEach(function (t) { delete generatedPasscodes[t.slug]; });
+            getTickedTypes().forEach(function (t) { generatedPasscodes[t.slug] = uniquePasscode(t.slug); });
+            renderPasscodeList();
+            applyPasscodeMode();
+        });
+
+        document.getElementById('passcodeListDone')?.addEventListener('click', function () {
+            const codes = getTickedTypes().map(function (t) { return (generatedPasscodes[t.slug] || '').trim(); });
+            if (codes.some(function (c) { return c === ''; })) {
+                showToast('Validation Error', 'Every seminar type needs a passcode.', 'error');
+                return;
+            }
+            if (new Set(codes).size !== codes.length) {
+                showToast('Validation Error', 'Each seminar type must have a different passcode.', 'error');
+                return;
+            }
+            applyPasscodeMode();
+            closePasscodeListModal();
+        });
+
+        document.getElementById('passcodeListBody')?.addEventListener('input', function (e) {
+            const el = e.target.closest('[data-passcode-input]');
+            if (!el) return;
+            generatedPasscodes[el.dataset.passcodeInput] = el.value.trim();
+            applyPasscodeMode();
+        });
+
+        document.getElementById('passcodeListBody')?.addEventListener('click', function (e) {
+            const regen = e.target.closest('[data-passcode-regen]');
+            const copy = e.target.closest('[data-passcode-copy]');
+            if (regen) {
+                const slug = regen.dataset.passcodeRegen;
+                generatedPasscodes[slug] = uniquePasscode(slug);
+                renderPasscodeList();
+                applyPasscodeMode();
+            } else if (copy) {
+                const code = generatedPasscodes[copy.dataset.passcodeCopy] || '';
+                navigator.clipboard?.writeText(code).then(function () {
+                    showToast('Copied', code + ' copied to clipboard.', 'success');
+                });
+            }
+        });
+
+        /* Block submit if multi-type passcodes are missing or duplicated */
+        document.querySelector('#scheduleSeminarModal form')?.addEventListener('submit', function (e) {
+            if (!passcodeMultiMode) return;
+            const codes = getTickedTypes().map(function (t) { return (generatedPasscodes[t.slug] || '').trim(); });
+            if (codes.some(function (c) { return c === ''; }) || new Set(codes).size !== codes.length) {
+                e.preventDefault();
+                showToast('Validation Error', 'Click Generate so every seminar type has its own unique passcode.', 'error');
             }
         });
     </script>

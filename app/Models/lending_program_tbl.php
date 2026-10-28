@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class lending_program_tbl extends Model
 {
+    public const PAYMENT_INTERVAL_DAYS = 7;
+
     public $incrementing = true;
 
     protected $table = 'lending_program_tbls';

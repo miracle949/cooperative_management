@@ -359,7 +359,9 @@ Moved from the Finance page (financial_activity.blade.php) so it lives under Set
                                     data-pm-has-qr="{{ $pm->has_qr_code ? 'true' : 'false' }}"
                                     data-pm-account-name="{{ $pm->account_name }}"
                                     data-pm-account-number="{{ $pm->account_number }}"
-                                    data-pm-instructions="{{ $pm->instructions }}">
+                                    data-pm-reference-length="{{ $pm->reference_length }}"
+                                    data-pm-instructions="{{ $pm->instructions }}"
+                                    data-pm-qr-url="{{ $pm->qr_code_image_path ? url('/proof/' . ltrim($pm->qr_code_image_path, '/')) : '' }}">
                                     Edit
                                 </button>
                                 <button class="js-delete-payment-method px-3 py-1.5 text-xs font-medium text-danger-600 bg-danger-50 rounded-lg hover:bg-danger-100 transition-colors"
@@ -444,6 +446,14 @@ Moved from the Finance page (financial_activity.blade.php) so it lives under Set
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Account Number</label>
                             <input type="text" name="account_number" id="pm_account_number" class="input" placeholder="e.g. 1234 5678 9012">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Reference Number Length <span class="text-gray-400 font-normal">(optional)</span>
+                            </label>
+                            <input type="number" name="reference_length" id="pm_reference_length" class="input"
+                                min="4" max="50" placeholder="e.g. 13 for GCash">
+                            <p class="text-xs text-gray-400 mt-1">Exact number of characters members must enter. Leave blank for any reference of 4 or more characters.</p>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Instructions <span class="text-gray-400">(optional)</span></label>
@@ -534,6 +544,11 @@ Moved from the Finance page (financial_activity.blade.php) so it lives under Set
         A.register('toggle-ratio-field', function (e, el) {
             document.getElementById('ratioField').classList.toggle('hidden', !el.checked);
         });
+
+        ['paymentMethodModal', 'manageLoanTypeModal'].forEach(function (id) {
+            var m = document.getElementById(id);
+            if (m) document.body.appendChild(m);
+        });
     })();
 
     // Payment Methods Management
@@ -553,6 +568,8 @@ Moved from the Finance page (financial_activity.blade.php) so it lives under Set
         document.getElementById('pm_account_name').value = '';
         document.getElementById('pm_account_number').value = '';
         document.getElementById('pm_instructions').value = '';
+        document.getElementById('pm_reference_length').value = '';
+        document.getElementById('pm-qr-preview-img').src = '';
         if (typeof lucide !== 'undefined') lucide.createIcons();
     }
 
@@ -579,19 +596,31 @@ Moved from the Finance page (financial_activity.blade.php) so it lives under Set
         }
     }
 
-    function editPaymentMethod(id, name, hasQr, accName, accNumber, instructions) {
+    function editPaymentMethod(d) {
+        const hasQr = d.pmHasQr === 'true';
         document.getElementById('pmModalTitle').textContent = 'Edit Payment Method';
         document.getElementById('pmSubmitText').textContent = 'Update Payment Method';
-        document.getElementById('pm_edit_id').value = id;
-        document.getElementById('pm_method_name').value = name;
+        document.getElementById('pm_edit_id').value = d.pmId;
+        document.getElementById('pm_method_name').value = d.pmName || '';
         document.getElementById('pm_has_qr').checked = hasQr;
         document.getElementById('pm-qr-upload').classList.toggle('hidden', !hasQr);
-        document.getElementById('pm-qr-preview').classList.add('hidden');
-        document.getElementById('pm-qr-placeholder').classList.remove('hidden');
         document.getElementById('pm_qr_image').value = '';
-        document.getElementById('pm_account_name').value = accName || '';
-        document.getElementById('pm_account_number').value = accNumber || '';
-        document.getElementById('pm_instructions').value = instructions || '';
+
+        if (hasQr && d.pmQrUrl) {
+            document.getElementById('pm-qr-preview-img').src = d.pmQrUrl;
+            document.getElementById('pm-qr-preview').classList.remove('hidden');
+            document.getElementById('pm-qr-placeholder').classList.add('hidden');
+        } else {
+            document.getElementById('pm-qr-preview-img').src = '';
+            document.getElementById('pm-qr-preview').classList.add('hidden');
+            document.getElementById('pm-qr-placeholder').classList.remove('hidden');
+        }
+
+        document.getElementById('pm_account_name').value = d.pmAccountName || '';
+        document.getElementById('pm_account_number').value = d.pmAccountNumber || '';
+        document.getElementById('pm_reference_length').value = d.pmReferenceLength || '';
+        document.getElementById('pm_instructions').value = d.pmInstructions || '';
+
         document.getElementById('paymentMethodModal').classList.remove('hidden');
         document.getElementById('paymentMethodModal').style.display = 'flex';
         document.body.style.overflow = 'hidden';
@@ -600,16 +629,7 @@ Moved from the Finance page (financial_activity.blade.php) so it lives under Set
     
     document.querySelectorAll('.js-edit-payment-method').forEach(function(btn) {
         btn.addEventListener('click', function() {
-            editPaymentMethod(
-                Number(this.dataset.pmId), this.dataset.pmName, this.dataset.pmHasQr === 'true',
-                this.dataset.pmAccountName, this.dataset.pmAccountNumber, this.dataset.pmInstructions
-            );
-        });
-    });
-
-    document.querySelectorAll('.js-edit-payment-method').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            editPaymentMethod(Number(this.dataset.pmId), this.dataset.pmName, this.dataset.pmHasQr === 'true');
+            editPaymentMethod(this.dataset);
         });
     });
 
