@@ -753,7 +753,7 @@
                 : 'Amount released to borrower';
 
         // Loan Charges breakdown — mirrors member LoanStatus page
-        const processingFee = parseFloat(loan.processing_fee_rate || 0);
+    const processingFee = parseFloat(loan.processing_fee_rate || 0);
         const serviceFee = parseFloat(loan.service_fee_rate || 0);
         const protectionFee = parseFloat(loan.loan_protection_fee || 0);
         const retentionFee = parseFloat(loan.retention_paid_rate || 0) + parseFloat(loan.retention_unpaid_rate || 0);
