@@ -719,46 +719,58 @@ class lendingController extends Controller
     // ─── Repayment ────────────────────────────────────────────────────────────────
     public function storeRepayment(Request $request)
     {
+        $selectedMethod = \App\Models\PaymentMethod::where('is_active', true)
+            ->where('method_name', $request->payment_method)->first();
+
+        $isGcash = strtolower((string) $request->payment_method) === 'gcash';
+        // Any method with a QR or account details needs proof + reference, not just GCash
+        $needsProof = strtolower(trim((string) $request->payment_method)) !== 'cash';
+
         $rules = [
             'lending_id' => 'required|exists:lending_program_tbls,id',
             'amount_paid' => 'required|numeric|min:1',
             'payment_method' => ['required', 'string', \Illuminate\Validation\Rule::in(\App\Models\PaymentMethod::where('is_active', true)->pluck('method_name')->toArray())],
             'payment_type' => 'nullable|in:monthly,full',
-            'gcash_reference_no' => 'nullable|string',
+            'gcash_reference_no' => 'nullable|string|max:50',
             'installments' => 'nullable|array',
             'installments.*' => 'integer|min:1',
         ];
 
-        if (strtolower($request->payment_method) === 'gcash') {
+        if ($needsProof) {
             $rules['gcash_proof'] = 'required|image|mimes:jpg,jpeg,png|max:5120';
         }
 
         $request->validate($rules);
 
-        if (strtolower($request->payment_method) === 'gcash') {
-            if (!$request->gcash_reference_no) {
-                return redirect()->back()->with('error', 'GCash reference number is required for GCash payments.');
+        if ($needsProof) {
+            $ref = trim((string) $request->gcash_reference_no);
+
+            if ($ref === '') {
+                return redirect()->back()->with('error', "{$request->payment_method} reference number is required.");
             }
-            if (strlen($request->gcash_reference_no) !== 13) {
+            if ($isGcash && strlen($ref) !== 13) {
                 return redirect()->back()->with('error', 'GCash reference number must be exactly 13 characters.');
             }
+            if (!$isGcash && strlen($ref) < 4) {
+                return redirect()->back()->with('error', 'Please enter a valid reference number.');
+            }
             if (
-                DB::table('lending_repayments_tbls')->where('gcash_reference_no', $request->gcash_reference_no)->where('status', '!=', 'voided')->exists()
-                || DB::table('share_capital_transaction_tbls')->where('gcash_reference_no', $request->gcash_reference_no)->where('status', '!=', 'voided')->exists()
-                || DB::table('savings_transaction_tbls')->where('gcash_reference_no', $request->gcash_reference_no)->where('status', '!=', 'voided')->exists()
+                DB::table('lending_repayments_tbls')->where('gcash_reference_no', $ref)->where('status', '!=', 'voided')->exists()
+                || DB::table('share_capital_transaction_tbls')->where('gcash_reference_no', $ref)->where('status', '!=', 'voided')->exists()
+                || DB::table('savings_transaction_tbls')->where('gcash_reference_no', $ref)->where('status', '!=', 'voided')->exists()
             ) {
                 return redirect()->back()->with('error', 'This reference number has already been used for a transaction.');
             }
         }
 
         $proofPath = $request->hasFile('gcash_proof')
-            ? $request->file('gcash_proof')->store('documents/gcash_proofs', 'public')
+        ? $request->file('gcash_proof')->store('documents/gcash_proofs', 'public')
             : null;
 
         $loan = lending_program_tbl::findOrFail($request->lending_id);
         $status = lending_status_tbl::where('lending_id', $request->lending_id)->first();
         $paymentType = $request->get('payment_type', 'monthly');
-        $isGcash = strtolower($request->payment_method) === 'gcash';
+        $isGcash = $needsProof; // "isGcash" now means "store the reference + proof"
 
         // Multi-installment payment (checkbox selection in the Make a Payment modal)
         if ($request->filled('installments') && $status) {

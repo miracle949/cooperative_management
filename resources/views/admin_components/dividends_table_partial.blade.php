@@ -68,9 +68,6 @@
                     <td class="text-sm font-medium text-gray-900">₱{{ number_format($dividend->share_capital_amount, 2) }}</td>
                     <td class="text-sm text-gray-900">
                         {{ number_format($memberSharePct, 2) }}%
-                        <div class="w-20 h-1.5 bg-gray-100 rounded-full mt-1">
-                            <div class="h-1.5 bg-primary-600 rounded-full" style="width: {{ min(100, $memberSharePct) }}%"></div>
-                        </div>
                     </td>
                     <td class="text-sm text-gray-900">
                         ₱{{ number_format($dividend->recommended_amount, 2) }}

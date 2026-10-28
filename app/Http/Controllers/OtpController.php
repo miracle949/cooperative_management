@@ -45,7 +45,6 @@ class OtpController extends Controller
 
         try {
             $body = "Greetings from Kingsland Palapala Multipurpose Cooperative!\n\n"
-                . "To verify your email address and continue with registration, please enter the One-Time Password (OTP) below.\n\n"
                 . "Your OTP Verification Code:\n\n"
                 . "{$otp}\n\n"
                 . "This code will expire in 5 minutes. For your security, do not share this code with anyone.\n\n"

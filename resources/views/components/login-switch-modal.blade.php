@@ -1,9 +1,12 @@
 <div id="switchModal"
     style="display:none; position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,.55); align-items:center; justify-content:center;">
     <div style="background:#fff; border-radius:12px; max-width:420px; width:90%; padding:1.5rem; box-shadow:0 10px 40px rgba(0,0,0,.3);">
-        <h3 style="margin:0 0 .5rem; font-size:1.15rem;">
-            <i data-lucide="shield-alert" style="display:inline-block; width:18px; height:18px; vertical-align:-3px;"></i> Someone is trying to log in
+        <div class="switch-top" style="display: flex; align-items: center; gap: 0.5rem; margin: 0 0 0.1rem;">
+            <i class="fa fa-shield" data-lucide="shield-alert" style="display:inline-block; width:15px; height:15px; vertical-align:-3px;"></i> 
+            <h3 style="margin: 0; font-size:1.15rem;">
+            Someone is trying to log in
         </h3>
+        </div>
         <p style="font-size:.9rem; color:#444; margin-bottom:.6rem;">
             Your account is being opened on another device or browser.
         </p>

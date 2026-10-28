@@ -18,15 +18,21 @@ class PaymentMethodController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'method_name' => 'required|string|max:255',
-            'has_qr_code' => 'required|boolean',
-            'qr_code_image' => 'required_if:has_qr_code,1|nullable|image|mimes:png,jpg,jpeg|max:2048',
+            'method_name'    => 'required|string|max:255',
+            'has_qr_code'    => 'required|boolean',
+            'qr_code_image'  => 'required_if:has_qr_code,1|nullable|image|mimes:png,jpg,jpeg|max:2048',
+            'account_name'   => 'nullable|string|max:255',
+            'account_number' => 'nullable|string|max:255',
+            'instructions'   => 'nullable|string|max:1000',
         ]);
 
         $data = [
-            'method_name' => $request->method_name,
-            'has_qr_code' => $request->boolean('has_qr_code'),
-            'is_active' => true,
+            'method_name'    => $request->method_name,
+            'has_qr_code'    => $request->boolean('has_qr_code'),
+            'account_name'   => $request->account_name,
+            'account_number' => $request->account_number,
+            'instructions'   => $request->instructions,
+            'is_active'      => true,
         ];
 
         if ($request->boolean('has_qr_code') && $request->hasFile('qr_code_image')) {
@@ -38,7 +44,7 @@ class PaymentMethodController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Payment method created successfully.',
-            'data' => $method,
+            'data'    => $method,
         ]);
     }
 
@@ -47,14 +53,26 @@ class PaymentMethodController extends Controller
         $method = PaymentMethod::findOrFail($id);
 
         $request->validate([
-            'method_name' => 'required|string|max:255',
-            'has_qr_code' => 'required|boolean',
-            'qr_code_image' => 'required_if:has_qr_code,1|nullable|image|mimes:png,jpg,jpeg|max:2048',
+            'method_name'    => 'required|string|max:255',
+            'has_qr_code'    => 'required|boolean',
+            // Only require a new image if enabling QR and none is stored yet
+            'qr_code_image'  => [
+                \Illuminate\Validation\Rule::requiredIf(
+                    $request->boolean('has_qr_code') && ! $method->qr_code_image_path
+                ),
+                'nullable', 'image', 'mimes:png,jpg,jpeg', 'max:2048',
+            ],
+            'account_name'   => 'nullable|string|max:255',
+            'account_number' => 'nullable|string|max:255',
+            'instructions'   => 'nullable|string|max:1000',
         ]);
 
         $data = [
-            'method_name' => $request->method_name,
-            'has_qr_code' => $request->boolean('has_qr_code'),
+            'method_name'    => $request->method_name,
+            'has_qr_code'    => $request->boolean('has_qr_code'),
+            'account_name'   => $request->account_name,
+            'account_number' => $request->account_number,
+            'instructions'   => $request->instructions,
         ];
 
         if ($request->boolean('has_qr_code') && $request->hasFile('qr_code_image')) {
@@ -74,7 +92,7 @@ class PaymentMethodController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Payment method updated successfully.',
-            'data' => $method,
+            'data'    => $method,
         ]);
     }
 

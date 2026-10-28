@@ -509,8 +509,8 @@
 
                     @if($loans->isEmpty())
                         <!-- <div class="loan-hero" style="display:flex;align-items:center;justify-content:center;padding:40px;">
-                                                                                                                                                                                                                                                                                                                        <p style="color:var(--teal);margin:0;">You have no approved loans yet.</p>
-                                                                                                                                                                                                                                                                                                                    </div> -->
+                                                                                                                                                                                                                                                                                                                                                    <p style="color:var(--teal);margin:0;">You have no approved loans yet.</p>
+                                                                                                                                                                                                                                                                                                                                                </div> -->
                         <div class="header-main">
                             <h3>Loan Repayments</h3>
                             <p>Manage your loan repayments by tracking payment history, upcoming due dates, and outstanding
@@ -644,20 +644,20 @@
                                         </button>
 
                                         <!-- @if($selectedLoan->disbursed_at)
-                                                                                                                                                                                                                                                                                                                                                        <button disabled style="opacity:.6;cursor:not-allowed;background:#e8f5ee;color:#1e7a4e;border:1px solid rgba(30,122,78,.3);">
-                                                                                                                                                                                                                                                                                                                                                            <i class="fa fa-circle-check"></i>
-                                                                                                                                                                                                                                                                                                                                                            <span>Disbursed</span>
-                                                                                                                                                                                                                                                                                                                                                        </button>
-                                                                                                                                                                                                                                                                                                                                                    @else
-                                                                                                                                                                                                                                                                                                                                                        <form action="{{ route('loan.disburse') }}" method="POST" style="margin:0;">
-                                                                                                                                                                                                                                                                                                                                                            @csrf
-                                                                                                                                                                                                                                                                                                                                                            <input type="hidden" name="lending_id" value="{{ $selectedLoan->id }}">
-                                                                                                                                                                                                                                                                                                                                                            <button type="submit">
-                                                                                                                                                                                                                                                                                                                                                                <i class="fa fa-hand-holding-dollar"></i>
-                                                                                                                                                                                                                                                                                                                                                                <span>Disburse Loan</span>
-                                                                                                                                                                                                                                                                                                                                                            </button>
-                                                                                                                                                                                                                                                                                                                                                        </form>
-                                                                                                                                                                                                                                                                                                                                                    @endif -->
+                                                                                                                                                                                                                                                                                                                                                                                    <button disabled style="opacity:.6;cursor:not-allowed;background:#e8f5ee;color:#1e7a4e;border:1px solid rgba(30,122,78,.3);">
+                                                                                                                                                                                                                                                                                                                                                                                        <i class="fa fa-circle-check"></i>
+                                                                                                                                                                                                                                                                                                                                                                                        <span>Disbursed</span>
+                                                                                                                                                                                                                                                                                                                                                                                    </button>
+                                                                                                                                                                                                                                                                                                                                                                                @else
+                                                                                                                                                                                                                                                                                                                                                                                    <form action="{{ route('loan.disburse') }}" method="POST" style="margin:0;">
+                                                                                                                                                                                                                                                                                                                                                                                        @csrf
+                                                                                                                                                                                                                                                                                                                                                                                        <input type="hidden" name="lending_id" value="{{ $selectedLoan->id }}">
+                                                                                                                                                                                                                                                                                                                                                                                        <button type="submit">
+                                                                                                                                                                                                                                                                                                                                                                                            <i class="fa fa-hand-holding-dollar"></i>
+                                                                                                                                                                                                                                                                                                                                                                                            <span>Disburse Loan</span>
+                                                                                                                                                                                                                                                                                                                                                                                        </button>
+                                                                                                                                                                                                                                                                                                                                                                                    </form>
+                                                                                                                                                                                                                                                                                                                                                                                @endif -->
                                     </div>
                                 </div>
                             </div>
@@ -734,20 +734,20 @@
                                 </button>
 
                                 <!-- @if($selectedLoan->disbursed_at)
-                                                                                                                                                                                                                                                                                                                                                <button disabled style="opacity:.6;cursor:not-allowed;background:#e8f5ee;color:#1e7a4e;border:1px solid rgba(30,122,78,.3);">
-                                                                                                                                                                                                                                                                                                                                                    <i class="fa fa-circle-check"></i>
-                                                                                                                                                                                                                                                                                                                                                    <span>Disbursed</span>
-                                                                                                                                                                                                                                                                                                                                                </button>
-                                                                                                                                                                                                                                                                                                                                            @else
-                                                                                                                                                                                                                                                                                                                                                <form action="{{ route('loan.disburse') }}" method="POST" style="margin:0;">
-                                                                                                                                                                                                                                                                                                                                                    @csrf
-                                                                                                                                                                                                                                                                                                                                                    <input type="hidden" name="lending_id" value="{{ $selectedLoan->id }}">
-                                                                                                                                                                                                                                                                                                                                                    <button type="submit">
-                                                                                                                                                                                                                                                                                                                                                        <i class="fa fa-hand-holding-dollar"></i>
-                                                                                                                                                                                                                                                                                                                                                        <span>Disburse Loan</span>
-                                                                                                                                                                                                                                                                                                                                                    </button>
-                                                                                                                                                                                                                                                                                                                                                </form>
-                                                                                                                                                                                                                                                                                                                                            @endif -->
+                                                                                                                                                                                                                                                                                                                                                                            <button disabled style="opacity:.6;cursor:not-allowed;background:#e8f5ee;color:#1e7a4e;border:1px solid rgba(30,122,78,.3);">
+                                                                                                                                                                                                                                                                                                                                                                                <i class="fa fa-circle-check"></i>
+                                                                                                                                                                                                                                                                                                                                                                                <span>Disbursed</span>
+                                                                                                                                                                                                                                                                                                                                                                            </button>
+                                                                                                                                                                                                                                                                                                                                                                        @else
+                                                                                                                                                                                                                                                                                                                                                                            <form action="{{ route('loan.disburse') }}" method="POST" style="margin:0;">
+                                                                                                                                                                                                                                                                                                                                                                                @csrf
+                                                                                                                                                                                                                                                                                                                                                                                <input type="hidden" name="lending_id" value="{{ $selectedLoan->id }}">
+                                                                                                                                                                                                                                                                                                                                                                                <button type="submit">
+                                                                                                                                                                                                                                                                                                                                                                                    <i class="fa fa-hand-holding-dollar"></i>
+                                                                                                                                                                                                                                                                                                                                                                                    <span>Disburse Loan</span>
+                                                                                                                                                                                                                                                                                                                                                                                </button>
+                                                                                                                                                                                                                                                                                                                                                                            </form>
+                                                                                                                                                                                                                                                                                                                                                                        @endif -->
                             </div>
 
                         </div>
@@ -840,11 +840,11 @@
                             <div class="schedule-parent">
                                 <div class="schedule-header" data-action="openScheduleModal" style="cursor:pointer;">
                                     <!-- <div class="header-tag">
-                                                                                                                                                                                                                                                                                                                                                    <div class="header-icon">
-                                                                                                                                                                                                                                                                                                                                                        <i class="fa fa-calendar-check"></i> 
-                                                                                                                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                                                                                                                                                <div class="header-icon">
+                                                                                                                                                                                                                                                                                                                                                                                    <i class="fa fa-calendar-check"></i> 
+                                                                                                                                                                                                                                                                                                                                                                                </div>
 
-                                                                                                                                                                                                                                                                                                                                                Payment Schedule</div> -->
+                                                                                                                                                                                                                                                                                                                                                                            Payment Schedule</div> -->
                                     <div>
                                         <div class="header-tag">Payment Schedule</div>
                                         <p>View your upcoming loan payment</p>
@@ -900,11 +900,11 @@
                             <div class="charges-parent">
                                 <div class="charges-header" data-action="openChargesModal" style="cursor:pointer;">
                                     <!-- <div class="header-tag">
-                                                                                                                                                                                                                                                                                                                                                    <div class="header-icon">
-                                                                                                                                                                                                                                                                                                                                                        <i class="fa fa-money-check-dollar"></i> 
-                                                                                                                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                                                                                                                                                <div class="header-icon">
+                                                                                                                                                                                                                                                                                                                                                                                    <i class="fa fa-money-check-dollar"></i> 
+                                                                                                                                                                                                                                                                                                                                                                                </div>
 
-                                                                                                                                                                                                                                                                                                                                                    Loan Charges</div> -->
+                                                                                                                                                                                                                                                                                                                                                                                Loan Charges</div> -->
                                     <div>
                                         <div class="header-tag">Loan Charges</div>
                                         <p>View your breakdown loan charges</p>
@@ -1382,7 +1382,18 @@
                                     style="border-radius: 10px; border: 1.5px solid #e0e0e0; height: 46px; font-size: 14px; color: #333;">
                                     <option value="" disabled selected>Select payment method...</option>
                                     @foreach($paymentMethods as $pm)
-                                        <option value="{{ $pm->method_name }}">{{ $pm->method_name }}</option>
+                                        @php
+                                            $pmQr = ($pm->has_qr_code && $pm->qr_code_image_path)
+                                                ? url('/proof/' . ltrim($pm->qr_code_image_path, '/')) : '';
+                                            $pmNeedsProof = strtolower(trim($pm->method_name)) !== 'cash';
+                                        @endphp
+                                        <option value="{{ $pm->method_name }}" data-qr="{{ $pmQr }}"
+                                            data-account-name="{{ $pm->account_name ?? '' }}"
+                                            data-account-number="{{ $pm->account_number ?? '' }}"
+                                            data-instructions="{{ $pm->instructions ?? '' }}"
+                                            data-requires-proof="{{ $pmNeedsProof ? 1 : 0 }}">
+                                            {{ $pm->method_name }}
+                                        </option>
                                     @endforeach
                                 </select>
                                 <p id="repay-method-error"
@@ -1391,51 +1402,18 @@
                                 </p>
                             </div>
 
-                            {{-- GCash section --}}
+                            {{-- Payment proof section (any method that needs proof) --}}
                             <div id="gcash-section" style="display: none;">
-                                @php
-                                    $gcashQrUrl = ($gcashPaymentMethod && $gcashPaymentMethod->qr_code_image_path)
-                                        ? url('/proof/' . ltrim($gcashPaymentMethod->qr_code_image_path, '/'))
-                                        : null;
-                                @endphp
                                 <div style="border-top: 1.5px dashed #e8e8e8; margin: 1.2rem 0;"></div>
 
-                                @if($gcashPaymentMethod && $gcashPaymentMethod->has_qr_code && $gcashPaymentMethod->qr_code_image_path)
-                                    <div
-                                        style="background: linear-gradient(135deg, #f0f7ff 0%, #e8f4ff 100%); border: 1.5px solid #c2deff; border-radius: 12px; padding: 1rem 1.2rem; text-align: center;">
-                                        <p style="margin: 0 0 10px; font-size: 14px; font-weight: 700; color: #0056b3;">
-                                            <i class="fa-solid fa-mobile-screen-button"></i> Scan to Pay via GCash
-                                        </p>
-                                        <img src="{{ $gcashQrUrl }}" alt="GCash QR Code" loading="lazy"
-                                            style="width: 320px; height: 320px; max-width: 100%; object-fit: contain; border-radius: 10px; border: 1px solid #c2deff; background: #fff; padding: 14px; display: block; margin: 0 auto;"
-                                            data-action="openQrLightbox" data-trigger="dblclick" data-arg='["|src|"]'>
-                                        <p style="margin: 10px 0 0; font-size: 11px; color: #5a8ac4;">
-                                            Scan this using your GCash app, then upload your payment screenshot below.
-                                        </p>
-                                        <p style="margin: 6px 0 0; font-size: 11px;">
-                                            <a href="#" class="js-open-qr-lightbox" data-qr-src="{{ $gcashQrUrl }}"
-                                                style="color: #0056b3; font-weight: 600;">
-                                                <i class="fa fa-up-right-and-down-left-from-center"></i> View full-size QR
-                                            </a>
-                                        </p>
-                                    </div>
-
-                                @else
-                                    <div
-                                        style="background: #fff3cd; border: 1.5px solid #ffe08a; border-radius: 12px; padding: 1rem 1.2rem;">
-                                        <p style="margin: 0; font-size: 13px; color: #856404;">
-                                            <i class="fa fa-triangle-exclamation"></i> No GCash QR code has been set up yet.
-                                            Please contact the admin.
-                                        </p>
-                                    </div>
-                                @endif
+                                <div id="method-details"></div>
 
                                 <div style="margin-top: 1.1rem;">
                                     <label
                                         style="font-size: 12px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px;">
                                         Upload Payment Screenshot <span
-                                            style="color:#aaa; font-weight:400; text-transform:none;">(GCash
-                                            proof)</span>
+                                            style="color:#aaa; font-weight:400; text-transform:none;">(proof of
+                                            payment)</span>
                                     </label>
                                     <input type="file" name="gcash_proof" id="gcash-proof-input"
                                         accept="image/png,image/jpeg,image/jpg" class="form-control"
@@ -1447,9 +1425,9 @@
                                 </div>
 
                                 <div style="margin-top: 1.1rem;">
-                                    <label
+                                    <label id="ref-label"
                                         style="font-size: 12px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px;">
-                                        GCash Reference Number <span style="color: red;">*</span>
+                                        Reference Number <span style="color: red;">*</span>
                                     </label>
                                     <p id="repay-ref-used-msg"
                                         style="display:none; margin:0 0 6px; color:#e53e3e; font-size:12px; font-weight:600;">
@@ -1457,8 +1435,7 @@
                                         used for a transaction.
                                     </p>
                                     <input type="text" name="gcash_reference_no" id="repay-gcash-ref"
-                                        class="form-control" placeholder="13-digit reference number" maxlength="13"
-                                        pattern="\d{13}"
+                                        class="form-control" placeholder="Reference number"
                                         style="border-radius: 10px; border: 1.5px solid #e0e0e0; height: 46px; font-size: 14px; color: #333;">
                                 </div>
 
@@ -2162,14 +2139,105 @@
             }
         }
 
-        function handleMethodChange(method) {
-            const isGcash = method === 'GCash';
-            document.getElementById('gcash-section').style.display = isGcash ? 'block' : 'none';
-            document.getElementById('gcash-proof-input').required = isGcash;
-            document.getElementById('repay-method-error').style.display = 'none';
-            document.getElementById('repay-method').style.borderColor = '#e0e0e0';
-            if (!isGcash) setRepayRefState(false);
+        function renderMethodDetails(opt) {
+            const box = document.getElementById('method-details');
+            if (!box) return;
+            const d = opt ? opt.dataset : {};
+            const name = opt ? opt.value : '';
+            let html = '';
+
+            if (d.qr) {
+                html += '<div style="background:linear-gradient(135deg,#f0f7ff 0%,#e8f4ff 100%);border:1.5px solid #c2deff;border-radius:12px;padding:1rem 1.2rem;text-align:center;">' +
+                    '<p style="margin:0 0 10px;font-size:14px;font-weight:700;color:#0056b3;"><i class="fa-solid fa-mobile-screen-button"></i> Scan to Pay via ' + phEsc(name) + '</p>' +
+                    '<img src="' + phEsc(d.qr) + '" alt="' + phEsc(name) + ' QR Code" loading="lazy" ' +
+                    'style="width:320px;height:320px;max-width:100%;object-fit:contain;border-radius:10px;border:1px solid #c2deff;background:#fff;padding:14px;display:block;margin:0 auto;" ' +
+                    'data-action="openQrLightbox" data-trigger="dblclick" data-arg=\'["|src|"]\'>' +
+                    '<p style="margin:10px 0 0;font-size:11px;color:#5a8ac4;">Scan this using your ' + phEsc(name) + ' app, then upload your payment screenshot below.</p>' +
+                    '<p style="margin:6px 0 0;font-size:11px;"><a href="#" class="js-open-qr-lightbox" data-qr-src="' + phEsc(d.qr) + '" style="color:#0056b3;font-weight:600;">' +
+                    '<i class="fa fa-up-right-and-down-left-from-center"></i> View full-size QR</a></p></div>';
+            }
+
+            if (d.accountName || d.accountNumber) {
+                html += '<div style="margin-top:' + (d.qr ? '12px' : '0') + ';background:#f8f9fa;border:1.5px solid #e5e7eb;border-radius:12px;padding:1rem 1.2rem;">' +
+                    '<p style="margin:0 0 8px;font-size:13px;font-weight:700;color:#1a1a1a;"><i class="fa fa-building-columns"></i> Pay to this account</p>' +
+                    (d.accountName
+                        ? '<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0;"><span style="color:#888;">Account Name</span><strong>' + phEsc(d.accountName) + '</strong></div>'
+                        : '') +
+                    (d.accountNumber
+                        ? '<div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:4px 0;">' +
+                            '<span style="color:#888;">Account Number</span>' +
+                            '<span style="display:flex;align-items:center;gap:8px;">' +
+                                '<strong>' + phEsc(d.accountNumber) + '</strong>' +
+                                '<button type="button" class="js-copy-account" data-copy="' + phEsc(d.accountNumber) + '" ' +
+                                'style="border:1px solid #d1d5db;background:#fff;color:#374151;border-radius:6px;padding:2px 10px;font-size:11px;font-weight:600;cursor:pointer;">' +
+                                '<i class="fa fa-copy"></i> Copy</button>' +
+                            '</span></div>'
+                        : '') +
+                    '</div>';
+            }
+
+            if (d.instructions) {
+                html += '<p style="margin:10px 0 0;font-size:12px;color:#6b7280;"><i class="fa fa-circle-info"></i> ' + phEsc(d.instructions) + '</p>';
+            }
+
+            if (!html) {
+                html = '<div style="background:#fff3cd;border:1.5px solid #ffe08a;border-radius:12px;padding:1rem 1.2rem;"><p style="margin:0;font-size:13px;color:#856404;">' +
+                    '<i class="fa fa-triangle-exclamation"></i> No payment details have been set up for ' + phEsc(name) + ' yet. Please contact the admin.</p></div>';
+            }
+            box.innerHTML = html;
         }
+
+        function handleMethodChange() {
+            const sel = document.getElementById('repay-method');
+            const opt = sel.options[sel.selectedIndex];
+            const needsProof = !!opt && opt.dataset.requiresProof === '1';
+            const isGcash = sel.value.toLowerCase() === 'gcash';
+            const refInput = document.getElementById('repay-gcash-ref');
+
+            document.getElementById('gcash-section').style.display = needsProof ? 'block' : 'none';
+            document.getElementById('gcash-proof-input').required = needsProof;
+            document.getElementById('repay-method-error').style.display = 'none';
+            sel.style.borderColor = '#e0e0e0';
+
+            document.getElementById('ref-label').innerHTML = phEsc(sel.value) + ' Reference Number <span style="color:red;">*</span>';
+            if (isGcash) {
+                refInput.maxLength = 13;
+                refInput.placeholder = '13-digit reference number';
+            } else {
+                refInput.removeAttribute('maxlength');
+                refInput.placeholder = 'Reference / transaction number';
+            }
+            refInput.value = '';
+
+            if (needsProof) renderMethodDetails(opt); else setRepayRefState(false);
+        }
+
+        document.addEventListener('click', function (e) {
+            const btn = e.target.closest('.js-copy-account');
+            if (!btn) return;
+
+            const text = btn.dataset.copy || '';
+            const original = btn.innerHTML;
+
+            const done = () => {
+                btn.innerHTML = '<i class="fa fa-check"></i> Copied';
+                setTimeout(() => { btn.innerHTML = original; }, 1500);
+            };
+
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(done);
+            } else {
+                // Fallback for plain-HTTP hosts, where navigator.clipboard is unavailable
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.select();
+                try { document.execCommand('copy'); done(); } catch (err) { }
+                ta.remove();
+            }
+        });
 
         document.getElementById('gcash-proof-input')?.addEventListener('change', function () {
             if (this.files && this.files[0]) {
@@ -2203,15 +2271,14 @@
             repayRefInput.addEventListener('input', function () {
                 clearTimeout(repayRefTimer);
                 const v = this.value.trim();
-                if (v.length !== 13 || !/^\d{13}$/.test(v)) {
-                    setRepayRefState(false);
-                    return;
-                }
+                const isGcash = document.getElementById('repay-method').value.toLowerCase() === 'gcash';
+                const valid = isGcash ? /^\d{13}$/.test(v) : v.length >= 4;
+                if (!valid) { setRepayRefState(false); return; }
                 repayRefTimer = setTimeout(function () {
                     fetch('{{ route('reference.check') }}?ref=' + encodeURIComponent(v))
-                        .then(function (r) { return r.json(); })
-                        .then(function (d) { setRepayRefState(!!d.used); })
-                        .catch(function () { setRepayRefState(false); });
+                        .then(r => r.json())
+                        .then(d => setRepayRefState(!!d.used))
+                        .catch(() => setRepayRefState(false));
                 }, 300);
             });
         }
@@ -2316,6 +2383,7 @@
             document.getElementById('gcash-section').style.display = 'none';
             document.getElementById('confirm-pay-btn').style.display = 'flex';
             document.getElementById('repay-gcash-ref').value = '';
+            document.getElementById('method-details').innerHTML = '';
             setRepayRefState(false);
             document.getElementById('notes-section').style.display = 'block';
             document.querySelector('#notes-section textarea').value = '';
@@ -2495,16 +2563,19 @@
             }
 
             // 2. GCash needs proof + a valid, unused reference number
-            if (methodSelect.value === 'GCash') {
+            const selOpt = methodSelect.options[methodSelect.selectedIndex];
+            if (selOpt && selOpt.dataset.requiresProof === '1') {
                 const proof = document.getElementById('gcash-proof-input');
                 const ref = document.getElementById('repay-gcash-ref');
+                const isGcash = methodSelect.value.toLowerCase() === 'gcash';
 
                 if (!proof.files || !proof.files.length) {
                     proof.style.borderColor = '#e53e3e';
                     proof.focus();
                     return;
                 }
-                if (!/^\d{13}$/.test(ref.value.trim())) {
+                const refOk = isGcash ? /^\d{13}$/.test(ref.value.trim()) : ref.value.trim().length >= 4;
+                if (!refOk) {
                     ref.style.borderColor = '#e53e3e';
                     ref.focus();
                     return;

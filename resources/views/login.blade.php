@@ -91,12 +91,69 @@
                 margin: 1rem 20px 1.5rem;
             }
         }
+
+        #switchOverlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background: rgba(20, 28, 58, 0.92);
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            padding: 24px;
+            color: #fff;
+        }
+
+        #switchOverlay.show {
+            display: flex;
+        }
+
+        #switchOverlay .so-spinner {
+            width: 56px;
+            height: 56px;
+            border: 5px solid rgba(255, 255, 255, 0.25);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: so-spin 0.9s linear infinite;
+            margin-bottom: 22px;
+        }
+
+        #switchOverlay .so-title {
+            margin: 0 0 8px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fff;
+            text-transform: none;
+            letter-spacing: normal;
+        }
+
+        #switchOverlay .so-text {
+            margin: 0;
+            max-width: 380px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        @keyframes so-spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 
 <body>
 
     <div class="container-fluid">
+
+    <div id="switchOverlay" role="alert" aria-live="polite">
+        <div class="so-spinner"></div>
+        <h3 class="so-title">Switching to this device…</h3>
+        <p class="so-text">
+            Your login was approved. Your account is now moving to this device and the other device has been signed out.
+        </p>
+    </div>
 
         <!-- <div class="bg"></div>
         <div class="grid-lines"></div>
@@ -456,6 +513,10 @@
 
                 function stop() { if (timer) { clearInterval(timer); timer = null; } }
 
+                var overlay = document.getElementById('switchOverlay');
+                function showOverlay() { overlay.classList.add('show'); }
+                function hideOverlay() { overlay.classList.remove('show'); }
+
                 function showWaiting() {
                     form.style.display = 'none';
                     panel.style.display = 'block';
@@ -498,10 +559,16 @@
 
                 function complete() {
                     title.textContent = 'Approved! Signing you in…';
+                    showOverlay(); // full-screen "switching device" loader
                     post(COMPLETE_URL).then(function (r) { return r.json(); }).then(function (d) {
-                        if (d.redirect) { window.location.href = d.redirect; }
-                        else { showResult('Could not sign in', 'Please try signing in again.'); }
+                        if (d.redirect) {
+                            window.location.href = d.redirect; // overlay stays visible until the next page loads
+                        } else {
+                            hideOverlay();
+                            showResult('Could not sign in', 'Please try signing in again.');
+                        }
                     }).catch(function () {
+                        hideOverlay();
                         showResult('Could not sign in', 'Please try signing in again.');
                     });
                 }
@@ -527,6 +594,10 @@
                     post(CANCEL_URL).finally(showForm);
                 });
                 back.addEventListener('click', showForm);
+
+                window.addEventListener('pageshow', function (e) {
+                    if (e.persisted) hideOverlay();
+                });
 
                 check(); // on page load: are we already waiting?
             })();

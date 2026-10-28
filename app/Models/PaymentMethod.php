@@ -13,6 +13,9 @@ class PaymentMethod extends Model
 
     protected $fillable = [
         'method_name',
+        'account_name',
+        'account_number',
+        'instructions',
         'has_qr_code',
         'qr_code_image_path',
         'is_active',
