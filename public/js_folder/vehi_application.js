@@ -19,6 +19,8 @@ VEHICLES.forEach(v => {
     };
 });
 
+// Hidden inputs are the ONLY plate fields that get submitted, so plates
+// from rows hidden after lowering the quantity are never sent.
 function syncHiddenInputs(vehicle) {
     const form = document.getElementById('form');
     if (!form) return;
@@ -52,21 +54,21 @@ function createPlateRow(vehicle, i) {
     const val = state[vehicle.qtyName].plates[i] || '';
     input.className = 'plate-input' + (val ? ' filled' : '');
     input.type = 'text';
-    input.name = vehicle.plateName + '[' + i + ']';
+    // NOTE: no "name" here on purpose (see syncHiddenInputs above)
     input.maxLength = 12;
     input.placeholder = 'Enter plate number';
     input.value = val;
 
-    input.onkeydown = function (event) {
+    input.addEventListener('keydown', function (event) {
         if (['+', '=', '?', '.', ',', '(', ')'].includes(event.key)) event.preventDefault();
-    };
+    });
 
-    input.oninput = function () {
+    input.addEventListener('input', function () {
         this.value = this.value.toUpperCase();
         state[vehicle.qtyName].plates[i] = this.value;
         this.classList.toggle('filled', this.value.length > 0);
         syncHiddenInputs(vehicle);
-    };
+    });
 
     row.appendChild(idx);
     row.appendChild(input);
@@ -77,7 +79,6 @@ function updatePlates(vehicle, qty, inputEl) {
     const card = document.getElementById('card-' + vehicle.qtyName);
     const container = document.getElementById('plates-' + vehicle.qtyName);
 
-    // Save current DOM values into state FIRST
     Array.from(container.querySelectorAll('.plate-input')).forEach((input, i) => {
         state[vehicle.qtyName].plates[i] = input.value;
     });
@@ -102,7 +103,6 @@ function updatePlates(vehicle, qty, inputEl) {
     const currentCount = currentRows.length;
 
     if (qty > currentCount) {
-        // ADD new rows
         for (let i = currentCount; i < qty; i++) {
             if (state[vehicle.qtyName].plates[i] === undefined) {
                 state[vehicle.qtyName].plates[i] = '';
@@ -110,15 +110,12 @@ function updatePlates(vehicle, qty, inputEl) {
             container.appendChild(createPlateRow(vehicle, i));
         }
     } else if (qty < currentCount) {
-        // HIDE rows instead of removing — data stays in state
         for (let i = currentCount - 1; i >= qty; i--) {
             currentRows[i].style.display = 'none';
         }
-        // Trim state to qty so hidden plates don't get submitted
         state[vehicle.qtyName].plates = state[vehicle.qtyName].plates.slice(0, qty);
     }
 
-    // Show rows that exist but are hidden (when increasing back)
     Array.from(container.querySelectorAll('.plate-row')).forEach((row, i) => {
         if (i < qty) row.style.display = '';
     });
@@ -138,6 +135,7 @@ function buildCards() {
         card.className = 'vehicle-card' + (existingQty > 0 ? ' has-data' : '');
         card.id = 'card-' + vehicle.qtyName;
 
+        // NOTE: no inline onkeydown="" here - the CSP blocks it.
         card.innerHTML = `
             <div class="card-header">
                 <span class="vehicle-type">${vehicle.label}</span>
@@ -150,7 +148,6 @@ function buildCards() {
                         min="0" max="99"
                         placeholder="0"
                         value="${existingQty > 0 ? existingQty : ''}"
-                        onkeydown="if(event.key==='e'||event.key==='E'||event.key==='+'||event.key==='-') event.preventDefault();"
                     />
                 </div>
             </div>
@@ -163,12 +160,20 @@ function buildCards() {
 
         grid.appendChild(card);
 
+        const qtyInput = card.querySelector('.qty-input');
+
+        // replaces the old inline onkeydown
+        qtyInput.addEventListener('keydown', function (event) {
+            if (event.key === 'e' || event.key === 'E' || event.key === '+' || event.key === '-') {
+                event.preventDefault();
+            }
+        });
+
         if (existingQty > 0) {
-            updatePlates(vehicle, existingQty, card.querySelector('.qty-input'));
+            updatePlates(vehicle, existingQty, qtyInput);
         }
 
-        card.querySelector('.qty-input').addEventListener('input', function () {
-            // Don't do anything if field is empty (user is still typing)
+        qtyInput.addEventListener('input', function () {
             if (this.value === '' || this.value === null) return;
 
             const val = parseInt(this.value) || 0;

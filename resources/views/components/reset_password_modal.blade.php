@@ -167,10 +167,14 @@
 
     #resetPasswordModal .rp-error {
         display: block;
-        min-height: 14px;
         margin-top: 4px;
         font-size: 12px;
         color: #dc2626;
+    }
+
+    /* Collapse completely when there is no message */
+    #resetPasswordModal .rp-error:empty {
+        display: none;
     }
 
     #resetPasswordModal .rp-hint {
@@ -241,6 +245,8 @@
 
 <script nonce="{{ csp_nonce() }}">
     (function () {
+        if (window.__rpModalBound) return;   // never bind twice
+        window.__rpModalBound = true;
         var modal = document.getElementById('resetPasswordModal');
         if (!modal) return;
 
@@ -251,6 +257,7 @@
         var currentErr = document.getElementById('current_password_error');
         var confirmErr = document.getElementById('confirm_password_error');
         var submitBtn = document.getElementById('resetPasswordSubmitBtn');
+        var BTN_DEFAULT = '<i class="fa fa-check"></i> Update Password';
 
         modal.querySelectorAll('.rp-toggle').forEach(function (btn) {
             btn.addEventListener('click', function () {
@@ -266,6 +273,8 @@
 
         modal.addEventListener('hidden.bs.modal', function () {
             form.reset();
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = BTN_DEFAULT;
             currentErr.textContent = '';
             confirmErr.textContent = '';
             modal.querySelectorAll('.rp-input').forEach(function (i) { i.type = 'password'; });
@@ -289,6 +298,9 @@
 
         form.addEventListener('submit', async function (e) {
             e.preventDefault();
+            e.stopImmediatePropagation();
+            if (window.__rpInFlight) return;
+
             currentErr.textContent = '';
             confirmErr.textContent = '';
 
@@ -297,10 +309,10 @@
 
             if (newPassword !== confirmPassword) {
                 confirmErr.textContent = 'Passwords do not match.';
-                return;
+                return;                       // flag was never set, so nothing to reset
             }
 
-            var originalText = submitBtn.innerHTML;
+            window.__rpInFlight = true;       // set it only after validation passes
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Updating...';
 
@@ -326,13 +338,16 @@
                     toast(data.message || 'Password updated successfully.');
                 } else {
                     var msg = data.errors ? Object.values(data.errors)[0][0] : data.message;
-                    currentErr.textContent = msg || 'Something went wrong.';
+                    if (modal.classList.contains('show')) {
+                        currentErr.textContent = msg || 'Something went wrong.';
+                    }
                 }
             } catch (err) {
                 currentErr.textContent = 'Something went wrong. Please try again.';
             } finally {
+                window.__rpInFlight = false;
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = originalText;
+                submitBtn.innerHTML = BTN_DEFAULT;
             }
         });
     })();

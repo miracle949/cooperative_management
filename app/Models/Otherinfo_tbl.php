@@ -29,5 +29,6 @@ class Otherinfo_tbl extends Model
         'approval_status',
         'membership_status',
         'monthly_income',
+        'application_form_completed_at'
     ];
 }

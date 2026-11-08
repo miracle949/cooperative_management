@@ -94,10 +94,9 @@ class UsersHandle extends Controller
     public function applicationFormButton(Request $request, $id)
     {
         try {
-            $targetUser = \App\Models\Users_tbl::find($id);
             abort_unless(
                 (int) auth()->id() === (int) $id
-                || ($targetUser && in_array(strtolower((string) $targetUser->role), ['pending', 'inactive'], true))
+                || (int) session('application_form_access') === (int) $id
                 || \App\Services\SoDGuard::actingAsStaff(),
                 403
             );
@@ -105,8 +104,8 @@ class UsersHandle extends Controller
             $request->validate([
                 // users_tbls
                 'fullname' => 'nullable|string|max:255',
-                'username' => 'nullable|string|max:255',
-                'email' => 'nullable|email|max:255',
+                'username' => ['nullable', 'string', 'max:255', Rule::unique('users_tbls', 'username')->ignore($id)],
+                'email' => ['nullable', 'email', 'max:255', Rule::unique('users_tbls', 'email')->ignore($id)],
 
                 // otherinfo_tbls
                 'date_of_birth' => 'nullable|string|max:255',
@@ -168,11 +167,7 @@ class UsersHandle extends Controller
                 'edu_specify.*' => 'nullable|string|max:255',
             ]);
 
-            Users_tbl::where('id', $id)->update($request->only([
-                'fullname',
-                'username',
-                'email',
-            ]));
+            Users_tbl::where('id', $id)->update(array_filter($request->only(['username', 'email'])));
 
             Family_tbl::updateOrCreate(
                 ['user_id' => $id],
@@ -201,6 +196,7 @@ class UsersHandle extends Controller
                     'weight' => $request->weight,
                     'blood_type' => $request->blood_type,
                     'skills' => $request->skills,
+                    'application_form_completed_at' => now(),   // ← add this
                 ]
             );
 
@@ -1199,19 +1195,41 @@ class UsersHandle extends Controller
             'new_password' => 'required|min:8|confirmed',
         ]);
 
-        Auth::logoutOtherDevices($request->new_password);
-
         $user = Auth::user();
 
-        Auth::logoutOtherDevices($request->new_password); // needs the AuthenticateSession middleware
-
+        // 1) Check the current password FIRST
+        // 1) Check the current password FIRST
         if (!\Illuminate\Support\Facades\Hash::check($request->current_password, $user->password)) {
-            return response()->json(['success' => false, 'message' => 'Current password is incorrect.'], 422);
+
+            // Duplicate request: the password was just changed to this exact new password
+            $justChanged = $user->password_changed_at
+                && Carbon::parse($user->password_changed_at)->gt(now()->subMinute())
+                && \Illuminate\Support\Facades\Hash::check($request->new_password, $user->password);
+
+            if ($justChanged) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Password updated successfully.',
+                ]);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Current password is incorrect.',
+            ]);
         }
 
+        // 2) Save the new password
         $user->password = bcrypt($request->new_password);
         $user->password_changed_at = now();
         $user->save();
+
+        // 3) Only now log out other devices, using the NEW password
+        try {
+            Auth::logoutOtherDevices($request->new_password);
+        } catch (\Throwable $e) {
+            // Don't fail the password change if this step can't run
+        }
 
         \App\Services\SingleSession::release($user->id);
 
@@ -3876,7 +3894,10 @@ class UsersHandle extends Controller
 
     public function checkEmail(Request $request)
     {
-        $exists = \App\Models\Users_tbl::where('email', $request->email)->exists();
+        $request->validate(['email' => 'required|email']);
+
+        $exists = \App\Models\Users_tbl::whereRaw('LOWER(email) = ?', [strtolower(trim($request->email))])
+            ->exists();
 
         return response()->json(['exists' => $exists]);
     }
