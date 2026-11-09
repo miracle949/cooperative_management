@@ -1724,7 +1724,7 @@
                                 <h3>Loan Application</h3>
                                 <p>View your loan applications and track upcoming, due, and overdue payments</p>
                             </div>
-                            <div class="{{ !$canApplyLoan ? 'gated' : '' }}">
+                            <div class="apply-btn-desktop {{ !$canApplyLoan ? 'gated' : '' }}">
                                 <div class="main-button">
                                     <button data-action="openLoanModal" @if(!$canApplyLoan) disabled
                                     style="opacity:.5;cursor:not-allowed;" @endif>
@@ -1806,9 +1806,18 @@
                                     <div class="gate-lock"><i class="fa fa-lock"></i></div>
                                     <div class="gate-msg">Loan application is locked</div>
                                     <div class="gate-sub">
-                                        You need at least <strong>{{ number_format($minimumShares, 0) }}</strong> shares of
-                                        share capital to apply for a loan.
-                                        You currently have <strong>{{ number_format($currentShares, 2) }}</strong> shares.
+                                        @if(!$hasMinShares)
+                                            You need at least <strong>{{ number_format($minimumShares, 0) }}</strong> shares of
+                                            share capital.
+                                            You currently have <strong>{{ number_format($currentShares, 2) }}</strong>
+                                            shares.<br>
+                                        @endif
+                                        @if(!$hasMinSavings)
+                                            You need at least <strong>₱{{ number_format($minSavingsForLoan, 2) }}</strong> in
+                                            savings to apply.
+                                            You currently have <strong>₱{{ number_format($currentSavings, 2) }}</strong>
+                                            (₱{{ number_format($minSavingsForLoan - $currentSavings, 2) }} more needed).
+                                        @endif
                                     </div>
                                 </div>
                             @endif
@@ -2729,6 +2738,13 @@
             </div>
         </div>
 
+        <div class="fab-wrap">
+            <button type="button" class="fab-plus" data-action="openLoanModal" aria-label="Apply for a Loan"
+                @if(!$canApplyLoan) disabled @endif>
+                <i class="fa fa-plus"></i>
+            </button>
+        </div>
+
         <!-- LOAN APPLICATION MODAL -->
         <div class="loan-modal-overlay" id="loanModalOverlay" data-action="maybeCloseLoanModal" data-arg='["|event|"]'>
             <div class="loan-modal" id="loanModal">
@@ -2832,6 +2848,12 @@
                                 @csrf
 
                                 <div class="panel-sec-hd">Loan Information</div>
+
+                                <div class="loan-status-banner lsb-warn" style="margin-top:0;">
+                                    <i class="fa fa-lock" style="margin-top:2px;flex-shrink:0;"></i>
+                                    <span>Your savings serve as security for this loan. While you have an active or
+                                        pending loan, you can't withdraw your savings until it is fully paid.</span>
+                                </div>
 
                                 <div class="p-form-row">
                                     <div class="p-field">

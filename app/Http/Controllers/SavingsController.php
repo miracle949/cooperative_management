@@ -21,6 +21,98 @@ class SavingsController extends Controller
      * Generate a unique reference number.
      * Format: SAV-DEP-20260326-A3F9 or SAV-WDR-20260326-B7K2
      */
+
+    /**
+     * 'full'       = ALL savings are locked while the member has an active loan
+     *                (what the panelist suggested).
+     * 'collateral' = only (outstanding principal + holdback) is locked; the rest
+     *                of the savings can still be withdrawn.
+     */
+    const LOAN_LOCK_MODE = 'collateral';
+    const MIN_SAVINGS_FOR_LOAN = 3500;
+
+    public function loanLockInfo(int $userId, float $savingsBalance): array
+    {
+        $loans = DB::table('lending_program_tbls as l')
+            ->leftJoin('lending_status_tbls as s', 's.lending_id', '=', 'l.id')
+            ->where('l.user_id', $userId)
+            ->whereIn('l.status', ['Pending', 'Approved'])   // Completed/Rejected never lock
+            ->select(
+                'l.id',
+                'l.status',
+                'l.lending_amount',
+                'l.total_payment',
+                's.remaining_balance',
+                's.payments_made',
+                's.total_payments'
+            )
+            ->get();
+
+        $outstanding = 0.0;
+        $count = 0;
+
+        foreach ($loans as $l) {
+            $principal = (float) $l->lending_amount;
+            $total = (float) ($l->total_payment ?: $principal);
+            $remaining = (float) ($l->remaining_balance ?? $total);
+
+            if ($l->status === 'Approved') {
+                $totalPayments = (int) ($l->total_payments ?? 0);
+                $paymentsMade = (int) ($l->payments_made ?? 0);
+
+                $fullyPaid = ($l->remaining_balance !== null && $remaining <= 0.01)
+                    || ($totalPayments > 0 && $paymentsMade >= $totalPayments);
+
+                if ($fullyPaid) {
+                    continue; // finished loan: no lock
+                }
+            }
+
+            $count++;
+            $outstanding += ($l->status === 'Pending' || $total <= 0)
+                ? $principal
+                : min($principal, ($remaining / $total) * $principal);
+        }
+
+        if ($count === 0) {
+            return [
+                'has_loan' => false,
+                'count' => 0,
+                'outstanding' => 0.0,
+                'locked' => 0.0,
+                'withdrawable' => max(0, $savingsBalance),
+                'mode' => self::LOAN_LOCK_MODE,
+            ];
+        }
+
+        // AFTER
+        $locked = match (self::LOAN_LOCK_MODE) {
+            'full' => $savingsBalance,
+            default => min($savingsBalance, $outstanding),   // no extra holdback
+        };
+
+        return [
+            'has_loan' => true,
+            'count' => $count,
+            'outstanding' => round($outstanding, 2),
+            'holdback' => 0.0,
+            'locked' => round($locked, 2),
+            'withdrawable' => round(max(0, $savingsBalance - $locked), 2),
+            'mode' => self::LOAN_LOCK_MODE,
+        ];
+    }
+
+    private function loanLockMessage(array $lock): string
+    {
+        if ($lock['mode'] === 'full') {
+            return 'Savings withdrawals are locked while you have an active or pending loan. Please settle your loan first.';
+        }
+
+        return 'You have an active or pending loan, so ₱' . number_format($lock['locked'], 2)
+            . ' of your savings is held back. You can withdraw up to ₱'
+            . number_format($lock['withdrawable'], 2) . '.';
+    }
+
     private function generateReferenceNo(string $type): string
     {
         $prefix = $type === 'deposit' ? 'SAV-DEP' : 'SAV-WDR';
@@ -54,7 +146,7 @@ class SavingsController extends Controller
         // Get or create savings account
         $savingsAccount = savings_account_tbl::where('user_id', $user->id)->first();
 
-        if (! $savingsAccount) {
+        if (!$savingsAccount) {
             $savingsAccount = savings_account_tbl::create([
                 'user_id' => $user->id,
                 'balance' => 0.00,
@@ -121,27 +213,27 @@ class SavingsController extends Controller
         if ($isCurrentYear) {
             // Rolling last 6 months ending this month
             $growthStart = Carbon::now()->startOfMonth()->subMonths(5);
-            $growthMonths = collect(range(5, 0))->map(fn ($i) => Carbon::now()->subMonths($i));
+            $growthMonths = collect(range(5, 0))->map(fn($i) => Carbon::now()->subMonths($i));
         } else {
             // Full calendar year Jan–Dec of the selected year
             $growthStart = Carbon::createFromDate($growthYear, 1, 1)->startOfMonth();
-            $growthMonths = collect(range(0, 11))->map(fn ($i) => Carbon::createFromDate($growthYear, 1, 1)->addMonths($i));
+            $growthMonths = collect(range(0, 11))->map(fn($i) => Carbon::createFromDate($growthYear, 1, 1)->addMonths($i));
         }
 
         $growthTxs = savings_transaction_tbl::where('savings_account_id', $savingsAccount->id)
             ->where('transaction_date', '>=', $growthStart)
-            ->when(! $isCurrentYear, fn ($q) => $q->whereYear('transaction_date', $growthYear))
+            ->when(!$isCurrentYear, fn($q) => $q->whereYear('transaction_date', $growthYear))
             ->whereIn('type', ['deposit', 'withdrawal'])
             ->whereRaw('LOWER(status) = ?', ['completed'])
             ->get()
-            ->groupBy(fn ($tx) => Carbon::parse($tx->transaction_date)->format('Y-m'));
+            ->groupBy(fn($tx) => Carbon::parse($tx->transaction_date)->format('Y-m'));
 
         $savingsGrowth = collect();
         foreach ($growthMonths as $month) {
             $key = $month->format('Y-m');
             $monthTxs = $growthTxs->get($key, collect());
 
-            $net = $monthTxs->sum(fn ($tx) => $tx->type === 'deposit' ? (float) $tx->amount : -(float) $tx->amount);
+            $net = $monthTxs->sum(fn($tx) => $tx->type === 'deposit' ? (float) $tx->amount : -(float) $tx->amount);
 
             $savingsGrowth->push([
                 'label' => $month->format('M'),
@@ -150,7 +242,7 @@ class SavingsController extends Controller
             ]);
         }
 
-        $maxGrowth = $savingsGrowth->max(fn ($m) => max($m['net'], 0)) ?: 1;
+        $maxGrowth = $savingsGrowth->max(fn($m) => max($m['net'], 0)) ?: 1;
 
         $savingsGrowth = $savingsGrowth->map(function ($m) use ($maxGrowth) {
             $m['height_percent'] = $m['net'] > 0
@@ -189,7 +281,7 @@ class SavingsController extends Controller
 
         // ★ NEW: filter by reference no.
         if ($ref !== '') {
-            $transactionsQuery->where('reference_no', 'like', '%'.$ref.'%');
+            $transactionsQuery->where('reference_no', 'like', '%' . $ref . '%');
         }
 
         // ★ NEW: filter by specific date
@@ -223,9 +315,9 @@ class SavingsController extends Controller
         $availableStatuses = savings_transaction_tbl::where('savings_account_id', $savingsAccount->id)
             ->whereNotNull('status')
             ->pluck('status')
-            ->map(fn ($s) => ucfirst($s))
+            ->map(fn($s) => ucfirst($s))
             ->unique()
-            ->sortBy(fn ($s) => strtolower($s))
+            ->sortBy(fn($s) => strtolower($s))
             ->values();
 
         // The QR the admin uploaded in Settings → Payment Methods Management
@@ -276,7 +368,7 @@ class SavingsController extends Controller
 
         $activeMethods = \App\Models\PaymentMethod::where('is_active', true)
             ->pluck('method_name')
-            ->map(fn ($m) => strtolower(trim($m)))
+            ->map(fn($m) => strtolower(trim($m)))
             ->toArray();
 
         $hasQr = \App\Models\PaymentMethod::where('method_name', $request->payment_method)
@@ -312,15 +404,15 @@ class SavingsController extends Controller
             $hasShareCapital = $currentShares > 0;
         }
 
-        if (! $hasShareCapital) {
+        if (!$hasShareCapital) {
             return redirect()->route('Financial', ['tab' => 'savings'])
                 ->with('error', 'You must have an active Share Capital account before you can deposit or withdraw savings.');
         }
 
         if ($hasQr && $request->gcash_reference_no) {
             $refExists = savings_transaction_tbl::where('gcash_reference_no', $request->gcash_reference_no)
-                    ->where('status', '!=', 'voided')
-                    ->exists()
+                ->where('status', '!=', 'voided')
+                ->exists()
                 || share_capital_transaction_tbl::where('gcash_reference_no', $request->gcash_reference_no)
                     ->where('status', '!=', 'voided')
                     ->exists()
@@ -360,7 +452,7 @@ class SavingsController extends Controller
         );
 
         $memberUser = Auth::user();
-        $memberName = trim(($memberUser->first_name ?? '').' '.($memberUser->last_name ?? '')) ?: 'Member';
+        $memberName = trim(($memberUser->first_name ?? '') . ' ' . ($memberUser->last_name ?? '')) ?: 'Member';
 
         return redirect()->route('Financial', ['tab' => 'savings'])
             ->with('deposit_success', true)
@@ -394,15 +486,21 @@ class SavingsController extends Controller
             $hasShareCapital = $currentShares > 0;
         }
 
-        if (! $hasShareCapital) {
+        if (!$hasShareCapital) {
             return redirect()->route('Financial', ['tab' => 'savings'])
                 ->with('error', 'You must have an active Share Capital account before you can deposit or withdraw savings.');
         }
 
         $availableBalance = $this->computeSavingsBalance($savingsAccount->id);
 
+        $lock = $this->loanLockInfo($user->id, $availableBalance);
+        if ($lock['has_loan'] && $request->amount > $lock['withdrawable']) {
+            return redirect()->route('Financial', ['tab' => 'savings'])
+                ->with('error', $this->loanLockMessage($lock));
+        }
+
         if ($request->amount > $availableBalance) {
-            return back()->withErrors(['amount' => 'Insufficient balance. Available: ₱ '.number_format($availableBalance, 2)]);
+            return back()->withErrors(['amount' => 'Insufficient balance. Available: ₱ ' . number_format($availableBalance, 2)]);
         }
 
         $referenceNo = $this->generateReferenceNo('withdrawal');
@@ -428,7 +526,7 @@ class SavingsController extends Controller
             $savingsAccount->id
         );
 
-        $memberName = trim(($user->first_name ?? '').' '.($user->last_name ?? '')) ?: 'Member';
+        $memberName = trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? '')) ?: 'Member';
 
         return redirect()->route('Financial', ['tab' => 'savings'])
             ->with('withdraw_success', true)
@@ -456,7 +554,7 @@ class SavingsController extends Controller
         $debits = savings_transaction_tbl::where('savings_account_id', $savingsAccountId)
             ->where(function ($q) {
                 $q->where('type', 'withdrawal')
-                  ->orWhere('type', ShareCapital::CONVERSION_TYPE);
+                    ->orWhere('type', ShareCapital::CONVERSION_TYPE);
             })
             ->whereRaw('LOWER(status) = ?', ['completed'])
             ->sum('amount');
@@ -478,7 +576,7 @@ class SavingsController extends Controller
 
         $tx = savings_transaction_tbl::where('reference_no', $referenceNo)->first();
 
-        abort_if(! $tx, 404, 'Transaction not found.');
+        abort_if(!$tx, 404, 'Transaction not found.');
 
         $receiptAccount = savings_account_tbl::find($tx->savings_account_id);
         $receiptOwnerId = $receiptAccount ? (int) $receiptAccount->user_id : null;
@@ -499,7 +597,7 @@ class SavingsController extends Controller
         $savingsAccount = savings_account_tbl::find($tx->savings_account_id);
         $transactionUser = $savingsAccount ? Users_tbl::find($savingsAccount->user_id) : null;
 
-        if (! $transactionUser) {
+        if (!$transactionUser) {
             $transactionUser = $user;
         }
 
@@ -514,10 +612,10 @@ class SavingsController extends Controller
         $type = $cfg['label'];
         $date = \Carbon\Carbon::parse($tx->transaction_date)->format('F d, Y');
         $time = \Carbon\Carbon::parse($tx->created_at)->format('h:i A');
-        $amount = 'PHP '.number_format($tx->amount, 2);
-        $balance = 'PHP '.number_format($tx->balance_after, 2);
+        $amount = 'PHP ' . number_format($tx->amount, 2);
+        $balance = 'PHP ' . number_format($tx->balance_after, 2);
         $note = $tx->note ?? 'N/A';
-        $member = $transactionUser->first_name.' '.$transactionUser->last_name;
+        $member = $transactionUser->first_name . ' ' . $transactionUser->last_name;
         $isDeposit = $cfg['color'] === 'green';
 
         // Font paths
@@ -617,7 +715,7 @@ class SavingsController extends Controller
             imagettftext($img, 9, 0, 50, $y, $muted, $fontRegular, $row[0]);
 
             // Value (right-aligned)
-            $val = strlen($row[1]) > 38 ? substr($row[1], 0, 38).'...' : $row[1];
+            $val = strlen($row[1]) > 38 ? substr($row[1], 0, 38) . '...' : $row[1];
             $bbox = imagettfbbox(9, 0, $fontSemiBold, $val);
             $valW = $bbox[2] - $bbox[0];
             $valX = $w - 50 - $valW;
@@ -650,7 +748,7 @@ class SavingsController extends Controller
 
         // Check if request is for inline view (for admin modal display)
         if ($request->query('view') === 'inline') {
-            $base64 = 'data:image/jpeg;base64,'.base64_encode($imageData);
+            $base64 = 'data:image/jpeg;base64,' . base64_encode($imageData);
 
             return response()->json(['image' => $base64]);
         }
@@ -677,8 +775,10 @@ class SavingsController extends Controller
 
         // Segregation of duties: an Allied Worker may not process their own
         // member account (self-processing block). Only the GM may do so.
-        if (\App\Services\SoDGuard::actingAsStaff() && ! \App\Services\SoDGuard::isGeneralManager()
-            && (int) Auth::id() === (int) $request->member_id) {
+        if (
+            \App\Services\SoDGuard::actingAsStaff() && !\App\Services\SoDGuard::isGeneralManager()
+            && (int) Auth::id() === (int) $request->member_id
+        ) {
             return response()->json([
                 'success' => false,
                 'message' => 'You cannot process a transaction for your own member account (self-processing is blocked).',
@@ -689,7 +789,7 @@ class SavingsController extends Controller
         $savingsAccount = savings_account_tbl::where('user_id', $request->member_id)->first();
 
         // If no savings account exists, create one
-        if (! $savingsAccount) {
+        if (!$savingsAccount) {
             $savingsAccount = savings_account_tbl::create([
                 'user_id' => $request->member_id,
                 'balance' => 0,
@@ -706,16 +806,22 @@ class SavingsController extends Controller
             if ($savingsAccount->balance < $amount) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Insufficient balance. Available: ₱'.number_format($savingsAccount->balance, 2),
+                    'message' => 'Insufficient balance. Available: ₱' . number_format($savingsAccount->balance, 2),
                 ], 422);
             }
+
+            $lock = $this->loanLockInfo((int) $request->member_id, (float) $savingsAccount->balance);
+            if ($lock['has_loan'] && $amount > $lock['withdrawable']) {
+                return response()->json(['success' => false, 'message' => $this->loanLockMessage($lock)], 422);
+            }
+
             $newBalance = $savingsAccount->balance - $amount;
 
             $settings = SavingsInterestSetting::getOrCreate();
             if ($settings->maintaining_balance > 0 && $newBalance < $settings->maintaining_balance) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'This withdrawal would bring balance below the maintaining balance of ₱'.number_format($settings->maintaining_balance, 2).'. Minimum required: ₱'.number_format($settings->maintaining_balance, 2),
+                    'message' => 'This withdrawal would bring balance below the maintaining balance of ₱' . number_format($settings->maintaining_balance, 2) . '. Minimum required: ₱' . number_format($settings->maintaining_balance, 2),
                 ], 422);
             }
         } else {
@@ -746,15 +852,15 @@ class SavingsController extends Controller
 
         $member = Users_tbl::find($request->member_id);
         AuditLog::log(
-            'Admin '.ucfirst($type).' Savings',
-            ucfirst($type)." of ₱{$amount} to/from {$member?->first_name} {$member?->last_name} (Ref: {$referenceNo})",
+            'Admin ' . ucfirst($type) . ' Savings',
+            ucfirst($type) . " of ₱{$amount} to/from {$member?->first_name} {$member?->last_name} (Ref: {$referenceNo})",
             'savings',
             $savingsAccount->id
         );
 
         return response()->json([
             'success' => true,
-            'message' => ucfirst($type).' of ₱'.number_format($amount, 2).' successful!',
+            'message' => ucfirst($type) . ' of ₱' . number_format($amount, 2) . ' successful!',
             'reference_no' => $referenceNo,
             'new_balance' => $newBalance,
         ]);
@@ -808,7 +914,7 @@ class SavingsController extends Controller
 
         $savingsAccount = savings_account_tbl::where('user_id', $memberId)->first();
 
-        if (! $savingsAccount) {
+        if (!$savingsAccount) {
             return response()->json([
                 'success' => false,
                 'message' => 'Member does not have a savings account.',
@@ -818,8 +924,13 @@ class SavingsController extends Controller
         if ($amount > $savingsAccount->balance) {
             return response()->json([
                 'success' => false,
-                'message' => 'Insufficient savings balance. Available: ₱'.number_format($savingsAccount->balance, 2),
+                'message' => 'Insufficient savings balance. Available: ₱' . number_format($savingsAccount->balance, 2),
             ], 422);
+        }
+
+        $lock = $this->loanLockInfo((int) $memberId, (float) $savingsAccount->balance);
+        if ($lock['has_loan'] && $amount > $lock['withdrawable']) {
+            return response()->json(['success' => false, 'message' => $this->loanLockMessage($lock)], 422);
         }
 
         $settings = SavingsInterestSetting::getOrCreate();
@@ -827,7 +938,7 @@ class SavingsController extends Controller
         if ($settings->maintaining_balance > 0 && $remainingBalance < $settings->maintaining_balance) {
             return response()->json([
                 'success' => false,
-                'message' => 'This conversion would bring savings balance below the maintaining balance of ₱'.number_format($settings->maintaining_balance, 2).'. Minimum required: ₱'.number_format($settings->maintaining_balance, 2),
+                'message' => 'This conversion would bring savings balance below the maintaining balance of ₱' . number_format($settings->maintaining_balance, 2) . '. Minimum required: ₱' . number_format($settings->maintaining_balance, 2),
             ], 422);
         }
 
@@ -837,7 +948,7 @@ class SavingsController extends Controller
         if ($shares < 1) {
             return response()->json([
                 'success' => false,
-                'message' => 'Minimum conversion amount is ₱'.number_format($amountPerShare, 2).' (1 share).',
+                'message' => 'Minimum conversion amount is ₱' . number_format($amountPerShare, 2) . ' (1 share).',
             ], 422);
         }
 
@@ -853,8 +964,8 @@ class SavingsController extends Controller
         // When an idempotency key is supplied, reuse it to build the reference so a retry
         // resolves to the same reference and is detected as already processed.
         $referenceNo = $request->idempotency_key
-            ? 'SCP-CONV-'.strtoupper($request->idempotency_key)
-            : 'SCP-CONV-'.strtoupper(bin2hex(random_bytes(8)));
+            ? 'SCP-CONV-' . strtoupper($request->idempotency_key)
+            : 'SCP-CONV-' . strtoupper(bin2hex(random_bytes(8)));
 
         // Idempotency guard: a previous successful run already wrote both ledger rows
         // with this reference. Replay without touching balances again.
@@ -866,7 +977,7 @@ class SavingsController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'This conversion was already processed (Ref: '.$referenceNo.'). No changes were made.',
+                'message' => 'This conversion was already processed (Ref: ' . $referenceNo . '). No changes were made.',
                 'converted_amount' => $convertedAmount,
                 'shares' => $shares,
                 'reference_no' => $referenceNo,
@@ -932,7 +1043,7 @@ class SavingsController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Successfully converted ₱'.number_format($convertedAmount, 2).' ('.$shares.' share(s)) to Share Capital.',
+                'message' => 'Successfully converted ₱' . number_format($convertedAmount, 2) . ' (' . $shares . ' share(s)) to Share Capital.',
                 'converted_amount' => $convertedAmount,
                 'shares' => $shares,
                 'reference_no' => $referenceNo,
@@ -944,7 +1055,7 @@ class SavingsController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Conversion failed: '.$e->getMessage(),
+                'message' => 'Conversion failed: ' . $e->getMessage(),
             ], 500);
         }
     }

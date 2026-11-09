@@ -2446,3 +2446,92 @@ select.form-select{
         border-radius: 10px;
     }
 }
+
+/* ═══ Floating "+" button (mobile only, when bottom nav shows) ═══ */
+.fab-wrap {
+    display: none;
+}
+
+@media only screen and (max-width: 703px) {
+    .fab-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 12px;
+        position: fixed;
+        right: 20px;
+        bottom: calc(95px + env(safe-area-inset-bottom, 0px));
+        z-index: 999;
+    }
+
+    .fab-plus {
+        /* width: 56px; */
+        /* height: 56px; */
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        border: none;
+        background: var(--teal);
+        color: #fff;
+        font-size: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 8px 24px rgba(30, 42, 74, .35);
+        cursor: pointer;
+    }
+
+    .fab-plus i {
+        transition: transform .2s ease;
+        font-size: 14px;
+    }
+
+    .fab-plus:disabled {
+        opacity: .5;
+        cursor: not-allowed;
+    }
+
+    .fab-wrap.open .fab-plus i {
+        transform: rotate(45deg);
+    }
+
+    .fab-menu {
+        display: none;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 10px;
+    }
+
+    .fab-wrap.open .fab-menu {
+        display: flex;
+    }
+
+    .fab-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 18px;
+        background: #fff;
+        color: var(--teal);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        font-size: 13.5px;
+        font-weight: 600;
+        white-space: nowrap;
+        box-shadow: 0 6px 18px rgba(30, 42, 74, .18);
+        cursor: pointer;
+    }
+
+    .container-fluid main .main-parent .table-header .apply-btn-desktop {
+        display: none;
+    }
+
+    .container-fluid .table-parent .parent-pagination {
+        justify-content: center;
+    }
+
+    .container-fluid .table-parent .parent-pagination p {
+        display: none;
+    }
+
+}
