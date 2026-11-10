@@ -108,11 +108,19 @@ class lendingController extends Controller
     {
         $memberId = auth()->id();
 
-        $savedMonthlyIncome = DB::table('lending_program_tbls')
+        // Profile value (otherinfo_tbls) is the source of truth.
+// Falls back to the latest loan application for older members.
+        $savedMonthlyIncome = DB::table('otherinfo_tbls')
             ->where('user_id', $memberId)
-            ->whereNotNull('monthly_income')
-            ->orderBy('created_at', 'desc')
             ->value('monthly_income');
+
+        if (empty($savedMonthlyIncome)) {
+            $savedMonthlyIncome = DB::table('lending_program_tbls')
+                ->where('user_id', $memberId)
+                ->whereNotNull('monthly_income')
+                ->orderBy('created_at', 'desc')
+                ->value('monthly_income');
+        }
 
         $savingsAccount = DB::table('savings_account_tbls')
             ->where('user_id', $memberId)->first();
@@ -554,6 +562,23 @@ class lendingController extends Controller
                 ->withInput();
         }
 
+        // Income on file in the profile always wins (the field is read-only in the form,
+// but this stops anyone bypassing it). If none exists yet, save the submitted
+// one to the profile so the Profile page gets filled in too.
+        $incomeOnFile = DB::table('otherinfo_tbls')
+            ->where('user_id', $memberId)
+            ->value('monthly_income');
+
+        $monthlyIncome = !empty($incomeOnFile)
+            ? $incomeOnFile
+            : $request->monthly_income;
+
+        if (empty($incomeOnFile) && is_numeric($request->monthly_income)) {
+            $info = \App\Models\Otherinfo_tbl::firstOrNew(['user_id' => $memberId]);
+            $info->monthly_income = $request->monthly_income;
+            $info->save();
+        }
+
         try {
             $request->validate([
                 'lending_type' => 'nullable|string',
@@ -663,7 +688,7 @@ class lendingController extends Controller
                 'net_proceeds' => $netProceeds,
                 'net_proceeds_adjustment_type' => $adjustmentType,
 
-                'monthly_income' => $request->monthly_income,
+                'monthly_income' => $monthlyIncome,
                 'monthly_payment' => $monthlyPayment,
                 'total_payment' => $totalPayment,
                 'total_interest' => $totalInterest,
