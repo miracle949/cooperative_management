@@ -19,113 +19,91 @@
             <div class="nav-logo">
                 <img src="../images/logo2.png" alt="">
                 <div class="nav-text">
-                    <h2 class="fw-bold">Membership Application Form</h2>
+                    <h2>Membership <em class="accent">Application</em> Form</h2>
                     <p>Ready to become part of something special? We can't wait to welcome you.</p>
                 </div>
             </div>
         </nav>
 
-
-
-
     @if($alreadySubmitted ?? false)
 
-            {{-- Already submitted state --}}
-            <div style="display:flex; justify-content:center; align-items:center; min-height:80vh; padding: 3rem 2rem 3rem 2rem;">
-                <div style="
-                    background:#fff;
-                    border-radius:20px;
-                    width:100%;
-                    max-width:500px;
-                    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-                    overflow:hidden;
-                    border: 1px solid #e8e8e8;
-                ">
+        {{-- Already submitted state --}}
+        @php
+            $isApproved = strtolower((string) ($other->approval_status ?? '')) === 'approved';
+        @endphp
+        <div class="status-wrap">
+            <div class="status-card">
 
-                    {{-- Header --}}
-                    <div style="text-align:center; padding: 2.5rem 1.5rem 1.5rem;">
-                        <div style="
-                            width:70px; height:70px;
-                            background:linear-gradient(135deg,#e8f5ee,#d0ede0);
-                            border-radius:50%;
-                            display:flex; align-items:center; justify-content:center;
-                            margin:0 auto 1rem;
-                        ">
-                            <i class="fa-solid fa-circle-check" style="color:#1a4a3a; font-size:2rem;"></i>
-                        </div>
-                        <h3 style="font-size:1.1rem; font-weight:700; color:#1a1a1a; margin:0 0 0.4rem;">
-                            Application Already Submitted
-                        </h3>
-                        <p style="font-size:0.85rem; color:#888; margin:0 0 1.5rem; line-height:1.5;">
+                <div class="status-head">
+                    <div class="status-icon">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <h3 class="status-title">Application <em class="accent">{{ $isApproved ? 'Completed' : 'Submitted' }}</em></h3>
+                    <p class="status-sub">
+                        @if($isApproved)
+                            Thank you! Your information has been received.<br>
+                            Your membership is already approved, so you can log in now.
+                        @else
                             You have already completed your membership application form.<br>
                             Please wait for the Board of Directors to review your application.
-                        </p>
-                    </div>
-
-                    <hr style="margin:0; border-color:#f0f0f0;">
-
-                    {{-- Info card --}}
-                    <div style="padding: 1.5rem;">
-                        <div style="
-                            background:#f9f9f9;
-                            border:1.5px solid #e8e8e8;
-                            border-radius:14px;
-                            padding:1rem 1.2rem;
-                            margin-bottom:1.2rem;
-                        ">
-                            <div style="display:flex; justify-content:space-between; padding:0.45rem 0; border-bottom:1px dashed #ececec; font-size:0.84rem;">
-                                <span style="color:#888; font-weight:500;">Member</span>
-                                <span style="color:#1a4a3a; font-weight:700;">{{ $user->fullname }}</span>
-                            </div>
-                            <div style="display:flex; justify-content:space-between; padding:0.45rem 0; border-bottom:1px dashed #ececec; font-size:0.84rem;">
-                                <span style="color:#888; font-weight:500;">Email</span>
-                                <span style="color:#1a4a3a; font-weight:700;">{{ $user->email }}</span>
-                            </div>
-                            <div style="display:flex; justify-content:space-between; align-items:center; padding:0.45rem 0; font-size:0.84rem;">
-                                <span style="color:#888; font-weight:500;">Status</span>
-                                <span style="
-                                    display:inline-flex; align-items:center; gap:6px;
-                                    background:#fff8e1; border:1.5px solid #ffe082;
-                                    color:#b8860b; border-radius:20px;
-                                    padding:0.2rem 0.75rem; font-size:0.75rem; font-weight:700;
-                                ">
-                                    <span style="width:7px;height:7px;background:#e6a817;border-radius:50%;display:inline-block;"></span>
-                                    Pending Review
-                                </span>
-                            </div>
-                        </div>
-
-                        {{-- Email notice --}}
-                        <div style="
-                            background:#f0fdf4; border:1.5px solid #bbf7d0;
-                            border-radius:10px; padding:0.8rem 1rem;
-                            display:flex; gap:10px; align-items:flex-start;
-                            font-size:0.82rem; color:#166534; line-height:1.6;
-                            margin-bottom:1.2rem;
-                        ">
-                            <i class="fa fa-envelope" style="margin-top:2px; color:#16a34a;"></i>
-                            <p style="margin:0;">You will receive an <strong>email notification</strong> once your application has been reviewed and approved by the Board of Directors.</p>
-                        </div>
-
-                        {{-- Go to Login button --}}
-                        <a href="{{ route('LoginPage') }}" style="
-                            display:flex; align-items:center; justify-content:center; gap:8px;
-                            width:100%; padding:0.85rem;
-                            background: linear-gradient(135deg,#1a4a3a,#2d6a4f);
-                            color:#fff; border:none; border-radius:12px;
-                            font-size:0.95rem; font-weight:700;
-                            text-decoration:none; box-sizing:border-box;
-                        ">
-                            <i class="fa fa-right-to-bracket"></i> Go to Login
-                        </a>
-                    </div>
-
+                        @endif
+                    </p>
                 </div>
+
+                <hr class="m-0" style="border-color: var(--border);">
+
+                <div class="status-body">
+                    <div class="status-info">
+                        <div class="status-row">
+                            <span class="k">Member</span>
+                            <span class="v">{{ trim(implode(' ', array_filter([$user->first_name ?? '', $user->middle_name ?? '', $user->last_name ?? '']))) ?: ($user->fullname ?? '') }}</span>
+                        </div>
+                        <div class="status-row">
+                            <span class="k">Email</span>
+                            <span class="v">{{ $user->email }}</span>
+                        </div>
+                        <div class="status-row">
+                            <span class="k">Status</span>
+                            @if($isApproved)
+                                <span class="status-pill approved"><span class="dot"></span>Approved</span>
+                            @else
+                                <span class="status-pill"><span class="dot"></span>Pending Review</span>
+                            @endif
+                        </div>
+                    </div>
+
+                    @unless($isApproved)
+                    <div class="status-note">
+                        <i class="fa fa-envelope"></i>
+                        <p>You will receive an <strong>email notification</strong> once your application has been reviewed and approved by the Board of Directors.</p>
+                    </div>
+                    @endunless
+
+                    <a href="{{ request()->url() }}?edit=1" class="status-btn status-btn-light">
+                        <i class="fa fa-pen"></i> Update my information
+                    </a>
+
+                    <a href="{{ route('LoginPage') }}" class="status-btn" style="margin-top:0.7rem">
+                        <i class="fa fa-right-to-bracket"></i> Go to Login
+                    </a>
+                </div>
+
             </div>
+        </div>
 
     @else
 
         <div class="form-container-body">
+            @if ($errors->any())
+                <div class="form-alert" role="alert">
+                    <strong>Please fix the following:</strong>
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
             <form id="form" action="{{ route('applicationFormButton', $user->id) }}" method="post" enctype="multipart/form-data">
                 @csrf
 
@@ -155,11 +133,11 @@
                                     <div class="card-logo">
                                         <i class="fa fa-file-lines"></i>
                                     </div>
-                                    <p>KMPCATS</p>
+                                    <p>KPMPCATS</p>
                                 </div>
 
                                 <div class="header-card">
-                                    <h2>Membership Application Form</h2>
+                                    <h2>Membership <em class="accent">Application</em> Form</h2>
                                     <p>Your membership application has been approved! You can now proceed to complete your information.</p>
                                 </div>
 
@@ -169,7 +147,7 @@
                                     <div class="row">
                                         <div class="col-lg-6 mt-4">
                                             <label>Fullname</label>
-                                            <input type="text" name="fullname" value="{{ $user->fullname ?? '' }}" class="form-control mt-1">
+                                            <input type="text" name="fullname" value="{{ trim(implode(' ', array_filter([$user->first_name ?? '', $user->middle_name ?? '', $user->last_name ?? '']))) ?: ($user->fullname ?? '') }}" class="form-control mt-1" readonly>
                                         </div>
                                         <div class="col-lg-6 mt-4">
                                             <label>Username</label>
@@ -278,54 +256,25 @@
                                 <h3 class="mt-5">Government Information</h3>
                                 <div class="form-body">
                                     <div class="row">
+                                        @foreach([
+                                            'sss_id'        => 'SSS ID',
+                                            'philhealth_id' => 'Philhealth ID',
+                                            'pagibig_id'    => 'Pagibig ID',
+                                            'tin_id'        => 'Tin ID',
+                                        ] as $field => $title)
                                         <div class="col-lg-6 mt-4">
-                                            <label>SSS ID</label>
+                                            <label>{{ $title }}</label>
                                             <div class="card-box mt-2">
-                                                <input type="file" name="sss_id" class="form-control mt-1" style="font-size: 14px">
+                                                <input type="file" name="{{ $field }}" class="form-control mt-1" style="font-size: 14px">
                                                 <span>No file selected</span>
                                             </div>
-                                            @if(!empty($governmentIds->sss_id))
+                                            @if(!empty($governmentIds->$field))
                                                 <small class="mt-1 d-block">
-                                                    Current: <a href="{{ asset('storage/' . $governmentIds->sss_id) }}" target="_blank">View file</a>
+                                                    Current: <a href="{{ asset('storage/' . $governmentIds->$field) }}" target="_blank">View file</a>
                                                 </small>
                                             @endif
                                         </div>
-                                        <div class="col-lg-6 mt-4">
-                                            <label>Philhealth ID</label>
-                                            <div class="card-box mt-2">
-                                                <input type="file" name="philhealth_id" class="form-control mt-1" style="font-size: 14px">
-                                                <span>No file selected</span>
-                                            </div>
-                                            @if(!empty($governmentIds->philhealth_id))
-                                                <small class="mt-1 d-block">
-                                                    Current: <a href="{{ asset('storage/' . $governmentIds->philhealth_id) }}" target="_blank">View file</a>
-                                                </small>
-                                            @endif
-                                        </div>
-                                        <div class="col-lg-6 mt-4">
-                                            <label>Pagibig ID</label>
-                                            <div class="card-box mt-2">
-                                                <input type="file" name="pagibig_id" class="form-control mt-1" style="font-size: 14px">
-                                                <span>No file selected</span>
-                                            </div>
-                                            @if(!empty($governmentIds->pagibig_id))
-                                                <small class="mt-1 d-block">
-                                                    Current: <a href="{{ asset('storage/' . $governmentIds->pagibig_id) }}" target="_blank">View file</a>
-                                                </small>
-                                            @endif
-                                        </div>
-                                        <div class="col-lg-6 mt-4">
-                                            <label>Tin ID</label>
-                                            <div class="card-box mt-2">
-                                                <input type="file" name="tin_id" class="form-control mt-1" style="font-size: 14px">
-                                                <span>No file selected</span>
-                                            </div>
-                                            @if(!empty($governmentIds->tin_id))
-                                                <small class="mt-1 d-block">
-                                                    Current: <a href="{{ asset('storage/' . $governmentIds->tin_id) }}" target="_blank">View file</a>
-                                                </small>
-                                            @endif
-                                        </div>
+                                        @endforeach
                                     </div>
                                 </div>
 

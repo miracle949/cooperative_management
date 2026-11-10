@@ -94,10 +94,9 @@ class UsersHandle extends Controller
     public function applicationFormButton(Request $request, $id)
     {
         try {
-            $targetUser = \App\Models\Users_tbl::find($id);
             abort_unless(
                 (int) auth()->id() === (int) $id
-                || ($targetUser && in_array(strtolower((string) $targetUser->role), ['pending', 'inactive'], true))
+                || (int) session('application_form_access') === (int) $id
                 || \App\Services\SoDGuard::actingAsStaff(),
                 403
             );
@@ -105,8 +104,8 @@ class UsersHandle extends Controller
             $request->validate([
                 // users_tbls
                 'fullname' => 'nullable|string|max:255',
-                'username' => 'nullable|string|max:255',
-                'email' => 'nullable|email|max:255',
+                'username' => ['nullable', 'string', 'max:255', Rule::unique('users_tbls', 'username')->ignore($id)],
+                'email' => ['nullable', 'email', 'max:255', Rule::unique('users_tbls', 'email')->ignore($id)],
 
                 // otherinfo_tbls
                 'date_of_birth' => 'nullable|string|max:255',
@@ -168,11 +167,7 @@ class UsersHandle extends Controller
                 'edu_specify.*' => 'nullable|string|max:255',
             ]);
 
-            Users_tbl::where('id', $id)->update($request->only([
-                'fullname',
-                'username',
-                'email',
-            ]));
+            Users_tbl::where('id', $id)->update(array_filter($request->only(['username', 'email'])));
 
             Family_tbl::updateOrCreate(
                 ['user_id' => $id],
@@ -201,6 +196,7 @@ class UsersHandle extends Controller
                     'weight' => $request->weight,
                     'blood_type' => $request->blood_type,
                     'skills' => $request->skills,
+                    'application_form_completed_at' => now(),   // ← add this
                 ]
             );
 
@@ -1049,7 +1045,14 @@ class UsersHandle extends Controller
             ->first();
 
         $currentShares = $account->total_shares ?? 0;
-        $canApplyLoan = $currentShares >= 25;
+        $savingsAccount = DB::table('savings_account_tbls')->where('user_id', auth()->id())->first();
+        $currentSavings = $savingsAccount
+            ? (float) (new SavingsController)->computeSavingsBalance($savingsAccount->id)
+            : 0.0;
+
+        $minSavingsForLoan = SavingsController::MIN_SAVINGS_FOR_LOAN;
+        $hasMinSavings = $currentSavings >= $minSavingsForLoan;
+        $canApplyLoan = $currentShares >= 25 && $hasMinSavings;
 
         return view(
             'members_components.loan_application',
@@ -1057,6 +1060,9 @@ class UsersHandle extends Controller
                 'username' => $username,
                 'firstName' => $firstName,
                 'email' => $email,
+                'minSavingsForLoan' => $minSavingsForLoan,
+                'hasMinSavings' => $hasMinSavings,
+                'currentSavings' => $currentSavings
             ],
             compact('currentShares', 'canApplyLoan')
         );
@@ -1199,19 +1205,41 @@ class UsersHandle extends Controller
             'new_password' => 'required|min:8|confirmed',
         ]);
 
-        Auth::logoutOtherDevices($request->new_password);
-
         $user = Auth::user();
 
-        Auth::logoutOtherDevices($request->new_password); // needs the AuthenticateSession middleware
-
+        // 1) Check the current password FIRST
+        // 1) Check the current password FIRST
         if (!\Illuminate\Support\Facades\Hash::check($request->current_password, $user->password)) {
-            return response()->json(['success' => false, 'message' => 'Current password is incorrect.'], 422);
+
+            // Duplicate request: the password was just changed to this exact new password
+            $justChanged = $user->password_changed_at
+                && Carbon::parse($user->password_changed_at)->gt(now()->subMinute())
+                && \Illuminate\Support\Facades\Hash::check($request->new_password, $user->password);
+
+            if ($justChanged) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Password updated successfully.',
+                ]);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Current password is incorrect.',
+            ]);
         }
 
+        // 2) Save the new password
         $user->password = bcrypt($request->new_password);
         $user->password_changed_at = now();
         $user->save();
+
+        // 3) Only now log out other devices, using the NEW password
+        try {
+            Auth::logoutOtherDevices($request->new_password);
+        } catch (\Throwable $e) {
+            // Don't fail the password change if this step can't run
+        }
 
         \App\Services\SingleSession::release($user->id);
 
@@ -1887,6 +1915,17 @@ class UsersHandle extends Controller
         $timeDepositBalance = 0;
         $interestAccruedBalance = 0;
         $totalSavingsBalance = $regularSavingsBalance;
+        $regularSavingsBalance = (new \App\Http\Controllers\SavingsController)->computeSavingsBalance($savingsAccount->id);
+        $timeDepositBalance = 0;
+        $interestAccruedBalance = 0;
+        $totalSavingsBalance = $regularSavingsBalance;
+
+        // ── Loan eligibility (same rule as LoanApplication()) ──
+        $minSavingsForLoan = \App\Http\Controllers\SavingsController::MIN_SAVINGS_FOR_LOAN;
+        $meetsLoanSavings = $totalSavingsBalance >= $minSavingsForLoan;
+
+        $loanLock = (new \App\Http\Controllers\SavingsController)->loanLockInfo($memberId, (float) $totalSavingsBalance);
+        $loanLock = (new \App\Http\Controllers\SavingsController)->loanLockInfo($memberId, (float) $totalSavingsBalance);
 
         $sirSettings = \App\Models\SavingsInterestSetting::getOrCreate();
         $regularSavingsRate = (float) $sirSettings->annual_rate;
@@ -1899,6 +1938,13 @@ class UsersHandle extends Controller
             * ($now->day / $now->daysInMonth),
             2
         );
+
+        // Full interest the member will receive on the next release (not yet credited)
+        $projectedMonthlyInterest = round(
+            $regularSavingsBalance * ($regularSavingsRate / 100) / max(1, (int) $sirSettings->frequency_divisor),
+            2
+        );
+        $nextInterestDate = $now->copy()->addMonthNoOverflow()->startOfMonth();
 
         $availableGrowthYears = savings_transaction_tbl::where('savings_account_id', $savingsAccount->id)
             ->selectRaw('DISTINCT YEAR(transaction_date) as yr')
@@ -2007,6 +2053,27 @@ class UsersHandle extends Controller
                 ]);
         }
 
+        // Pending "accruing" row for the interest that will be credited next release
+        if (
+            in_array($type, ['all', 'interest_credit'])
+            && in_array($status, ['all', 'accruing'])
+            && $ref === ''
+            && $projectedMonthlyInterest > 0
+        ) {
+            $interestReleases->push((object) [
+                'id' => 'accruing-current',
+                'type' => 'interest_credit',
+                'reference_no' => null,
+                'transaction_date' => $now->toDateString(),
+                'amount' => $projectedMonthlyInterest,
+                'status' => 'accruing',
+                'payment_method' => null,
+                'gcash_reference_no' => null,
+                'void_reason' => null,
+                'created_at' => $now,
+            ]);
+        }
+
         // ── Merge, sort newest first, paginate (10 per page) ─────────────
         $allTxs = $savingsTxs->concat($interestReleases)
             ->sortByDesc(fn($tx) =>
@@ -2093,6 +2160,7 @@ class UsersHandle extends Controller
                 DB::table('savings_interest_releases_tbls')->where('savings_account_id', $savingsAccount->id)->exists(),
                 fn($c) => $c->push('credited')
             )
+            ->when($projectedMonthlyInterest > 0, fn($c) => $c->push('accruing'))
             ->map(fn($s) => ucfirst($s))
             ->unique()
             ->sortBy(fn($s) => strtolower($s))
@@ -2134,6 +2202,8 @@ class UsersHandle extends Controller
                 // Savings
                 'savingsAccount',
                 'transactions',
+                'meetsLoanSavings',
+                'minSavingsForLoan',
                 'type',
                 'ref',
                 'date',
@@ -2157,6 +2227,9 @@ class UsersHandle extends Controller
                 'tdHistory',
                 'savingsGrowth',
                 'estimatedQuarterInterest',
+                'loanLock',
+                'projectedMonthlyInterest',
+                'nextInterestDate',
                 // Shared
                 'gcashPaymentMethod',
                 'paymentMethods'
@@ -3134,6 +3207,7 @@ class UsersHandle extends Controller
                     'message' => "{$displayType} of ₱" . number_format((float) ($loan->monthly_payment ?? 0), 2) . " is due today ({$due->format('M d, Y')}).",
                     'time' => $due->diffForHumans(),
                     'sort_at' => $due,
+                    'group' => 1,
                     'url' => route('LoanApplication'),
                 ]);
             } elseif ($daysLeft <= 7) {
@@ -3144,6 +3218,7 @@ class UsersHandle extends Controller
                     'message' => "{$displayType} is due on {$due->format('M d, Y')} (in {$daysLeft} day" . ($daysLeft === 1 ? '' : 's') . ').',
                     'time' => $due->diffForHumans(),
                     'sort_at' => $due,
+                    'group' => 1,
                     'url' => route('LoanApplication'),
                 ]);
             }
@@ -3374,6 +3449,31 @@ class UsersHandle extends Controller
             }
         }
 
+        // ── 4) Announcements (last 14 days) ─────────────────────────────
+        $recentAnnouncements = \App\Models\Announcements_tbl::with('user')
+            ->where('created_at', '>=', $today->copy()->subDays(14))
+            ->orderByDesc('created_at')
+            ->take(10)
+            ->get();
+
+        foreach ($recentAnnouncements as $an) {
+            // Adjust these field names if your table uses different columns
+            $anTitle = data_get($an, 'title');
+            $anBody = data_get($an, 'content') ?? data_get($an, 'message') ?? data_get($an, 'body') ?? '';
+            $text = $anTitle ?: \Illuminate\Support\Str::limit(strip_tags((string) $anBody), 90);
+
+            $notifications->push([
+                'key' => 'announcement-' . $an->id,
+                'icon' => 'fa-bullhorn',
+                'color' => 'gold',
+                'title' => 'New Announcement',
+                'message' => \Illuminate\Support\Str::limit(strip_tags((string) $text), 110),
+                'time' => $an->created_at->diffForHumans(),
+                'sort_at' => $an->created_at,
+                'url' => route('MemberPortal'),
+            ]);
+        }
+
         // ── 5) Seminars — upcoming sessions ─────────────────────────────
         $seminarTypeLabelsNotif = [
             'pmes' => 'PMES',
@@ -3408,6 +3508,7 @@ class UsersHandle extends Controller
                     . " · {$deliveryText}.",
                 'time' => $sessionDate->diffForHumans(),
                 'sort_at' => $sessionDate,
+                'group' => 1,
                 'clickable' => false,   // ← replaces 'url' => route('Seminars')
             ]);
         }
@@ -3436,6 +3537,7 @@ class UsersHandle extends Controller
                 'message' => "{$displayLabel} is still required to complete your membership training. No session has been scheduled yet — check back soon.",
                 'time' => 'Pending',
                 'sort_at' => $today->copy()->addDays(90),
+                'group' => 1,
                 'clickable' => false,   // ← replaces 'url' => route('Seminars')
             ]);
         }
@@ -3454,6 +3556,30 @@ class UsersHandle extends Controller
         $readIds = $readIds + session('read_notification_ids', []);
 
         $nowTs = Carbon::now()->getTimestamp();
+
+        return $notifications
+            ->unique(fn($n) => $n['title'] . '|' . $n['message'])
+            ->map(function ($n) {
+                $n['id'] = $n['db_id'] ?? $n['key'] ?? md5($n['title'] . '|' . $n['message']);
+                return $n;
+            })
+            ->reject(fn($n) => isset($readIds[$n['id']]))
+            ->sort(function ($a, $b) use ($nowTs) {
+                $ga = $a['group'] ?? 0;
+                $gb = $b['group'] ?? 0;
+
+                // Seminars (group 1) always go after everything else
+                if ($ga !== $gb) {
+                    return $ga <=> $gb;
+                }
+
+                $ta = min($a['sort_at']->getTimestamp(), $nowTs);
+                $tb = min($b['sort_at']->getTimestamp(), $nowTs);
+
+                // Normal items: newest first. Seminars: soonest session first.
+                return $ga === 0 ? $tb <=> $ta : $a['sort_at']->getTimestamp() <=> $b['sort_at']->getTimestamp();
+            })
+            ->values();
 
         return $notifications
             ->unique(fn($n) => $n['title'] . '|' . $n['message'])
@@ -3879,7 +4005,10 @@ class UsersHandle extends Controller
 
     public function checkEmail(Request $request)
     {
-        $exists = \App\Models\Users_tbl::where('email', $request->email)->exists();
+        $request->validate(['email' => 'required|email']);
+
+        $exists = \App\Models\Users_tbl::whereRaw('LOWER(email) = ?', [strtolower(trim($request->email))])
+            ->exists();
 
         return response()->json(['exists' => $exists]);
     }

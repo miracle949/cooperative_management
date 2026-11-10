@@ -595,18 +595,21 @@
         const emailInput = currentFormStep.querySelector('#email');
 
         // ✅ EMAIL + OTP VERIFICATION — then check if email already exists
+        // ✅ EMAIL: check if already registered FIRST, then OTP
         if (emailInput && emailInput.value) {
-            const existingEmailError = currentFormStep.querySelector('#email-exists-error');
-            if (existingEmailError) existingEmailError.remove();
+            // clear old errors
+            currentFormStep.querySelector('#email-exists-error')?.remove();
+            document.getElementById('email-send-error')?.remove();
+            emailInput.classList.remove('is-invalid');
 
-            const otpVerified = await sendOtpAndVerify(emailInput.value);
-            if (!otpVerified) return;
-
+            // 1) Does this email already exist?
+            setNextButtonLoading(true, 'Checking email…');
             try {
                 const response = await fetch('/check-email', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Accept': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content
                             || document.querySelector('input[name="_token"]')?.value
                     },
@@ -616,6 +619,7 @@
                 const data = await response.json();
 
                 if (data.exists) {
+                    setNextButtonLoading(false);
                     const errorMsg = document.createElement('small');
                     errorMsg.id = 'email-exists-error';
                     errorMsg.style.cssText = 'color: #dc2626; font-size: 12.5px; margin-top: 4px; display: block;';
@@ -623,13 +627,19 @@
                     emailInput.classList.add('is-invalid');
                     emailInput.insertAdjacentElement('afterend', errorMsg);
                     emailInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    return;
-                } else {
-                    emailInput.classList.remove('is-invalid');
+                    return;   // ⛔ stop — don't send OTP
                 }
             } catch (err) {
                 console.error('Email check failed:', err);
+                setNextButtonLoading(false);
+                alert('Could not verify the email. Please check your connection and try again.');
+                return;
             }
+            setNextButtonLoading(false);
+
+            // 2) Email is free → now send/verify OTP
+            const otpVerified = await sendOtpAndVerify(emailInput.value);
+            if (!otpVerified) return;
 
             goToNextStep();
             return;

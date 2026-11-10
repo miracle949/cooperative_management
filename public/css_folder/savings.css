@@ -95,7 +95,7 @@
     overflow: hidden;
 }
 
-.main-head{
+.main-head {
     display: flex;
     justify-content: end;
 }
@@ -188,7 +188,7 @@
     font-size: 13.5px;
 }
 
-.container-fluid main .card-box-parent .card-box-text button span{
+.container-fluid main .card-box-parent .card-box-text button span {
     color: #ffffff;
 }
 
@@ -1550,6 +1550,12 @@
 
     .container-fluid section .card-box-parent .card-box {
         width: 100%;
+    }
+
+    .sm-tab-group {
+        display: inline-flex;
+        gap: 0.5rem;
+        margin: 1.25rem 16px 1.25rem;
     }
 }
 

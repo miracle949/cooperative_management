@@ -145,10 +145,48 @@ class lendingController extends Controller
 
         $minimumShares = (float) ($loanEligSettings->minimum_shares ?? 10);
 
-        $canApplyLoan = $currentShares >= $minimumShares;
+        // (remove the first "$savingsAccount / $currentSavings" block near the top
+//  and keep one computed-balance version)
+        $savingsAccount = DB::table('savings_account_tbls')
+            ->where('user_id', $memberId)->first();
+
+        $currentSavings = $savingsAccount
+            ? (float) (new SavingsController)->computeSavingsBalance($savingsAccount->id)
+            : 0.0;
+
+        $loanEligSettings = \App\Models\LoanEligibilitySetting::getOrCreate();
+
+        $savingsHoldback = $loanEligSettings->savings_to_loan_enabled
+            ? (float) $loanEligSettings->savings_to_loan_ratio
+            : 0;
+
+        $scAccount = DB::table('share_capital_account_tbls')
+            ->where('user_id', $memberId)->first();
+
+        $currentShares = $scAccount
+            ? (float) ShareCapital::paidUpForAccount((int) $scAccount->id)['shares']
+            : 0;
+
+        $minimumShares = (float) ($loanEligSettings->minimum_shares ?? 10);
+        $minSavingsForLoan = SavingsController::MIN_SAVINGS_FOR_LOAN;
+
+        $hasMinShares = $currentShares >= $minimumShares;
+        $hasMinSavings = $currentSavings >= $minSavingsForLoan;
+
+        $canApplyLoan = $hasMinShares && $hasMinSavings;
+
+        // Use the computed (completed-only) balance, not the cached column
+        $currentSavings = $savingsAccount
+            ? (float) (new SavingsController)->computeSavingsBalance($savingsAccount->id)
+            : 0.0;
+
+        $minSavingsForLoan = SavingsController::MIN_SAVINGS_FOR_LOAN;
+        $hasMinSavings = $currentSavings >= $minSavingsForLoan;
+
         $maxLoan = 25000;
 
         // Savings caps total borrowing capacity, regardless of the ₱25,000 program ceiling
+        // $holdback = $savingsToLoanEnabled ? (float) $loanEligSettings->savings_to_loan_ratio : 0;
         $maxLoanBySavings = max(0, $currentSavings - $savingsHoldback);
 
         // Get all active loans (Pending, Approved, Completed) and calculate remaining balance
@@ -360,6 +398,9 @@ class lendingController extends Controller
             'effectiveCeiling',
             'totalPaidOnActiveLoans',
             'savedMonthlyIncome',
+            'minSavingsForLoan',   // ← add
+            'hasMinShares',        // ← add
+            'hasMinSavings',
             // ── new ──
             'allLoans',
             'allLoansCount',
@@ -423,12 +464,38 @@ class lendingController extends Controller
             : 0;
 
         $savingsAccount = DB::table('savings_account_tbls')->where('user_id', $memberId)->first();
-        $currentSavings = (float) ($savingsAccount->balance ?? 0);
+        $currentSavings = $savingsAccount
+            ? (float) (new SavingsController)->computeSavingsBalance($savingsAccount->id)
+            : 0.0;
+
+        // ── Minimum savings requirement ──
+        $minSavings = SavingsController::MIN_SAVINGS_FOR_LOAN;
+        if ($currentSavings < $minSavings) {
+            return redirect()->back()->with(
+                'loan_blocked',
+                'You need at least ₱' . number_format($minSavings, 2) . ' in savings to apply for a loan. ' .
+                'You currently have ₱' . number_format($currentSavings, 2) . '.'
+            );
+        }
 
         $loanEligSettings = \App\Models\LoanEligibilitySetting::getOrCreate();
         $savingsToLoanEnabled = $loanEligSettings->savings_to_loan_enabled;
 
         $minimumShares = (float) ($loanEligSettings->minimum_shares ?? 10);
+        $minimumShares = (float) ($loanEligSettings->minimum_shares ?? 10);
+        $hasMinShares = $currentShares >= $minimumShares;
+
+        $savingsAccount = DB::table('savings_account_tbls')
+            ->where('user_id', $memberId)->first();
+
+        // Use the computed (completed-only) balance, not the cached column
+        $currentSavings = $savingsAccount
+            ? (float) (new SavingsController)->computeSavingsBalance($savingsAccount->id)
+            : 0.0;
+
+        $minSavingsForLoan = SavingsController::MIN_SAVINGS_FOR_LOAN;
+        $hasMinSavings = $currentSavings >= $minSavingsForLoan;
+
         if ($currentShares < $minimumShares) {
             return redirect()->back()->with(
                 'loan_blocked',

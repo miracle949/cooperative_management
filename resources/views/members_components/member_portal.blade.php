@@ -327,6 +327,266 @@
             flex-shrink: 0;
         }
 
+        /* ─── Announcement banner ─────────────────────────── */
+        .ann-banner {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-left: 5px solid var(--gold, #C9A84C);
+            border-radius: 16px;
+            padding: 14px 18px;
+            margin-top: 1rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .06), 0 1px 2px rgba(0, 0, 0, .04);
+            animation: annSlideIn .5s cubic-bezier(.22, 1, .36, 1) both;
+        }
+
+        .ann-banner.ann-hide {
+            display: none;
+        }
+
+        .ann-icon {
+            width: 38px;
+            height: 38px;
+            flex-shrink: 0;
+            border-radius: 12px;
+            background: #FEF3C7;
+            color: #b45309;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: annRing 2.4s ease-in-out 1s 2;
+        }
+
+        .ann-main {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .ann-top {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .ann-badge {
+            font-size: 10.5px;
+            font-weight: 700;
+            letter-spacing: .5px;
+            text-transform: uppercase;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: var(--teal);
+            color: #fff;
+        }
+
+        .ann-title {
+            font-size: 14.5px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .ann-meta {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .ann-body {
+            font-size: 13px;
+            /* color: #555; */
+            color: var(--teal);
+            font-weight: 600;
+            line-height: 1.5;
+            margin: 8px 0 0;
+            white-space: pre-wrap;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .ann-body.open {
+            display: block;
+            -webkit-line-clamp: unset;
+        }
+
+        .ann-actions {
+            display: flex;
+            gap: 14px;
+            margin-top: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .ann-link {
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--muted);
+        }
+
+        .ann-nav {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: auto;
+        }
+
+        .ann-nav button {
+            width: 26px;
+            height: 26px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: #fff;
+            color: var(--muted);
+        }
+
+        .ann-nav button .fa {
+            font-size: 11px;
+        }
+
+        .ann-count {
+            font-size: 12px;
+            color: var(--muted);
+            min-width: 34px;
+            text-align: center;
+        }
+
+        .ann-close {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            line-height: 1;
+            color: #9ca3af;
+            padding: 0 2px;
+        }
+
+        .ann-slide {
+            display: none;
+        }
+
+        .ann-slide.active {
+            display: block;
+            animation: annFade .35s ease both;
+        }
+
+        @keyframes annSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-14px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes annFade {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes annRing {
+
+            0%,
+            100% {
+                transform: rotate(0);
+            }
+
+            10%,
+            30% {
+                transform: rotate(-14deg);
+            }
+
+            20%,
+            40% {
+                transform: rotate(14deg);
+            }
+
+            50% {
+                transform: rotate(0);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .ann-banner {
+                position: relative;
+                flex-wrap: wrap;
+                gap: 10px 12px;
+                margin: 1rem 16px 0;
+                padding: 12px 14px;
+                border-radius: 14px;
+            }
+
+            .ann-icon {
+                width: 34px;
+                height: 34px;
+                border-radius: 10px;
+            }
+
+            /* Leave room on the right for the close button */
+            .ann-main {
+                flex: 1 1 0;
+                padding-right: 22px;
+            }
+
+            .ann-close {
+                position: absolute;
+                top: 8px;
+                right: 10px;
+            }
+
+            .ann-title {
+                font-size: 14px;
+            }
+
+            /* Beats the page's global "main p" size on small screens */
+            .ann-banner .ann-body {
+                font-size: 13px;
+                line-height: 1.5;
+            }
+
+            .ann-link {
+                padding: 4px 0;
+            }
+
+            /* Prev / next moves to its own row under the text */
+            .ann-nav {
+                order: 3;
+                width: 100%;
+                margin-left: 0;
+                justify-content: center;
+                gap: 14px;
+                padding-top: 8px;
+                border-top: 1px solid var(--border);
+            }
+
+            .ann-nav button {
+                width: 32px;
+                height: 32px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .ann-icon {
+                display: none;
+            }
+        }
+
         /* Same breakpoints as homepage.css */
         @media (max-width: 965px) {
             .sk-cards {
@@ -513,6 +773,45 @@
                     <main>
 
                         <h2>Good day, {{ $username }}! <span>Here's your overview</span></h2>
+
+                        @php $bannerAnnouncements = $announcements->take(3); @endphp
+
+                        @if ($bannerAnnouncements->isNotEmpty())
+                            <div class="ann-banner" id="annBanner" role="note">
+                                <div class="ann-icon"><i class="fa-solid fa-bullhorn"></i></div>
+
+                                <div class="ann-main">
+                                    @foreach ($bannerAnnouncements as $i => $a)
+                                        <div class="ann-slide {{ $i === 0 ? 'active' : '' }}" data-ann-id="{{ $a->id }}">
+                                            <div class="ann-top">
+                                                @if ($a->created_at->gt(now()->subDays(3)))
+                                                    <span class="ann-badge">New</span>
+                                                @endif
+                                                <span class="ann-title">{{ $a->title }}</span>
+                                            </div>
+                                            <div class="ann-meta">
+                                                {{ $a->created_at->format('M d, Y') }}
+                                                @if ($a->user) · {{ $a->user->first_name }} {{ $a->user->last_name }} @endif
+                                            </div>
+                                            <p class="ann-body">{{ trim($a->content) }}</p>
+                                            <div class="ann-actions">
+                                                <button type="button" class="ann-link ann-toggle">Read more</button>
+                                                <button type="button" class="ann-link ann-viewall">View all</button>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+
+                                <div class="ann-nav" id="annNav">
+                                    <button type="button" id="annPrev" aria-label="Previous"><i
+                                            class="fa-solid fa-chevron-left"></i></button>
+                                    <span class="ann-count" id="annCount"></span>
+                                    <button type="button" id="annNext" aria-label="Next"><i
+                                            class="fa-solid fa-chevron-right"></i></button>
+                                </div>
+                                <button type="button" class="ann-close" id="annClose" aria-label="Dismiss">&times;</button>
+                            </div>
+                        @endif
 
                         {{-- Only Allied Workers see this (and only on screens 1200px and below — see homepage.css) --}}
                         @if(auth()->user()?->isAlliedWorker())
@@ -907,130 +1206,17 @@
                             </div>
 
 
-                            <div class="panel graph announcements">
+                            <div class="panel graph announcements" id="communityPanel">
                                 <div class="panel-head">
                                     <div>
-                                        <h3>Community</h3>
-                                        <p>Announcements and polls</p>
-                                    </div>
-                                </div>
-                                <div style="display:flex; border-bottom: 1px solid var(--line);">
-                                    <button type="button" data-action="switchMemberCommunityTab"
-                                        data-arg='["announcements"]' id="member-community-tab-announcements"
-                                        style="flex:1; padding:10px; font-size:13px; font-weight:600; cursor:pointer; border:none; background:none; border-bottom:2px solid var(--teal); color:var(--teal);">
-                                        <i class="fa-solid fa-bullhorn" style="margin-right:4px;"></i> Announcements
-                                    </button>
-                                    <button type="button" data-action="switchMemberCommunityTab" data-arg='["polls"]'
-                                        id="member-community-tab-polls"
-                                        style="flex:1; padding:10px; font-size:13px; font-weight:600; cursor:pointer; border:none; background:none; border-bottom:2px solid transparent; color:var(--muted);">
-                                        <i class="fa-solid fa-chart-bar" style="margin-right:4px;"></i> Polls
-                                    </button>
-                                </div>
-
-                                {{-- Announcements Tab --}}
-                                <div id="member-community-content-announcements" class="panel-body"
-                                    style="height:auto; max-height:400px;">
-                                    <div class="tx-list" id="announcementsList">
-                                        @forelse ($announcements as $announcement)
-                                            <div class="tx-list-item member-announcement-item"
-                                                style="flex-direction:column; align-items:stretch; padding:12px 0; border-bottom:1px solid var(--line);">
-                                                <div style="display:flex; align-items:center; gap:10px; cursor:pointer;"
-                                                    data-action="toggleMemberAnnouncement"
-                                                    data-arg='[{{ $announcement->id }}]'>
-                                                    <div class="tx-icon gold"><i class="fa-solid fa-bullhorn"></i></div>
-                                                    <div class="tx-list-info" style="flex:1;">
-                                                        <strong>{{ $announcement->title }}</strong>
-                                                        <span>
-                                                            {{ $announcement->created_at->format('M d, Y') }}
-                                                            @if($announcement->user)
-                                                                · {{ $announcement->user->first_name }}
-                                                                {{ $announcement->user->last_name }}
-                                                            @endif
-                                                        </span>
-                                                    </div>
-                                                    <i class="fa-solid fa-chevron-down"
-                                                        style="font-size:12px; color:var(--muted); transition:transform .2s; cursor:pointer;"
-                                                        id="announcement-chevron-{{ $announcement->id }}"></i>
-                                                </div>
-                                                <div id="announcement-expanded-{{ $announcement->id }}"
-                                                    style="display:none; margin-top:10px; padding-left:46px;">
-                                                    <p
-                                                        style="font-size:13px; color:#555; white-space:pre-wrap; line-height:1.5;">
-                                                        {{ trim($announcement->content) }}
-                                                    </p>
-                                                    <div style="display:flex; gap:8px; margin-top:10px;">
-                                                        <button type="button" data-action="toggleMemberLike"
-                                                            data-arg='[{{ $announcement->id }},"|el|"]' data-stop
-                                                            class="member-like-btn {{ $announcement->likes->contains('user_id', $user->id ?? 0) ? 'liked' : '' }}"
-                                                            style="display:inline-flex; align-items:center; gap:4px; padding:4px 10px; border-radius:8px; font-size:12px; font-weight:600; border:1px solid var(--line); background:{{ $announcement->likes->contains('user_id', $user->id ?? 0) ? '#FEE2E2' : 'var(--card)' }}; color:{{ $announcement->likes->contains('user_id', $user->id ?? 0) ? '#DC2626' : '#6B7280' }}; cursor:pointer;">
-                                                            <i class="fa-solid fa-heart"></i> <span
-                                                                class="like-count">{{ $announcement->likes_count }}</span>
-                                                        </button>
-                                                        <button type="button" data-action="toggleMemberComments"
-                                                            data-arg='[{{ $announcement->id }}]' data-stop
-                                                            style="display:inline-flex; align-items:center; gap:4px; padding:4px 10px; border-radius:8px; font-size:12px; font-weight:600; border:1px solid var(--line); background:var(--card); color:#6B7280; cursor:pointer;">
-                                                            <i class="fa-solid fa-comment"></i>
-                                                            {{ $announcement->comments_count }}
-                                                        </button>
-                                                    </div>
-                                                    <div id="member-comments-{{ $announcement->id }}"
-                                                        style="display:none; margin-top:10px;">
-                                                        <div class="member-comments-list"
-                                                            style="display:flex; flex-direction:column; gap:6px;">
-                                                            @foreach($announcement->comments as $comment)
-                                                                <div
-                                                                    style="display:flex; gap:8px; padding:8px; background:var(--bg); border-radius:8px;">
-                                                                    <div
-                                                                        style="width:24px; height:24px; border-radius:50%; background:{{ $comment->user && in_array($comment->user->role, ['admin', 'general-manager']) ? '#3B82F6' : 'var(--teal)' }}; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                                                                        <span
-                                                                            style="color:#fff; font-size:10px; font-weight:700;">{{ strtoupper(substr($comment->user->first_name ?? '', 0, 1)) }}{{ strtoupper(substr($comment->user->last_name ?? '', 0, 1)) }}</span>
-                                                                    </div>
-                                                                    <div style="flex:1; min-width:0;">
-                                                                        <div
-                                                                            style="display:flex; align-items:center; gap:4px; margin-bottom:2px;">
-                                                                            <span
-                                                                                style="font-size:12px; font-weight:600;">{{ $comment->user->first_name ?? '' }}
-                                                                                {{ $comment->user->last_name ?? '' }}</span>
-                                                                            @if($comment->user && in_array($comment->user->role, ['admin', 'general-manager']))
-                                                                                <span
-                                                                                    style="font-size:10px; padding:1px 4px; background:#DBEAFE; color:#1D4ED8; border-radius:4px; font-weight:600;">Admin</span>
-                                                                            @endif
-                                                                            <span
-                                                                                style="font-size:11px; color:var(--muted);">{{ $comment->created_at->diffForHumans() }}</span>
-                                                                        </div>
-                                                                        <p style="font-size:12px; color:#555; margin:0;">
-                                                                            {{ $comment->comment }}
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
-                                                            @endforeach
-                                                        </div>
-                                                        <form data-action="postMemberComment"
-                                                            data-arg='["|event|",{{ $announcement->id }}]'
-                                                            style="display:flex; gap:6px; margin-top:8px;">
-                                                            @csrf
-                                                            <input type="text" placeholder="Write a comment..." required
-                                                                style="flex:1; padding:6px 10px; border:1px solid var(--line); border-radius:8px; font-size:12px; background:var(--card); color:var(--text);">
-                                                            <button type="submit"
-                                                                style="padding:6px 12px; background:var(--teal); color:#fff; border:none; border-radius:8px; font-size:12px; cursor:pointer;"><i
-                                                                    class="fa-solid fa-paper-plane"></i></button>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @empty
-                                            <div style="text-align: center; color: #aaa; padding: 2rem; font-size: 13px;">
-                                                <i class="fa fa-bullhorn"
-                                                    style="font-size: 24px; display: block; margin-bottom: 8px;"></i>
-                                                No announcements yet.
-                                            </div>
-                                        @endforelse
+                                        <h3>Polls</h3>
+                                        <p>Vote on cooperative polls</p>
                                     </div>
                                 </div>
 
                                 {{-- Polls Tab --}}
                                 <div id="member-community-content-polls" class="panel-body"
-                                    style="height:auto; max-height:400px; display:none;">
+                                    style="height:auto; max-height:400px;">
                                     @php $pollOptionsMap = []; @endphp
                                     @forelse($polls as $poll)
                                         @php
@@ -1564,6 +1750,115 @@
             </div>{{-- end .main-parent --}}
         </div>{{-- end .rightbar --}}
     </div>{{-- end .container-fluid --}}
+
+    <!-- All Announcements Modal -->
+    <div id="allAnnouncementsModal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:99999; align-items:center; justify-content:center;"
+        data-overlay>
+        <div
+            style="background:#fff; border-radius:16px; max-width:560px; width:92%; padding:0; box-shadow:0 25px 60px rgba(0,0,0,0.3); max-height:85vh; display:flex; flex-direction:column;">
+            <div
+                style="padding:20px 24px; border-bottom:1px solid #e5e7eb; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <h3 style="margin:0; font-size:15px; font-weight:700; color:#111827;">All Announcements</h3>
+                    <p style="margin:3.2px 0 0; font-size:13.5px; color:var(--muted);">Latest news from the cooperative
+                    </p>
+                </div>
+                <button data-action="hide-modal" data-target="allAnnouncementsModal"
+                    style="background:none; border:none; font-size:24px; cursor:pointer; color:#6b7280;">&times;</button>
+            </div>
+
+            <div style="padding:0 24px; overflow-y:auto; flex:1;">
+                <div class="tx-list" id="announcementsList">
+                    @forelse ($announcements as $announcement)
+                        <div class="tx-list-item member-announcement-item"
+                            style="flex-direction:column; align-items:stretch; padding:12px 0; border-bottom:1px solid var(--line);">
+                            <div style="display:flex; align-items:center; gap:10px; cursor:pointer;"
+                                data-action="toggleMemberAnnouncement" data-arg='[{{ $announcement->id }}]'>
+                                <div class="tx-icon gold"><i class="fa-solid fa-bullhorn"></i></div>
+                                <div class="tx-list-info" style="flex:1;">
+                                    <strong>{{ $announcement->title }}</strong>
+                                    <span>
+                                        {{ $announcement->created_at->format('M d, Y') }}
+                                        @if($announcement->user)
+                                            · {{ $announcement->user->first_name }} {{ $announcement->user->last_name }}
+                                        @endif
+                                    </span>
+                                </div>
+                                <i class="fa-solid fa-chevron-down"
+                                    style="font-size:12px; color:var(--muted); transition:transform .2s; cursor:pointer;"
+                                    id="announcement-chevron-{{ $announcement->id }}"></i>
+                            </div>
+
+                            <div id="announcement-expanded-{{ $announcement->id }}"
+                                style="display:none; margin-top:10px; padding-left:46px;">
+                                <p style="font-size:13px; color:#555; white-space:pre-wrap; line-height:1.5;">
+                                    {{ trim($announcement->content) }}
+                                </p>
+                                <div style="display:flex; gap:8px; margin-top:10px;">
+                                    <button type="button" data-action="toggleMemberLike"
+                                        data-arg='[{{ $announcement->id }},"|el|"]' data-stop
+                                        class="member-like-btn {{ $announcement->likes->contains('user_id', $user->id ?? 0) ? 'liked' : '' }}"
+                                        style="display:inline-flex; align-items:center; gap:4px; padding:4px 10px; border-radius:8px; font-size:12px; font-weight:600; border:1px solid var(--line); background:{{ $announcement->likes->contains('user_id', $user->id ?? 0) ? '#FEE2E2' : 'var(--card)' }}; color:{{ $announcement->likes->contains('user_id', $user->id ?? 0) ? '#DC2626' : '#6B7280' }}; cursor:pointer;">
+                                        <i class="fa-solid fa-heart"></i> <span
+                                            class="like-count">{{ $announcement->likes_count }}</span>
+                                    </button>
+                                    <button type="button" data-action="toggleMemberComments"
+                                        data-arg='[{{ $announcement->id }}]' data-stop
+                                        style="display:inline-flex; align-items:center; gap:4px; padding:4px 10px; border-radius:8px; font-size:12px; font-weight:600; border:1px solid var(--line); background:var(--card); color:#6B7280; cursor:pointer;">
+                                        <i class="fa-solid fa-comment"></i> {{ $announcement->comments_count }}
+                                    </button>
+                                </div>
+
+                                <div id="member-comments-{{ $announcement->id }}" style="display:none; margin-top:10px;">
+                                    <div class="member-comments-list" style="display:flex; flex-direction:column; gap:6px;">
+                                        @foreach($announcement->comments as $comment)
+                                            <div
+                                                style="display:flex; gap:8px; padding:8px; background:var(--bg); border-radius:8px;">
+                                                <div
+                                                    style="width:24px; height:24px; border-radius:50%; background:{{ $comment->user && in_array($comment->user->role, ['admin', 'general-manager']) ? '#3B82F6' : 'var(--teal)' }}; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                                    <span
+                                                        style="color:#fff; font-size:10px; font-weight:700;">{{ strtoupper(substr($comment->user->first_name ?? '', 0, 1)) }}{{ strtoupper(substr($comment->user->last_name ?? '', 0, 1)) }}</span>
+                                                </div>
+                                                <div style="flex:1; min-width:0;">
+                                                    <div style="display:flex; align-items:center; gap:4px; margin-bottom:2px;">
+                                                        <span
+                                                            style="font-size:12px; font-weight:600;">{{ $comment->user->first_name ?? '' }}
+                                                            {{ $comment->user->last_name ?? '' }}</span>
+                                                        @if($comment->user && in_array($comment->user->role, ['admin', 'general-manager']))
+                                                            <span
+                                                                style="font-size:10px; padding:1px 4px; background:#DBEAFE; color:#1D4ED8; border-radius:4px; font-weight:600;">Admin</span>
+                                                        @endif
+                                                        <span
+                                                            style="font-size:11px; color:var(--muted);">{{ $comment->created_at->diffForHumans() }}</span>
+                                                    </div>
+                                                    <p style="font-size:12px; color:#555; margin:0;">{{ $comment->comment }}</p>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    <form data-action="postMemberComment" data-arg='["|event|",{{ $announcement->id }}]'
+                                        style="display:flex; gap:6px; margin-top:8px;">
+                                        @csrf
+                                        <input type="text" placeholder="Write a comment..." required
+                                            style="flex:1; padding:6px 10px; border:1px solid var(--line); border-radius:8px; font-size:12px; background:var(--card); color:var(--text);">
+                                        <button type="submit"
+                                            style="padding:6px 12px; background:var(--teal); color:#fff; border:none; border-radius:8px; font-size:12px; cursor:pointer;"><i
+                                                class="fa-solid fa-paper-plane"></i></button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <div style="text-align:center; color:#aaa; padding:2rem; font-size:13px;">
+                            <i class="fa fa-bullhorn" style="font-size:24px; display:block; margin-bottom:8px;"></i>
+                            No announcements yet.
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Upcoming Dues Modal -->
     <div id="upcomingDuesModal"
@@ -2181,6 +2476,66 @@
                 }, 3500);
             });
         })();
+    </script>
+
+    <script nonce="{{ csp_nonce() }}">
+        document.addEventListener('DOMContentLoaded', function () {
+            var banner = document.getElementById('annBanner');
+            if (!banner) return;
+
+            var KEY = 'dismissedAnnouncements';
+            var dismissed = [];
+            try { dismissed = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) { }
+
+            var slides = Array.prototype.slice.call(banner.querySelectorAll('.ann-slide'))
+                .filter(function (s) {
+                    if (dismissed.indexOf(s.dataset.annId) !== -1) { s.remove(); return false; }
+                    return true;
+                });
+
+            if (!slides.length) { banner.classList.add('ann-hide'); return; }
+
+            var idx = 0;
+            var nav = document.getElementById('annNav');
+            var count = document.getElementById('annCount');
+
+            function show(n) {
+                idx = (n + slides.length) % slides.length;
+                slides.forEach(function (s, i) { s.classList.toggle('active', i === idx); });
+                count.textContent = (idx + 1) + ' / ' + slides.length;
+                nav.style.display = slides.length > 1 ? 'flex' : 'none';
+            }
+            show(0);
+
+            document.getElementById('annPrev').addEventListener('click', function () { show(idx - 1); });
+            document.getElementById('annNext').addEventListener('click', function () { show(idx + 1); });
+
+            banner.querySelectorAll('.ann-toggle').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var body = btn.closest('.ann-slide').querySelector('.ann-body');
+                    var open = body.classList.toggle('open');
+                    btn.textContent = open ? 'Show less' : 'Read more';
+                });
+            });
+
+            banner.querySelectorAll('.ann-viewall').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var modal = document.getElementById('allAnnouncementsModal');
+                    if (modal) modal.style.display = 'flex';
+                });
+            });
+
+            // Dismiss the announcement currently showing
+            document.getElementById('annClose').addEventListener('click', function () {
+                var current = slides[idx];
+                dismissed.push(current.dataset.annId);
+                try { localStorage.setItem(KEY, JSON.stringify(dismissed)); } catch (e) { }
+                current.remove();
+                slides.splice(idx, 1);
+                if (!slides.length) { banner.classList.add('ann-hide'); return; }
+                show(idx);
+            });
+        });
     </script>
 
 </body>

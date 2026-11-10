@@ -18,6 +18,14 @@ class OtpController extends Controller
             'email.email' => 'This email address could not be found. Please check and try again.',
         ]);
 
+        // ⬇️ PASTE HERE: block OTP for already-registered emails
+        if (\App\Models\Users_tbl::whereRaw('LOWER(email) = ?', [strtolower(trim($request->email))])->exists()) {
+            return response()->json([
+                'message' => 'This email is already registered. Please use a different email.',
+                'errors' => ['email' => ['This email is already registered. Please use a different email.']],
+            ], 422);
+        }
+
         $email = $request->email;
 
         // ── Real deliverability check — catches mailboxes that pass DNS

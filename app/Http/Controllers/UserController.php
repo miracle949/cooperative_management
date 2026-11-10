@@ -626,14 +626,19 @@ class UserController extends Controller
         return view('ShareCapitalForm.share_capital_form');
     }
 
-    public function applicationForm($id)
+    public function applicationForm(Request $request, $id)
     {
         $id = (int) $id;
         $user = Users_tbl::findOrFail($id);
 
+        // A valid signed link (from the approval email) grants access for this session
+        if ($request->hasValidSignature()) {
+            session(['application_form_access' => $id]);
+        }
+
         abort_unless(
             (int) auth()->id() === $id
-            || in_array(strtolower((string) $user->role), ['pending', 'inactive'], true)
+            || (int) session('application_form_access') === $id
             || \App\Services\SoDGuard::actingAsStaff(),
             403
         );
@@ -645,7 +650,9 @@ class UserController extends Controller
         $governmentIds = Membergovern_ids_tbl::where('user_id', $id)->first();
 
         // Check if already submitted (has contact_no or any filled data)
-        $alreadySubmitted = $other && !empty($other->contact_no);
+        $alreadySubmitted = $other
+        && !empty($other->application_form_completed_at)
+        && !$request->boolean('edit');
 
         return view('members_components.application_form', compact(
             'user',
@@ -2511,8 +2518,8 @@ class UserController extends Controller
         }
 
         $storedReason = $request->void_reason === 'other'
-        ? trim($request->void_reason_other)
-        : $request->void_reason;
+            ? trim($request->void_reason_other)
+            : $request->void_reason;
 
         $transaction->update([
             'status' => 'voided',
@@ -3202,8 +3209,8 @@ class UserController extends Controller
 
         $scAccount = share_capital_account_tbl::findOrFail($transaction->share_capital_account_id);
         $reasonText = $request->void_reason === 'other'
-        ? trim($request->void_reason_other)
-        : $this->returnReasonLabel($request->void_reason);
+            ? trim($request->void_reason_other)
+            : $this->returnReasonLabel($request->void_reason);
 
         \App\Models\Notifications_tbl::create([
             'user_id' => $scAccount->user_id,

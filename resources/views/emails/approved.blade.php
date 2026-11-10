@@ -38,7 +38,9 @@
 
     <p>To complete your profile, please fill out the additional form below:</p>
 
-    <a href="{{ url('/application-form/' . $user->id) }}">Fill up your information in this additional form</a>
+    <a href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('applicationForm', now()->addDays(7), ['id' => $user->id]) }}">
+        Fill up your information in this additional form
+    </a>
 
     <p>Once again, welcome to the Kingsland Cooperative family! We are excited to have you on board and look forward to
         serving you.</p>
