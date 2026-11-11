@@ -651,8 +651,8 @@ class UserController extends Controller
 
         // Check if already submitted (has contact_no or any filled data)
         $alreadySubmitted = $other
-        && !empty($other->application_form_completed_at)
-        && !$request->boolean('edit');
+            && !empty($other->application_form_completed_at)
+            && !$request->boolean('edit');
 
         return view('members_components.application_form', compact(
             'user',
@@ -663,6 +663,30 @@ class UserController extends Controller
             'governmentIds',
             'alreadySubmitted'
         ));
+    }
+
+    public function viewGovernmentId(Request $request)
+    {
+        abort_unless(
+            auth()->user()?->isMainAdmin() || \App\Services\SoDGuard::actingAsStaff(),
+            403
+        );
+
+        $path = ltrim((string) $request->query('path', ''), '/');
+
+        // Only allow files inside government_ids/ and block path tricks
+        abort_unless(
+            str_starts_with($path, 'government_ids/') && !str_contains($path, '..'),
+            404
+        );
+
+        foreach (['public', 'local'] as $disk) {
+            if (\Illuminate\Support\Facades\Storage::disk($disk)->exists($path)) {
+                return \Illuminate\Support\Facades\Storage::disk($disk)->response($path);
+            }
+        }
+
+        abort(404, 'File not found.');
     }
 
     public function approveUser($id)
