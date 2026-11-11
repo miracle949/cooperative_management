@@ -142,70 +142,57 @@ class OtpController extends Controller
      */
     private function verifyEmailDeliverability(string $email): array
     {
-        // if (config('app.env') !== 'production') {
-        //     return ['deliverable' => true, 'message' => null];
-        // }
-
         $apiKey = config('services.abstract_email.key');
+
         if (!$apiKey) {
+            Log::error('ABSTRACT_EMAIL_KEY is missing — email deliverability check skipped.');
             return ['deliverable' => true, 'message' => null];
         }
 
         try {
-            $response = Http::timeout(5)->get(
+            $response = Http::timeout(8)->get(
                 'https://emailreputation.abstractapi.com/v1/',
                 ['api_key' => $apiKey, 'email' => $email]
             );
 
-            if ($response->successful()) {
-                $data = $response->json();
-
-                // 🔍 Log the FULL response so we can see exactly why AbstractAPI
-                // is calling something undeliverable, instead of trusting one field blind.
-                Log::info('AbstractAPI deliverability check', [
-                    'email' => $email,
-                    'full_response' => $data,
-                ]);
-
-                $status = $data['email_deliverability']['status'] ?? null;
-                $qualityScore = $data['quality_score'] ?? null;
-                $smtpValid = $data['email_deliverability']['is_smtp_valid'] ?? null;
-
-                // Only hard-block when we have HIGH confidence the mailbox is fake:
-                // bad format, or SMTP explicitly says the mailbox doesn't exist.
-                // Many institutional/edu mail servers refuse SMTP probes entirely
-                // (they return 'unknown' or 'risky', not a real rejection) — don't
-                // punish real users for a strict/misbehaving mail server.
-                $isFormatValid = $data['is_valid_format']['value'] ?? true;
-
-                if (!$isFormatValid) {
-                    return [
-                        'deliverable' => false,
-                        'message' => 'This email address format is invalid. Please check and try again.',
-                    ];
-                }
-
-                if ($status === 'undeliverable' && $smtpValid === false) {
-                    return [
-                        'deliverable' => false,
-                        'message' => 'This email address does not exist. Please check and try again.',
-                    ];
-                }
-
-                // status === 'undeliverable' but smtp_valid is null/true/unknown →
-                // treat as inconclusive, let it through, just log it for review.
-                if ($status === 'undeliverable') {
-                    Log::warning('Deliverability flagged undeliverable but SMTP check inconclusive — allowing through', [
-                        'email' => $email,
-                        'response' => $data,
-                    ]);
-                }
-            } else {
-                Log::warning('Email reputation API returned non-success status', [
+            // Surface auth / quota / wrong-product problems loudly in the log
+            if (!$response->successful()) {
+                Log::error('AbstractAPI request FAILED', [
                     'status' => $response->status(),
                     'body' => $response->body(),
                 ]);
+                return ['deliverable' => true, 'message' => null]; // fail open
             }
+
+            $data = $response->json();
+            Log::info('AbstractAPI deliverability check', ['email' => $email, 'full_response' => $data]);
+
+            $d = $data['email_deliverability'] ?? [];
+
+            $status = $d['status'] ?? null;               // deliverable | undeliverable | unknown
+            $formatValid = $d['is_format_valid'] ?? true;
+            $mxValid = $d['is_mx_valid'] ?? null;
+            $smtpValid = $d['is_smtp_valid'] ?? null;
+
+            // Some versions wrap booleans as {"value": true, "text": "TRUE"}
+            $unwrap = fn($v) => is_array($v) ? ($v['value'] ?? null) : $v;
+            $formatValid = $unwrap($formatValid);
+            $mxValid = $unwrap($mxValid);
+            $smtpValid = $unwrap($smtpValid);
+
+            if ($formatValid === false) {
+                return ['deliverable' => false, 'message' => 'This email address format is invalid. Please check and try again.'];
+            }
+
+            if ($mxValid === false) {
+                return ['deliverable' => false, 'message' => 'This email domain cannot receive mail. Please check and try again.'];
+            }
+
+            if ($status === 'undeliverable' || $smtpValid === false) {
+                return ['deliverable' => false, 'message' => 'This email address does not exist. Please use a real email address.'];
+            }
+
+            // 'unknown' / 'risky' → allowed (some school/company servers block SMTP probing)
         } catch (\Exception $e) {
             Log::error('Email verification API failed (non-fatal): ' . $e->getMessage());
         }

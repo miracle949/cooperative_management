@@ -22,28 +22,40 @@ Route::get("/", [UserController::class, "UserDirection"]);
 Route::get("/index", [UserController::class, "index"])->name("index");
 
 Route::get('/proof/{path}', function ($path) {
-    $path = ltrim($path, '/');
+    $path = ltrim(str_replace('\\', '/', $path), '/');
     abort_if(str_contains($path, '..'), 404);
 
-    foreach (['public', 'local'] as $diskName) {
-        $disk = Storage::disk($diskName);
-        if ($disk->exists($path)) {
-            return $disk->response($path);
+    // Try the path as stored, plus versions with common prefixes removed
+    $variants = array_unique([
+        $path,
+        preg_replace('#^storage/#', '', $path),
+        preg_replace('#^public/#', '', $path),
+        preg_replace('#^(storage/)?public/#', '', $path),
+    ]);
+
+    foreach ($variants as $p) {
+        foreach (['public', 'local'] as $diskName) {
+            $disk = Storage::disk($diskName);
+            if ($disk->exists($p)) {
+                return $disk->response($p);
+            }
+        }
+
+        foreach ([
+            public_path($p),
+            public_path('storage/' . $p),
+            storage_path('app/' . $p),
+            storage_path('app/public/' . $p),
+            storage_path('app/private/' . $p),
+            storage_path('app/private/public/' . $p),
+        ] as $candidate) {
+            if (is_file($candidate)) {
+                return response()->file($candidate);
+            }
         }
     }
 
-    foreach ([
-        public_path($path),
-        public_path('storage/' . $path),
-        storage_path('app/' . $path),
-        storage_path('app/private/' . $path),
-        storage_path('app/public/' . $path),
-    ] as $candidate) {
-        if (is_file($candidate)) {
-            return response()->file($candidate);
-        }
-    }
-
+    \Log::warning('/proof file not found', ['requested' => $path, 'tried' => $variants]);
     abort(404);
 })->where('path', '.*')->middleware('auth');
 
