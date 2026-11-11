@@ -42,7 +42,7 @@
             </div>
         </div>
     @endif
- 
+
     @if(session('import_errors'))
         <div class="mb-4 p-4 bg-white border border-amber-200 rounded-lg">
             <p class="text-sm font-semibold text-gray-900 mb-2">Rows that need attention:</p>
@@ -55,25 +55,25 @@
     @endif
 
     @if(session('import_credentials'))
-    @php
-        $csv = "Name,Email,Username,Password\n";
-        foreach (session('import_credentials') as $c) {
-            $csv .= '"' . $c['name'] . '","' . $c['email'] . '","' . $c['username'] . '","' . $c['password'] . "\"\n";
-        }
-    @endphp
-    <div class="mb-4 p-4 bg-white border border-green-200 rounded-lg">
-        <div class="flex items-center justify-between mb-2">
-            <p class="text-sm font-semibold text-gray-900">New member logins (shown once)</p>
-            <a href="data:text/csv;charset=utf-8,{{ rawurlencode($csv) }}" download="imported-members-logins.csv"
-                class="btn btn-outline btn-xs">Download CSV</a>
+        @php
+            $csv = "Name,Email,Username,Password\n";
+            foreach (session('import_credentials') as $c) {
+                $csv .= '"' . $c['name'] . '","' . $c['email'] . '","' . $c['username'] . '","' . $c['password'] . "\"\n";
+            }
+        @endphp
+        <div class="mb-4 p-4 bg-white border border-green-200 rounded-lg">
+            <div class="flex items-center justify-between mb-2">
+                <p class="text-sm font-semibold text-gray-900">New member logins (shown once)</p>
+                <a href="data:text/csv;charset=utf-8,{{ rawurlencode($csv) }}" download="imported-members-logins.csv"
+                    class="btn btn-outline btn-xs">Download CSV</a>
+            </div>
+            <ul class="text-xs text-gray-700 space-y-1 max-h-48 overflow-y-auto list-disc pl-5">
+                @foreach(session('import_credentials') as $c)
+                    <li>{{ $c['name'] }} — {{ $c['email'] }} — <span class="font-mono">{{ $c['password'] }}</span></li>
+                @endforeach
+            </ul>
         </div>
-        <ul class="text-xs text-gray-700 space-y-1 max-h-48 overflow-y-auto list-disc pl-5">
-            @foreach(session('import_credentials') as $c)
-                <li>{{ $c['name'] }} — {{ $c['email'] }} — <span class="font-mono">{{ $c['password'] }}</span></li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+    @endif
 
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
@@ -361,9 +361,9 @@
                     <p class="text-sm text-gray-500 mb-1">Members</p>
                     <p class="text-2xl font-bold text-gray-900">{{ $memberCategoryCounts->sum() }}</p>
                     <!-- <p class="text-xs text-primary-500 mt-1 flex items-center">
-                        <i data-lucide="users" class="w-3 h-3 mr-1"></i>
-                        Click to view breakdown
-                    </p> -->
+                                                <i data-lucide="users" class="w-3 h-3 mr-1"></i>
+                                                Click to view breakdown
+                                            </p> -->
                 </div>
                 <div
                     class="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center group-hover:bg-primary-200 transition-colors">
@@ -637,11 +637,11 @@
             </div>
         </div>
         <script type="application/json" id="admin-list-data">
-                                                                                                                                                                                                                                {!! json_encode($adminList, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES) !!}
-                                                                                                                                                                                                                            </script>
+                                                                                                                                                                                                                                                                                {!! json_encode($adminList, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES) !!}
+                                                                                                                                                                                                                                                                            </script>
         <script type="application/json" id="roles-data">
-                                                                                                                                                                                                                                {!! json_encode($roles->map(fn($r) => ['slug' => $r->slug, 'name' => $r->name, 'sidebar_permissions' => $r->sidebar_permissions]), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES) !!}
-                                                                                                                                                                                                                            </script>
+                                                                                                                                                                                                                                                                                {!! json_encode($roles->map(fn($r) => ['slug' => $r->slug, 'name' => $r->name, 'sidebar_permissions' => $r->sidebar_permissions]), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES) !!}
+                                                                                                                                                                                                                                                                            </script>
     @endif
 
     <!-- Resignation Requests -->
@@ -1054,9 +1054,8 @@
                     <i data-lucide="x" class="w-5 h-5 text-gray-500"></i>
                 </button>
             </div>
- 
-            <form method="POST" action="{{ route('members.import') }}" enctype="multipart/form-data"
-                class="p-6 space-y-4">
+
+            <form method="POST" action="{{ route('members.import') }}" enctype="multipart/form-data" class="p-6 space-y-4">
                 @csrf
 
                 <div>
@@ -1067,7 +1066,8 @@
 
                 <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-800">
                     Members log in with the <strong>Password</strong> column in your Excel file (min 8 characters).
-                    If a Password cell is blank, the password is set to <strong>FirstName@123456</strong> (e.g. Alfredo@123456).
+                    If a Password cell is blank, the password is set to <strong>FirstName@123456</strong> (e.g.
+                    Alfredo@123456).
                 </div>
 
                 <div class="p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800">
@@ -1490,6 +1490,21 @@
 
             <!-- Scrollable Body -->
             <div class="flex-1 overflow-y-auto p-6 space-y-6">
+
+                <div id="detail-incomplete-alert" class="hidden mb-5 p-4 rounded-2xl bg-amber-50 border border-amber-200">
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
+                            <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs font-extrabold uppercase tracking-wider text-amber-800">Incomplete Profile
+                            </p>
+                            <p class="text-xs text-amber-700 mt-0.5">This member has not finished filling out the
+                                following:</p>
+                            <div id="detail-incomplete-list" class="mt-3 space-y-2"></div>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Hero Banner -->
                 <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
@@ -2214,6 +2229,22 @@
             <!-- Scrollable Body -->
             <div class="flex-1 overflow-y-auto p-6 space-y-6">
 
+                <!-- NEW: Incomplete profile alert -->
+                <div id="review-incomplete-alert" class="hidden mb-5 p-4 rounded-2xl bg-amber-50 border border-amber-200">
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
+                            <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs font-extrabold uppercase tracking-wider text-amber-800">Incomplete Profile
+                            </p>
+                            <p class="text-xs text-amber-700 mt-0.5">This member has not finished filling out the
+                                following:</p>
+                            <div id="review-incomplete-list" class="mt-3 space-y-2"></div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Hero Banner -->
                 <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
                     <div class="flex items-center gap-5">
@@ -2229,6 +2260,37 @@
                                     class="px-2.5 py-0.5 bg-indigo-50 text-indigo-600 border border-indigo-100 text-[10px] font-extrabold uppercase rounded-full">--</span>
                             </div>
                             <p id="review-applied" class="text-[10px] text-slate-400 font-medium mt-1.5">--</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Government IDs -->
+                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+                    <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-900 flex items-center gap-2 mb-4">
+                        <div class="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center"><i
+                                data-lucide="id-card" class="w-3.5 h-3.5 text-slate-600"></i></div>
+                        Government IDs
+                    </h4>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        <div><label
+                                class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1">SSS
+                                ID</label>
+                            <p id="review-sss" class="text-xs font-semibold text-slate-800">Not provided</p>
+                        </div>
+                        <div><label
+                                class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1">PhilHealth
+                                ID</label>
+                            <p id="review-philhealth" class="text-xs font-semibold text-slate-800">Not provided</p>
+                        </div>
+                        <div><label
+                                class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1">Pag-IBIG
+                                ID</label>
+                            <p id="review-pagibig" class="text-xs font-semibold text-slate-800">Not provided</p>
+                        </div>
+                        <div><label
+                                class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1">TIN
+                                ID</label>
+                            <p id="review-tin" class="text-xs font-semibold text-slate-800">Not provided</p>
                         </div>
                     </div>
                 </div>
@@ -2306,37 +2368,6 @@
                                 class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1">Permanent
                                 Address</label>
                             <p id="review-permanent-address" class="text-xs font-semibold text-slate-800">--</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Government IDs -->
-                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
-                    <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-900 flex items-center gap-2 mb-4">
-                        <div class="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center"><i
-                                data-lucide="id-card" class="w-3.5 h-3.5 text-slate-600"></i></div>
-                        Government IDs
-                    </h4>
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                        <div><label
-                                class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1">SSS
-                                ID</label>
-                            <p id="review-sss" class="text-xs font-semibold text-slate-800">Not provided</p>
-                        </div>
-                        <div><label
-                                class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1">PhilHealth
-                                ID</label>
-                            <p id="review-philhealth" class="text-xs font-semibold text-slate-800">Not provided</p>
-                        </div>
-                        <div><label
-                                class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1">Pag-IBIG
-                                ID</label>
-                            <p id="review-pagibig" class="text-xs font-semibold text-slate-800">Not provided</p>
-                        </div>
-                        <div><label
-                                class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1">TIN
-                                ID</label>
-                            <p id="review-tin" class="text-xs font-semibold text-slate-800">Not provided</p>
                         </div>
                     </div>
                 </div>
@@ -2439,8 +2470,8 @@
     </div>
 
     <script type="application/json" id="members-data">
-                                            {!! json_encode($members, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES) !!}
-                                            </script>
+                                                                    {!! json_encode($members, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES) !!}
+                                                                    </script>
 
 
 
@@ -2594,7 +2625,7 @@
             el.innerHTML = '';
             if (!path) { el.textContent = 'Not provided'; return; }
             const a = document.createElement('a');
-            a.href = '/storage/' + path;
+            a.href = '/member-documents/government-id?path=' + encodeURIComponent(path);   // ← changed
             a.target = '_blank';
             a.rel = 'noopener';
             a.className = 'text-indigo-600 hover:underline';
@@ -2709,327 +2740,398 @@
             });
         @endif
 
-            function openMemberDetailModal(memberId) {
-                let member = membersData.find(m => m.id === memberId);
-                if (!member) {
-                    member = adminsData.find(m => m.id === memberId);
-                }
-                if (!member) return;
+                        // Categories that are expected to have a registered vehicle
+                const VEHICLE_REQUIRED_CATEGORIES = ['Operator', 'Driver-Operator', 'Transport Entrepreneur'];
 
-                const initials = (member.first_name?.charAt(0) || '') + (member.last_name?.charAt(0) || '');
-                const fullName = (member.first_name || '') + ' ' + (member.last_name || '');
+        function renderIncompleteAlert(prefix, member, isAdmin) {
+            const box = document.getElementById(prefix + '-incomplete-alert');
+            const list = document.getElementById(prefix + '-incomplete-list');
+            if (!box || !list) return;
 
-                document.getElementById('detail-avatar').textContent = initials.toUpperCase();
-                document.getElementById('detail-name').textContent = fullName;
-                document.getElementById('detail-middle-name').textContent = member.middle_name ? member.middle_name : '';
-                const isAdmin = !['member', 'pending', 'inactive'].includes(String(member.role || '').toLowerCase());
-                document.getElementById('detail-member-id').textContent = (isAdmin ? 'ADM-' : 'MEM-') + String(member.id).padStart(4, '0');
-                document.getElementById('detail-email').textContent = member.email || 'N/A';
-                document.getElementById('detail-present-address').textContent = member.present_address || 'N/A';
-                document.getElementById('detail-phone').textContent = member.contact_no || 'N/A';
-                document.getElementById('detail-dob').textContent = member.date_of_birth || 'N/A';
-                document.getElementById('detail-sex').textContent = member.sex || 'N/A';
-                document.getElementById('detail-civil-status').textContent = member.civil_status || 'N/A';
-                document.getElementById('detail-address').textContent = member.present_address || 'N/A';
-                document.getElementById('detail-membership').textContent = isAdmin ? 'Allied Workers' : (member.membership_category || 'N/A');
-                document.getElementById('detail-citizenship').textContent = member.citizenship || 'N/A';
-                document.getElementById('detail-pob').textContent = member.place_of_birth || 'N/A';
-                document.getElementById('detail-blood-type').textContent = member.blood_type || 'N/A';
-                document.getElementById('detail-height').textContent = member.height || 'N/A';
-                document.getElementById('detail-weight').textContent = member.weight || 'N/A';
-                document.getElementById('detail-permanent-address-2').textContent = member.permanent_address || 'N/A';
+            list.innerHTML = '';
+            if (isAdmin) { box.classList.add('hidden'); return; } // staff accounts are not checked
 
-                // Duplicate fields in Personal & Family tab
-                document.getElementById('detail-dob-2').textContent = member.date_of_birth || 'N/A';
-                document.getElementById('detail-sex-2').textContent = member.sex || 'N/A';
-                document.getElementById('detail-civil-status-2').textContent = member.civil_status || 'N/A';
-                document.getElementById('detail-citizenship-2').textContent = member.citizenship || 'N/A';
-                document.getElementById('detail-pob-2').textContent = member.place_of_birth || 'N/A';
-                document.getElementById('detail-blood-type-2').textContent = member.blood_type || 'N/A';
-                document.getElementById('detail-height-2').textContent = member.height || 'N/A';
-                document.getElementById('detail-weight-2').textContent = member.weight || 'N/A';
-                document.getElementById('detail-address-2').textContent = member.present_address || 'N/A';
-                document.getElementById('detail-phone-2').textContent = member.contact_no || 'N/A';
+            const blank = (v) => v === null || v === undefined || String(v).trim() === '';
+            const groups = [];
 
-                // Profile pic
-                const profilePic = document.getElementById('detail-profile-pic');
-                const avatar = document.getElementById('detail-avatar');
-                if (member.profile_picture) {
-                    profilePic.src = '/storage/' + member.profile_picture;
-                    profilePic.classList.remove('hidden');
-                    avatar.classList.add('hidden');
-                } else {
-                    profilePic.classList.add('hidden');
-                    avatar.classList.remove('hidden');
-                }
+            // Names (add 'middle_name' here if you also want it required)
+            const names = [];
+            if (blank(member.first_name)) names.push('First name');
+            if (blank(member.last_name)) names.push('Last name');
+            if (names.length) groups.push({ label: 'Names', items: names });
 
-                // Signature
-                const sigImg = document.getElementById('detail-signature-img');
-                const sigEmpty = document.getElementById('detail-signature-empty');
-                if (member.signature) {
-                    sigImg.src = member.signature;
-                    sigImg.classList.remove('hidden');
-                    sigEmpty.classList.add('hidden');
-                } else {
-                    sigImg.classList.add('hidden');
-                    sigEmpty.classList.remove('hidden');
-                }
+            // Personal info
+            const personal = [];
+            if (blank(member.date_of_birth)) personal.push('Date of birth');
+            if (blank(member.sex)) personal.push('Sex');
+            if (blank(member.civil_status)) personal.push('Civil status');
+            if (blank(member.contact_no)) personal.push('Contact number');
+            if (blank(member.present_address)) personal.push('Present address');
+            if (personal.length) groups.push({ label: 'Personal Info', items: personal });
 
-                // Join date
-                const joinDate = member.created_at;
-                document.getElementById('detail-join-date').textContent = joinDate ? 'Member since ' + new Date(joinDate).toLocaleDateString('en-PH', { month: 'long', year: 'numeric' }) : '';
+            // Vehicles
+            const needsVehicle = VEHICLE_REQUIRED_CATEGORIES.includes(member.membership_category);
+            if (needsVehicle && (!Array.isArray(member.vehicles) || member.vehicles.length === 0)) {
+                groups.push({ label: 'Vehicle', items: ['No vehicle registered'] });
+            }
 
-                // Family (Overview tab)
-                document.getElementById('detail-spouse-name').textContent = member.spouse_name || 'Not specified';
-                document.getElementById('detail-number-son').textContent = member.number_son || 0;
-                document.getElementById('detail-number-daughter').textContent = member.number_daughter || 0;
-                // Family (Personal tab)
-                document.getElementById('detail-spouse-name-2').textContent = member.spouse_name || 'Not specified';
-                document.getElementById('detail-spouse-dob-2').textContent = member.spouse_date_birth || 'Not specified';
-                document.getElementById('detail-number-son-2').textContent = member.number_son || 0;
-                document.getElementById('detail-number-daughter-2').textContent = member.number_daughter || 0;
+            // Government IDs
+            const ids = [];
+            if (blank(member.sss_id)) ids.push('SSS');
+            if (blank(member.philhealth_id)) ids.push('PhilHealth');
+            if (blank(member.pagibig_id)) ids.push('Pag-IBIG');
+            if (blank(member.tin_id)) ids.push('TIN');
+            if (ids.length) groups.push({ label: 'Government IDs', items: ids });
 
-                // Skills
-                const skillsEl = document.getElementById('detail-skills');
-                if (member.skills && member.skills.trim()) {
-                    const skillsArray = member.skills.split(',').map(s => s.trim()).filter(s => s);
-                    if (skillsArray.length > 0) {
-                        skillsEl.innerHTML = skillsArray.map(skill =>
-                            `<span class="inline-block px-2.5 py-1 bg-amber-50 text-amber-700 border border-amber-100 text-[10px] font-bold rounded-lg">${skill}</span>`
-                        ).join('');
-                    } else {
-                        skillsEl.textContent = 'No skills specified';
-                    }
+            // Signature
+            if (blank(member.signature)) groups.push({ label: 'Signature', items: ['No signature on file'] });
+
+            if (groups.length === 0) { box.classList.add('hidden'); return; }
+
+            groups.forEach(g => {
+                const row = document.createElement('div');
+                row.className = 'flex flex-wrap items-center gap-1.5';
+
+                const label = document.createElement('span');
+                label.className = 'text-[10px] font-extrabold uppercase tracking-wider text-amber-800 mr-1';
+                label.textContent = g.label + ':';
+                row.appendChild(label);
+
+                g.items.forEach(item => {
+                    const chip = document.createElement('span');
+                    chip.className = 'px-2 py-0.5 bg-white text-amber-700 border border-amber-200 text-[10px] font-bold rounded-lg';
+                    chip.textContent = item;
+                    row.appendChild(chip);
+                });
+
+                list.appendChild(row);
+            });
+
+            box.classList.remove('hidden');
+        }
+
+        function openMemberDetailModal(memberId) {
+            let member = membersData.find(m => m.id === memberId);
+            if (!member) {
+                member = adminsData.find(m => m.id === memberId);
+            }
+            if (!member) return;
+
+            const initials = (member.first_name?.charAt(0) || '') + (member.last_name?.charAt(0) || '');
+            const fullName = (member.first_name || '') + ' ' + (member.last_name || '');
+
+            document.getElementById('detail-avatar').textContent = initials.toUpperCase();
+            document.getElementById('detail-name').textContent = fullName;
+            document.getElementById('detail-middle-name').textContent = member.middle_name ? member.middle_name : '';
+            const isAdmin = !['member', 'pending', 'inactive'].includes(String(member.role || '').toLowerCase());
+            renderIncompleteAlert('detail', member, isAdmin);
+            document.getElementById('detail-member-id').textContent = (isAdmin ? 'ADM-' : 'MEM-') + String(member.id).padStart(4, '0');
+            document.getElementById('detail-email').textContent = member.email || 'N/A';
+            document.getElementById('detail-present-address').textContent = member.present_address || 'N/A';
+            document.getElementById('detail-phone').textContent = member.contact_no || 'N/A';
+            document.getElementById('detail-dob').textContent = member.date_of_birth || 'N/A';
+            document.getElementById('detail-sex').textContent = member.sex || 'N/A';
+            document.getElementById('detail-civil-status').textContent = member.civil_status || 'N/A';
+            document.getElementById('detail-address').textContent = member.present_address || 'N/A';
+            document.getElementById('detail-membership').textContent = isAdmin ? 'Allied Workers' : (member.membership_category || 'N/A');
+            document.getElementById('detail-citizenship').textContent = member.citizenship || 'N/A';
+            document.getElementById('detail-pob').textContent = member.place_of_birth || 'N/A';
+            document.getElementById('detail-blood-type').textContent = member.blood_type || 'N/A';
+            document.getElementById('detail-height').textContent = member.height || 'N/A';
+            document.getElementById('detail-weight').textContent = member.weight || 'N/A';
+            document.getElementById('detail-permanent-address-2').textContent = member.permanent_address || 'N/A';
+
+            // Duplicate fields in Personal & Family tab
+            document.getElementById('detail-dob-2').textContent = member.date_of_birth || 'N/A';
+            document.getElementById('detail-sex-2').textContent = member.sex || 'N/A';
+            document.getElementById('detail-civil-status-2').textContent = member.civil_status || 'N/A';
+            document.getElementById('detail-citizenship-2').textContent = member.citizenship || 'N/A';
+            document.getElementById('detail-pob-2').textContent = member.place_of_birth || 'N/A';
+            document.getElementById('detail-blood-type-2').textContent = member.blood_type || 'N/A';
+            document.getElementById('detail-height-2').textContent = member.height || 'N/A';
+            document.getElementById('detail-weight-2').textContent = member.weight || 'N/A';
+            document.getElementById('detail-address-2').textContent = member.present_address || 'N/A';
+            document.getElementById('detail-phone-2').textContent = member.contact_no || 'N/A';
+
+            // Profile pic
+            const profilePic = document.getElementById('detail-profile-pic');
+            const avatar = document.getElementById('detail-avatar');
+            if (member.profile_picture) {
+                profilePic.src = '/storage/' + member.profile_picture;
+                profilePic.classList.remove('hidden');
+                avatar.classList.add('hidden');
+            } else {
+                profilePic.classList.add('hidden');
+                avatar.classList.remove('hidden');
+            }
+
+            // Signature
+            const sigImg = document.getElementById('detail-signature-img');
+            const sigEmpty = document.getElementById('detail-signature-empty');
+            if (member.signature) {
+                sigImg.src = member.signature;
+                sigImg.classList.remove('hidden');
+                sigEmpty.classList.add('hidden');
+            } else {
+                sigImg.classList.add('hidden');
+                sigEmpty.classList.remove('hidden');
+            }
+
+            // Join date
+            const joinDate = member.created_at;
+            document.getElementById('detail-join-date').textContent = joinDate ? 'Member since ' + new Date(joinDate).toLocaleDateString('en-PH', { month: 'long', year: 'numeric' }) : '';
+
+            // Family (Overview tab)
+            document.getElementById('detail-spouse-name').textContent = member.spouse_name || 'Not specified';
+            document.getElementById('detail-number-son').textContent = member.number_son || 0;
+            document.getElementById('detail-number-daughter').textContent = member.number_daughter || 0;
+            // Family (Personal tab)
+            document.getElementById('detail-spouse-name-2').textContent = member.spouse_name || 'Not specified';
+            document.getElementById('detail-spouse-dob-2').textContent = member.spouse_date_birth || 'Not specified';
+            document.getElementById('detail-number-son-2').textContent = member.number_son || 0;
+            document.getElementById('detail-number-daughter-2').textContent = member.number_daughter || 0;
+
+            // Skills
+            const skillsEl = document.getElementById('detail-skills');
+            if (member.skills && member.skills.trim()) {
+                const skillsArray = member.skills.split(',').map(s => s.trim()).filter(s => s);
+                if (skillsArray.length > 0) {
+                    skillsEl.innerHTML = skillsArray.map(skill =>
+                        `<span class="inline-block px-2.5 py-1 bg-amber-50 text-amber-700 border border-amber-100 text-[10px] font-bold rounded-lg">${skill}</span>`
+                    ).join('');
                 } else {
                     skillsEl.textContent = 'No skills specified';
                 }
-
-                // Gov IDs — quick chips (Overview)
-                setGovIdChip(document.getElementById('detail-sss-id'), member.sss_id);
-                setGovIdChip(document.getElementById('detail-philhealth-id'), member.philhealth_id);
-                setGovIdChip(document.getElementById('detail-pagibig-id'), member.pagibig_id);
-                setGovIdChip(document.getElementById('detail-tin-id'), member.tin_id);
-                // Gov IDs — full tab with view links
-                setGovIdFull(document.getElementById('detail-sss-id-2'), member.sss_id);
-                setGovIdFull(document.getElementById('detail-philhealth-id-2'), member.philhealth_id);
-                setGovIdFull(document.getElementById('detail-pagibig-id-2'), member.pagibig_id);
-                setGovIdFull(document.getElementById('detail-tin-id-2'), member.tin_id);
-
-                // Vehicles
-                const vehiclesBody = document.getElementById('detail-vehicles-body');
-                const esc = (value) => {
-                    const div = document.createElement('div');
-                    div.textContent = value;
-                    return div.innerHTML;
-                };
-                if (member.vehicles && member.vehicles.length > 0) {
-                    vehiclesBody.innerHTML = member.vehicles.map(v => `
-                                                                                                                                <tr class="border-t border-slate-100">
-                                                                                                                                    <td class="px-5 py-3 text-xs font-semibold text-slate-800">${esc(v.vehicle_type || 'N/A')}</td>
-                                                                                                                                    <td class="px-5 py-3 text-xs font-mono font-bold text-slate-800">${esc(v.plate_no || 'N/A')}</td>
-                                                                                                                                    <td class="px-5 py-3 text-xs font-semibold text-slate-800 text-center">${esc(v.quantity || 1)}</td>
-                                                                                                                                </tr>
-                                                                                                                            `).join('');
-                } else {
-                    vehiclesBody.innerHTML = '<tr><td colspan="3" class="px-5 py-10 text-center"><div class="w-12 h-12 mx-auto mb-2 rounded-xl bg-slate-100 flex items-center justify-center"><i data-lucide="car" class="w-6 h-6 text-slate-300"></i></div><p class="text-xs font-semibold text-slate-400">No vehicles registered</p></td></tr>';
-                }
-
-                // Status badge
-                const statusEl = document.getElementById('detail-status');
-                if (['admin', 'general-manager'].includes(member.role)) {
-                    statusEl.className = 'px-2.5 py-0.5 bg-blue-50 text-blue-600 border border-blue-100 text-[10px] font-extrabold uppercase rounded-full';
-                    statusEl.textContent = 'Admin';
-                } else if (member.role === 'Member' || member.role === 'member' || member.role === 'active') {
-                    statusEl.className = 'px-2.5 py-0.5 bg-emerald-50 text-emerald-600 border border-emerald-100 text-[10px] font-extrabold uppercase rounded-full';
-                    statusEl.textContent = 'Active';
-                } else if (member.role === 'pending' || member.role === 'Pending') {
-                    statusEl.className = 'px-2.5 py-0.5 bg-amber-50 text-amber-600 border border-amber-100 text-[10px] font-extrabold uppercase rounded-full';
-                    statusEl.textContent = 'Pending';
-                } else {
-                    statusEl.className = 'px-2.5 py-0.5 bg-slate-100 text-slate-600 border border-slate-200 text-[10px] font-extrabold uppercase rounded-full';
-                    statusEl.textContent = member.role || 'N/A';
-                }
-
-                document.getElementById('detail-category').textContent = isAdmin ? 'Allied Workers' : (member.membership_category || 'N/A');
-
-                // Share Capital
-                document.getElementById('detail-sc-amount').textContent = '₱' + (member.sc_total_amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
-                document.getElementById('detail-sc-shares').textContent = member.sc_total_shares || 0;
-
-                const scStatusEl = document.getElementById('detail-sc-status');
-                if (member.sc_status === 'Active') {
-                    scStatusEl.className = 'inline-block px-2 py-0.5 bg-white/15 text-white text-[10px] font-extrabold uppercase rounded-full';
-                    scStatusEl.textContent = 'Active';
-                } else if (member.sc_status === 'No Account') {
-                    scStatusEl.className = 'inline-block px-2 py-0.5 bg-white/15 text-white/60 text-[10px] font-extrabold uppercase rounded-full';
-                    scStatusEl.textContent = 'No Account';
-                } else {
-                    scStatusEl.className = 'inline-block px-2 py-0.5 bg-white/15 text-white text-[10px] font-extrabold uppercase rounded-full';
-                    scStatusEl.textContent = member.sc_status || 'Inactive';
-                }
-
-                document.getElementById('detail-sc-see-more').href = '/dashboard-sharecapitals?member=' + member.id;
-
-                // Savings Card (hero balance cards)
-                document.getElementById('detail-savings-amount').textContent = '₱' + (member.savings_balance || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
-                const savingsStatusEl = document.getElementById('detail-savings-status');
-                if (member.savings_status === 'Active') {
-                    savingsStatusEl.textContent = 'Savings account active';
-                    savingsStatusEl.className = 'text-xs text-emerald-500 mt-1';
-                } else if (member.savings_status === 'No Account') {
-                    savingsStatusEl.textContent = 'No savings account linked';
-                    savingsStatusEl.className = 'text-xs text-slate-400 mt-1';
-                } else {
-                    savingsStatusEl.textContent = member.savings_status || 'No savings account linked';
-                    savingsStatusEl.className = 'text-xs text-slate-400 mt-1';
-                }
-                document.getElementById('detail-savings-see-more').href = '/dashboard-savings?member=' + member.id;
-
-                // Financials tab — Share Capital
-                document.getElementById('fin-sc-amount').textContent = '₱' + (member.sc_total_amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
-                document.getElementById('fin-sc-shares').textContent = member.sc_total_shares || 0;
-                const finScStatusEl = document.getElementById('fin-sc-status');
-                if (member.sc_status === 'Active') {
-                    finScStatusEl.textContent = 'Active';
-                    finScStatusEl.className = 'text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600';
-                } else if (member.sc_status === 'No Account') {
-                    finScStatusEl.textContent = 'No Account';
-                    finScStatusEl.className = 'text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-slate-100 text-slate-500';
-                } else {
-                    finScStatusEl.textContent = member.sc_status || 'Inactive';
-                    finScStatusEl.className = 'text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-slate-100 text-slate-500';
-                }
-                document.getElementById('fin-sc-link').href = '/dashboard-sharecapitals?member=' + member.id;
-
-                // Financials tab — Savings
-                document.getElementById('fin-savings-amount').textContent = '₱' + (member.savings_balance || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
-                document.getElementById('fin-savings-interest').textContent = '₱' + (member.savings_interest || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
-                const finSaStatusEl = document.getElementById('fin-savings-status');
-                if (member.savings_status === 'Active') {
-                    finSaStatusEl.textContent = 'Active';
-                    finSaStatusEl.className = 'text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600';
-                } else if (member.savings_status === 'No Account') {
-                    finSaStatusEl.textContent = 'No Account';
-                    finSaStatusEl.className = 'text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-slate-100 text-slate-500';
-                } else {
-                    finSaStatusEl.textContent = member.savings_status || 'Inactive';
-                    finSaStatusEl.className = 'text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-slate-100 text-slate-500';
-                }
-                document.getElementById('fin-savings-link').href = '/dashboard-savings?member=' + member.id;
-
-                // Financials tab — Active Loans
-                document.getElementById('fin-loans-count').textContent = member.active_loans_count || 0;
-                const loansBody = document.getElementById('fin-loans-body');
-                if (member.active_loans && member.active_loans.length > 0) {
-                    loansBody.innerHTML = member.active_loans.map(l => `
-                                                                                                                                <tr class="border-t border-slate-100 hover:bg-slate-50">
-                                                                                                                                    <td class="px-4 py-3 text-xs font-mono font-bold text-indigo-600">${l.reference_no || 'N/A'}</td>
-                                                                                                                                    <td class="px-4 py-3 text-xs font-semibold text-slate-800">${l.lending_type || 'N/A'}</td>
-                                                                                                                                    <td class="px-4 py-3 text-xs font-mono font-bold text-slate-800 text-right">₱${(l.lending_amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
-                                                                                                                                    <td class="px-4 py-3 text-xs font-mono font-semibold text-slate-600 text-right">₱${(l.monthly_payment || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
-                                                                                                                                    <td class="px-4 py-3 text-xs font-mono font-bold text-amber-600 text-right">₱${(l.total_payment || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
-                                                                                                                                </tr>
-                                                                                                                            `).join('');
-                } else {
-                    loansBody.innerHTML = '<tr><td colspan="5" class="px-5 py-10 text-center"><div class="w-12 h-12 mx-auto mb-2 rounded-xl bg-slate-100 flex items-center justify-center"><i data-lucide="check-circle" class="w-6 h-6 text-slate-300"></i></div><p class="text-xs font-semibold text-slate-400">No active loans</p></td></tr>';
-                }
-
-                const roleSelect = document.getElementById('detail-role');
-                const ROLES = ['Pending', 'Member', 'inactive'];
-                Array.from(roleSelect.options).forEach(o => { if (!ROLES.includes(o.value)) o.remove(); });
-                roleSelect.disabled = false;
-
-                if (isAdmin) {
-                    let opt = Array.from(roleSelect.options).find(o => o.value === (member.role || 'Admin'));
-                    if (!opt) {
-                        opt = document.createElement('option');
-                        opt.value = member.role || 'Admin';
-                        opt.textContent = member.role || 'Admin';
-                        roleSelect.appendChild(opt);
-                    }
-                    roleSelect.value = opt.value;
-                    roleSelect.disabled = true;
-                } else {
-                    const roleValue = { member: 'Member', active: 'Member', pending: 'Pending', inactive: 'inactive' }[String(member.role || 'member').toLowerCase()] || '';
-                    roleSelect.value = roleValue;
-                }
-
-                // Reset to Overview tab
-                // Resignation Request panel
-                const resignCard = document.getElementById('detail-resignation-card');
-                const rr = member.resignation_request;
-
-                if (!rr) {
-                    resignCard.classList.add('hidden');
-                } else {
-                    resignCard.classList.remove('hidden');
-
-                    document.getElementById('detail-resign-requested').textContent = rr.created_at
-                        ? new Date(rr.created_at).toLocaleDateString('en-PH', { month: 'long', day: 'numeric', year: 'numeric' })
-                        : '--';
-                    document.getElementById('detail-resign-preference').textContent = rr.withdraw_share_capital
-                        ? 'Withdraw after 60 days'
-                        : 'Leave with cooperative';
-
-                    const badge = document.getElementById('detail-resign-status-badge');
-                    const pendingActions = document.getElementById('detail-resign-pending-actions');
-                    const releaseActions = document.getElementById('detail-resign-release-actions');
-                    const releaseRow = document.getElementById('detail-resign-release-row');
-                    const reasonRow = document.getElementById('detail-resign-reason-row');
-
-                    pendingActions.classList.add('hidden');
-                    releaseActions.classList.add('hidden');
-                    releaseRow.classList.add('hidden');
-                    reasonRow.classList.add('hidden');
-
-                    if (rr.status === 'pending') {
-                        badge.className = 'ml-auto px-2.5 py-0.5 text-[10px] font-extrabold uppercase rounded-full bg-amber-50 text-amber-600 border border-amber-100';
-                        badge.textContent = 'Pending';
-                        pendingActions.classList.remove('hidden');
-
-                        document.getElementById('detail-resign-approve-form').action = '/resignation/' + rr.id + '/approve';
-                        document.getElementById('detail-resign-reject-btn').onclick = function () {
-                            resetRejectResignForm(rr.id);
-                            openModal('rejectResignModal');
-                        };
-                    } else if (rr.status === 'approved') {
-                        if (rr.withdraw_share_capital && !rr.is_released) {
-                            badge.className = 'ml-auto px-2.5 py-0.5 text-[10px] font-extrabold uppercase rounded-full bg-blue-50 text-blue-600 border border-blue-100';
-                            badge.textContent = 'Awaiting Release';
-                            releaseRow.classList.remove('hidden');
-                            document.getElementById('detail-resign-release-date').textContent = rr.release_date
-                                ? new Date(rr.release_date).toLocaleDateString('en-PH', { month: 'long', day: 'numeric', year: 'numeric' })
-                                : '--';
-
-                            const daysLeft = rr.release_date ? Math.ceil((new Date(rr.release_date) - new Date()) / 86400000) : 0;
-                            if (daysLeft <= 0) {
-                                releaseActions.classList.remove('hidden');
-                                document.getElementById('detail-resign-release-form').action = '/resignation/' + rr.id + '/release';
-                            }
-                        } else {
-                            badge.className = 'ml-auto px-2.5 py-0.5 text-[10px] font-extrabold uppercase rounded-full bg-slate-100 text-slate-500 border border-slate-200';
-                            badge.textContent = 'Resigned';
-                        }
-                    } else if (rr.status === 'rejected') {
-                        badge.className = 'ml-auto px-2.5 py-0.5 text-[10px] font-extrabold uppercase rounded-full bg-red-50 text-red-600 border border-red-100';
-                        badge.textContent = 'Rejected';
-                        reasonRow.classList.remove('hidden');
-                        document.getElementById('detail-resign-reason').textContent = rr.rejection_reason || '--';
-                    }
-                }
-
-                // Reset to Overview tab
-                switchMemberTab('overview');
-                filterBalanceCards('all');
-
-                if (typeof lucide !== 'undefined') {
-                    lucide.createIcons();
-                }
-
-                openModal('memberDetailModal');
-                window.currentMemberId = member.id;
-                window.currentMember = member;
+            } else {
+                skillsEl.textContent = 'No skills specified';
             }
+
+            // Gov IDs — quick chips (Overview)
+            setGovIdChip(document.getElementById('detail-sss-id'), member.sss_id);
+            setGovIdChip(document.getElementById('detail-philhealth-id'), member.philhealth_id);
+            setGovIdChip(document.getElementById('detail-pagibig-id'), member.pagibig_id);
+            setGovIdChip(document.getElementById('detail-tin-id'), member.tin_id);
+            // Gov IDs — full tab with view links
+            setGovIdFull(document.getElementById('detail-sss-id-2'), member.sss_id);
+            setGovIdFull(document.getElementById('detail-philhealth-id-2'), member.philhealth_id);
+            setGovIdFull(document.getElementById('detail-pagibig-id-2'), member.pagibig_id);
+            setGovIdFull(document.getElementById('detail-tin-id-2'), member.tin_id);
+
+            // Vehicles
+            const vehiclesBody = document.getElementById('detail-vehicles-body');
+            const esc = (value) => {
+                const div = document.createElement('div');
+                div.textContent = value;
+                return div.innerHTML;
+            };
+            if (member.vehicles && member.vehicles.length > 0) {
+                vehiclesBody.innerHTML = member.vehicles.map(v => `
+                                                                                                                                                        <tr class="border-t border-slate-100">
+                                                                                                                                                            <td class="px-5 py-3 text-xs font-semibold text-slate-800">${esc(v.vehicle_type || 'N/A')}</td>
+                                                                                                                                                            <td class="px-5 py-3 text-xs font-mono font-bold text-slate-800">${esc(v.plate_no || 'N/A')}</td>
+                                                                                                                                                            <td class="px-5 py-3 text-xs font-semibold text-slate-800 text-center">${esc(v.quantity || 1)}</td>
+                                                                                                                                                        </tr>
+                                                                                                                                                    `).join('');
+            } else {
+                vehiclesBody.innerHTML = '<tr><td colspan="3" class="px-5 py-10 text-center"><div class="w-12 h-12 mx-auto mb-2 rounded-xl bg-slate-100 flex items-center justify-center"><i data-lucide="car" class="w-6 h-6 text-slate-300"></i></div><p class="text-xs font-semibold text-slate-400">No vehicles registered</p></td></tr>';
+            }
+
+            // Status badge
+            const statusEl = document.getElementById('detail-status');
+            if (['admin', 'general-manager'].includes(member.role)) {
+                statusEl.className = 'px-2.5 py-0.5 bg-blue-50 text-blue-600 border border-blue-100 text-[10px] font-extrabold uppercase rounded-full';
+                statusEl.textContent = 'Admin';
+            } else if (member.role === 'Member' || member.role === 'member' || member.role === 'active') {
+                statusEl.className = 'px-2.5 py-0.5 bg-emerald-50 text-emerald-600 border border-emerald-100 text-[10px] font-extrabold uppercase rounded-full';
+                statusEl.textContent = 'Active';
+            } else if (member.role === 'pending' || member.role === 'Pending') {
+                statusEl.className = 'px-2.5 py-0.5 bg-amber-50 text-amber-600 border border-amber-100 text-[10px] font-extrabold uppercase rounded-full';
+                statusEl.textContent = 'Pending';
+            } else {
+                statusEl.className = 'px-2.5 py-0.5 bg-slate-100 text-slate-600 border border-slate-200 text-[10px] font-extrabold uppercase rounded-full';
+                statusEl.textContent = member.role || 'N/A';
+            }
+
+            document.getElementById('detail-category').textContent = isAdmin ? 'Allied Workers' : (member.membership_category || 'N/A');
+
+            // Share Capital
+            document.getElementById('detail-sc-amount').textContent = '₱' + (member.sc_total_amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+            document.getElementById('detail-sc-shares').textContent = member.sc_total_shares || 0;
+
+            const scStatusEl = document.getElementById('detail-sc-status');
+            if (member.sc_status === 'Active') {
+                scStatusEl.className = 'inline-block px-2 py-0.5 bg-white/15 text-white text-[10px] font-extrabold uppercase rounded-full';
+                scStatusEl.textContent = 'Active';
+            } else if (member.sc_status === 'No Account') {
+                scStatusEl.className = 'inline-block px-2 py-0.5 bg-white/15 text-white/60 text-[10px] font-extrabold uppercase rounded-full';
+                scStatusEl.textContent = 'No Account';
+            } else {
+                scStatusEl.className = 'inline-block px-2 py-0.5 bg-white/15 text-white text-[10px] font-extrabold uppercase rounded-full';
+                scStatusEl.textContent = member.sc_status || 'Inactive';
+            }
+
+            document.getElementById('detail-sc-see-more').href = '/dashboard-sharecapitals?member=' + member.id;
+
+            // Savings Card (hero balance cards)
+            document.getElementById('detail-savings-amount').textContent = '₱' + (member.savings_balance || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+            const savingsStatusEl = document.getElementById('detail-savings-status');
+            if (member.savings_status === 'Active') {
+                savingsStatusEl.textContent = 'Savings account active';
+                savingsStatusEl.className = 'text-xs text-emerald-500 mt-1';
+            } else if (member.savings_status === 'No Account') {
+                savingsStatusEl.textContent = 'No savings account linked';
+                savingsStatusEl.className = 'text-xs text-slate-400 mt-1';
+            } else {
+                savingsStatusEl.textContent = member.savings_status || 'No savings account linked';
+                savingsStatusEl.className = 'text-xs text-slate-400 mt-1';
+            }
+            document.getElementById('detail-savings-see-more').href = '/dashboard-savings?member=' + member.id;
+
+            // Financials tab — Share Capital
+            document.getElementById('fin-sc-amount').textContent = '₱' + (member.sc_total_amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+            document.getElementById('fin-sc-shares').textContent = member.sc_total_shares || 0;
+            const finScStatusEl = document.getElementById('fin-sc-status');
+            if (member.sc_status === 'Active') {
+                finScStatusEl.textContent = 'Active';
+                finScStatusEl.className = 'text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600';
+            } else if (member.sc_status === 'No Account') {
+                finScStatusEl.textContent = 'No Account';
+                finScStatusEl.className = 'text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-slate-100 text-slate-500';
+            } else {
+                finScStatusEl.textContent = member.sc_status || 'Inactive';
+                finScStatusEl.className = 'text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-slate-100 text-slate-500';
+            }
+            document.getElementById('fin-sc-link').href = '/dashboard-sharecapitals?member=' + member.id;
+
+            // Financials tab — Savings
+            document.getElementById('fin-savings-amount').textContent = '₱' + (member.savings_balance || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+            document.getElementById('fin-savings-interest').textContent = '₱' + (member.savings_interest || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+            const finSaStatusEl = document.getElementById('fin-savings-status');
+            if (member.savings_status === 'Active') {
+                finSaStatusEl.textContent = 'Active';
+                finSaStatusEl.className = 'text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600';
+            } else if (member.savings_status === 'No Account') {
+                finSaStatusEl.textContent = 'No Account';
+                finSaStatusEl.className = 'text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-slate-100 text-slate-500';
+            } else {
+                finSaStatusEl.textContent = member.savings_status || 'Inactive';
+                finSaStatusEl.className = 'text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-slate-100 text-slate-500';
+            }
+            document.getElementById('fin-savings-link').href = '/dashboard-savings?member=' + member.id;
+
+            // Financials tab — Active Loans
+            document.getElementById('fin-loans-count').textContent = member.active_loans_count || 0;
+            const loansBody = document.getElementById('fin-loans-body');
+            if (member.active_loans && member.active_loans.length > 0) {
+                loansBody.innerHTML = member.active_loans.map(l => `
+                                                                                                                                                        <tr class="border-t border-slate-100 hover:bg-slate-50">
+                                                                                                                                                            <td class="px-4 py-3 text-xs font-mono font-bold text-indigo-600">${l.reference_no || 'N/A'}</td>
+                                                                                                                                                            <td class="px-4 py-3 text-xs font-semibold text-slate-800">${l.lending_type || 'N/A'}</td>
+                                                                                                                                                            <td class="px-4 py-3 text-xs font-mono font-bold text-slate-800 text-right">₱${(l.lending_amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+                                                                                                                                                            <td class="px-4 py-3 text-xs font-mono font-semibold text-slate-600 text-right">₱${(l.monthly_payment || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+                                                                                                                                                            <td class="px-4 py-3 text-xs font-mono font-bold text-amber-600 text-right">₱${(l.total_payment || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+                                                                                                                                                        </tr>
+                                                                                                                                                    `).join('');
+            } else {
+                loansBody.innerHTML = '<tr><td colspan="5" class="px-5 py-10 text-center"><div class="w-12 h-12 mx-auto mb-2 rounded-xl bg-slate-100 flex items-center justify-center"><i data-lucide="check-circle" class="w-6 h-6 text-slate-300"></i></div><p class="text-xs font-semibold text-slate-400">No active loans</p></td></tr>';
+            }
+
+            const roleSelect = document.getElementById('detail-role');
+            const ROLES = ['Pending', 'Member', 'inactive'];
+            Array.from(roleSelect.options).forEach(o => { if (!ROLES.includes(o.value)) o.remove(); });
+            roleSelect.disabled = false;
+
+            if (isAdmin) {
+                let opt = Array.from(roleSelect.options).find(o => o.value === (member.role || 'Admin'));
+                if (!opt) {
+                    opt = document.createElement('option');
+                    opt.value = member.role || 'Admin';
+                    opt.textContent = member.role || 'Admin';
+                    roleSelect.appendChild(opt);
+                }
+                roleSelect.value = opt.value;
+                roleSelect.disabled = true;
+            } else {
+                const roleValue = { member: 'Member', active: 'Member', pending: 'Pending', inactive: 'inactive' }[String(member.role || 'member').toLowerCase()] || '';
+                roleSelect.value = roleValue;
+            }
+
+            // Reset to Overview tab
+            // Resignation Request panel
+            const resignCard = document.getElementById('detail-resignation-card');
+            const rr = member.resignation_request;
+
+            if (!rr) {
+                resignCard.classList.add('hidden');
+            } else {
+                resignCard.classList.remove('hidden');
+
+                document.getElementById('detail-resign-requested').textContent = rr.created_at
+                    ? new Date(rr.created_at).toLocaleDateString('en-PH', { month: 'long', day: 'numeric', year: 'numeric' })
+                    : '--';
+                document.getElementById('detail-resign-preference').textContent = rr.withdraw_share_capital
+                    ? 'Withdraw after 60 days'
+                    : 'Leave with cooperative';
+
+                const badge = document.getElementById('detail-resign-status-badge');
+                const pendingActions = document.getElementById('detail-resign-pending-actions');
+                const releaseActions = document.getElementById('detail-resign-release-actions');
+                const releaseRow = document.getElementById('detail-resign-release-row');
+                const reasonRow = document.getElementById('detail-resign-reason-row');
+
+                pendingActions.classList.add('hidden');
+                releaseActions.classList.add('hidden');
+                releaseRow.classList.add('hidden');
+                reasonRow.classList.add('hidden');
+
+                if (rr.status === 'pending') {
+                    badge.className = 'ml-auto px-2.5 py-0.5 text-[10px] font-extrabold uppercase rounded-full bg-amber-50 text-amber-600 border border-amber-100';
+                    badge.textContent = 'Pending';
+                    pendingActions.classList.remove('hidden');
+
+                    document.getElementById('detail-resign-approve-form').action = '/resignation/' + rr.id + '/approve';
+                    document.getElementById('detail-resign-reject-btn').onclick = function () {
+                        resetRejectResignForm(rr.id);
+                        openModal('rejectResignModal');
+                    };
+                } else if (rr.status === 'approved') {
+                    if (rr.withdraw_share_capital && !rr.is_released) {
+                        badge.className = 'ml-auto px-2.5 py-0.5 text-[10px] font-extrabold uppercase rounded-full bg-blue-50 text-blue-600 border border-blue-100';
+                        badge.textContent = 'Awaiting Release';
+                        releaseRow.classList.remove('hidden');
+                        document.getElementById('detail-resign-release-date').textContent = rr.release_date
+                            ? new Date(rr.release_date).toLocaleDateString('en-PH', { month: 'long', day: 'numeric', year: 'numeric' })
+                            : '--';
+
+                        const daysLeft = rr.release_date ? Math.ceil((new Date(rr.release_date) - new Date()) / 86400000) : 0;
+                        if (daysLeft <= 0) {
+                            releaseActions.classList.remove('hidden');
+                            document.getElementById('detail-resign-release-form').action = '/resignation/' + rr.id + '/release';
+                        }
+                    } else {
+                        badge.className = 'ml-auto px-2.5 py-0.5 text-[10px] font-extrabold uppercase rounded-full bg-slate-100 text-slate-500 border border-slate-200';
+                        badge.textContent = 'Resigned';
+                    }
+                } else if (rr.status === 'rejected') {
+                    badge.className = 'ml-auto px-2.5 py-0.5 text-[10px] font-extrabold uppercase rounded-full bg-red-50 text-red-600 border border-red-100';
+                    badge.textContent = 'Rejected';
+                    reasonRow.classList.remove('hidden');
+                    document.getElementById('detail-resign-reason').textContent = rr.rejection_reason || '--';
+                }
+            }
+
+            // Reset to Overview tab
+            switchMemberTab('overview');
+            filterBalanceCards('all');
+
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+
+            openModal('memberDetailModal');
+            window.currentMemberId = member.id;
+            window.currentMember = member;
+        }
 
         function openMemberReviewModal(memberId) {
             const member = membersData.find(m => m.id === memberId);
@@ -3037,6 +3139,8 @@
 
             const initials = (member.first_name?.charAt(0) || '') + (member.last_name?.charAt(0) || '');
             const fullName = (member.first_name || '') + ' ' + (member.last_name || '');
+            renderIncompleteAlert('review', member, false);
+
 
             document.getElementById('review-avatar').textContent = initials.toUpperCase();
             document.getElementById('review-name').textContent = fullName;
@@ -3085,12 +3189,12 @@
             };
             if (member.vehicles && member.vehicles.length > 0) {
                 recordVehiclesBody.innerHTML = member.vehicles.map(v => `
-                                                                                                                                <tr class="border-t border-slate-100">
-                                                                                                                                    <td class="px-5 py-3 text-xs font-semibold text-slate-800">${esc(v.vehicle_type || 'N/A')}</td>
-                                                                                                                                    <td class="px-5 py-3 text-xs font-mono font-bold text-slate-800">${esc(v.plate_no || 'N/A')}</td>
-                                                                                                                                    <td class="px-5 py-3 text-xs font-semibold text-slate-800 text-center">${esc(v.quantity || 1)}</td>
-                                                                                                                                </tr>
-                                                                                                                            `).join('');
+                                                                                                                                                        <tr class="border-t border-slate-100">
+                                                                                                                                                            <td class="px-5 py-3 text-xs font-semibold text-slate-800">${esc(v.vehicle_type || 'N/A')}</td>
+                                                                                                                                                            <td class="px-5 py-3 text-xs font-mono font-bold text-slate-800">${esc(v.plate_no || 'N/A')}</td>
+                                                                                                                                                            <td class="px-5 py-3 text-xs font-semibold text-slate-800 text-center">${esc(v.quantity || 1)}</td>
+                                                                                                                                                        </tr>
+                                                                                                                                                    `).join('');
             } else {
                 recordVehiclesBody.innerHTML = '<tr><td colspan="3" class="px-5 py-6 text-center"><p class="text-xs font-semibold text-slate-400">No vehicles registered</p></td></tr>';
             }
@@ -3182,13 +3286,13 @@
             const loans = Array.isArray(member.active_loans) ? member.active_loans : [];
             const loanRows = loans.length > 0
                 ? loans.map(l => `
-                                                                                                                                <tr>
-                                                                                                                                    <td>${soaEsc(l.reference_no || '—')}</td>
-                                                                                                                                    <td>${soaEsc(l.lending_type || '—')}</td>
-                                                                                                                                    <td class="num">${fmt(l.lending_amount)}</td>
-                                                                                                                                    <td class="num">${fmt(l.monthly_payment)}</td>
-                                                                                                                                    <td class="num">${fmt(l.total_payment)}</td>
-                                                                                                                                </tr>`).join('')
+                                                                                                                                                        <tr>
+                                                                                                                                                            <td>${soaEsc(l.reference_no || '—')}</td>
+                                                                                                                                                            <td>${soaEsc(l.lending_type || '—')}</td>
+                                                                                                                                                            <td class="num">${fmt(l.lending_amount)}</td>
+                                                                                                                                                            <td class="num">${fmt(l.monthly_payment)}</td>
+                                                                                                                                                            <td class="num">${fmt(l.total_payment)}</td>
+                                                                                                                                                        </tr>`).join('')
                 : '<tr><td colspan="5">No active loans</td></tr>';
 
             const scAmount = Number(member.sc_total_amount) || 0;
@@ -3196,114 +3300,114 @@
             const scrOpen = '<scr' + 'ipt>';
 
             const html = `<!DOCTYPE html>
-                                                                                                            <html lang="en">
-                                                                                                            <head>
-                                                                                                                <meta charset="UTF-8">
-                                                                                                                <title>Statement of Account - ${fullName}</title>
-                                                                                                                <style>
-                                                                                                                    * { margin: 0; padding: 0; box-sizing: border-box; }
-                                                                                                                    body { font-family: 'Courier New', Courier, monospace; font-size: 10px; color: #000; padding: 15px 20px; background: #fff; }
-                                                                                                                    .header { margin-bottom: 18px; text-align: center; }
-                                                                                                                    .header .coop-name { font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
-                                                                                                                    .header .title { font-size: 13px; font-weight: 700; margin-top: 4px; }
-                                                                                                                    .header .subtitle { font-size: 10px; color: #333; margin-top: 2px; }
-                                                                                                                    table { width: 100%; border-collapse: collapse; font-size: 10px; margin-bottom: 16px; }
-                                                                                                                    thead th { background: #e0e0e0; border: 1px solid #000; padding: 5px 8px; font-weight: 700; text-align: center; text-transform: uppercase; font-size: 9px; }
-                                                                                                                    tbody td { border: 1px solid #000; padding: 4px 8px; }
-                                                                                                                    .num { text-align: right; font-family: 'Courier New', Courier, monospace; }
-                                                                                                                    .totals-row td { font-weight: 700; background: #e8e8e8; border-top: 2px solid #000; }
-                                                                                                                    .section-label { font-size: 11px; font-weight: 700; text-transform: uppercase; margin: 14px 0 4px; letter-spacing: 0.5px; }
-                                                                                                                    .toolbar { margin-bottom: 12px; }
-                                                                                                                    .toolbar button { padding: 6px 18px; font-size: 12px; cursor: pointer; background: #1E2A4A; color: #fff; border: none; border-radius: 4px; margin-right: 6px; }
-                                                                                                                    .toolbar .close { background: #6c757d; }
-                                                                                                                    .footer { margin-top: 14px; padding-top: 6px; border-top: 1px solid #000; display: flex; justify-content: space-between; font-size: 8px; color: #555; }
-                                                                                                                    @@media print {
-                                                                                                                        body { padding: 10px 15px; font-size: 9px; }
-                                                                                                                        thead th { font-size: 8px; padding: 4px 6px; }
-                                                                                                                        tbody td { padding: 3px 6px; }
-                                                                                                                        .toolbar { display: none !important; }
-                                                                                                                    }
-                                                                                                                    @@page { size: portrait; margin: 15mm; }
-                                                                                                                </style>
-                                                                                                            </head>
-                                                                                                            <body>
-                                                                                                                <div class="toolbar">
-                                                                                                                    <button id="btn-print">Print / Save as PDF</button>
-                                                                                                                    <button id="btn-close" class="close">Close</button>
-                                                                                                                </div>
+                                                                                                                                    <html lang="en">
+                                                                                                                                    <head>
+                                                                                                                                        <meta charset="UTF-8">
+                                                                                                                                        <title>Statement of Account - ${fullName}</title>
+                                                                                                                                        <style>
+                                                                                                                                            * { margin: 0; padding: 0; box-sizing: border-box; }
+                                                                                                                                            body { font-family: 'Courier New', Courier, monospace; font-size: 10px; color: #000; padding: 15px 20px; background: #fff; }
+                                                                                                                                            .header { margin-bottom: 18px; text-align: center; }
+                                                                                                                                            .header .coop-name { font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+                                                                                                                                            .header .title { font-size: 13px; font-weight: 700; margin-top: 4px; }
+                                                                                                                                            .header .subtitle { font-size: 10px; color: #333; margin-top: 2px; }
+                                                                                                                                            table { width: 100%; border-collapse: collapse; font-size: 10px; margin-bottom: 16px; }
+                                                                                                                                            thead th { background: #e0e0e0; border: 1px solid #000; padding: 5px 8px; font-weight: 700; text-align: center; text-transform: uppercase; font-size: 9px; }
+                                                                                                                                            tbody td { border: 1px solid #000; padding: 4px 8px; }
+                                                                                                                                            .num { text-align: right; font-family: 'Courier New', Courier, monospace; }
+                                                                                                                                            .totals-row td { font-weight: 700; background: #e8e8e8; border-top: 2px solid #000; }
+                                                                                                                                            .section-label { font-size: 11px; font-weight: 700; text-transform: uppercase; margin: 14px 0 4px; letter-spacing: 0.5px; }
+                                                                                                                                            .toolbar { margin-bottom: 12px; }
+                                                                                                                                            .toolbar button { padding: 6px 18px; font-size: 12px; cursor: pointer; background: #1E2A4A; color: #fff; border: none; border-radius: 4px; margin-right: 6px; }
+                                                                                                                                            .toolbar .close { background: #6c757d; }
+                                                                                                                                            .footer { margin-top: 14px; padding-top: 6px; border-top: 1px solid #000; display: flex; justify-content: space-between; font-size: 8px; color: #555; }
+                                                                                                                                            @@media print {
+                                                                                                                                                body { padding: 10px 15px; font-size: 9px; }
+                                                                                                                                                thead th { font-size: 8px; padding: 4px 6px; }
+                                                                                                                                                tbody td { padding: 3px 6px; }
+                                                                                                                                                .toolbar { display: none !important; }
+                                                                                                                                            }
+                                                                                                                                            @@page { size: portrait; margin: 15mm; }
+                                                                                                                                        </style>
+                                                                                                                                    </head>
+                                                                                                                                    <body>
+                                                                                                                                        <div class="toolbar">
+                                                                                                                                            <button id="btn-print">Print / Save as PDF</button>
+                                                                                                                                            <button id="btn-close" class="close">Close</button>
+                                                                                                                                        </div>
 
-                                                                                                                <div class="header">
-                                                                                                                    <div class="coop-name">Kingsland Pala-Pala Multi-Purpose Cooperative</div>
-                                                                                                                    <div class="title">STATEMENT OF ACCOUNT</div>
-                                                                                                                    <div class="subtitle">${fullName} &middot; ${memberId} &middot; As of ${asOf}</div>
-                                                                                                                </div>
+                                                                                                                                        <div class="header">
+                                                                                                                                            <div class="coop-name">Kingsland Pala-Pala Multi-Purpose Cooperative</div>
+                                                                                                                                            <div class="title">STATEMENT OF ACCOUNT</div>
+                                                                                                                                            <div class="subtitle">${fullName} &middot; ${memberId} &middot; As of ${asOf}</div>
+                                                                                                                                        </div>
 
-                                                                                                                <table>
-                                                                                                                    <tbody>
-                                                                                                                        <tr><td><strong>MEMBER NAME</strong></td><td>${fullName}</td></tr>
-                                                                                                                        <tr><td><strong>MEMBERSHIP NO.</strong></td><td>${memberId}</td></tr>
-                                                                                                                        <tr><td><strong>MEMBERSHIP CATEGORY</strong></td><td>${soaEsc(member.membership_category || 'Investor Associate')}</td></tr>
-                                                                                                                        <tr><td><strong>EMAIL</strong></td><td>${soaEsc(member.email)}</td></tr>
-                                                                                                                        <tr><td><strong>CONTACT NO.</strong></td><td>${soaEsc(member.contact_no)}</td></tr>
-                                                                                                                        <tr><td><strong>PRESENT ADDRESS</strong></td><td>${soaEsc(member.present_address)}</td></tr>
-                                                                                                                        <tr><td><strong>MEMBER SINCE</strong></td><td>${memberSince}</td></tr>
-                                                                                                                        <tr><td><strong>STATEMENT DATE</strong></td><td>${asOf}</td></tr>
-                                                                                                                    </tbody>
-                                                                                                                </table>
+                                                                                                                                        <table>
+                                                                                                                                            <tbody>
+                                                                                                                                                <tr><td><strong>MEMBER NAME</strong></td><td>${fullName}</td></tr>
+                                                                                                                                                <tr><td><strong>MEMBERSHIP NO.</strong></td><td>${memberId}</td></tr>
+                                                                                                                                                <tr><td><strong>MEMBERSHIP CATEGORY</strong></td><td>${soaEsc(member.membership_category || 'Investor Associate')}</td></tr>
+                                                                                                                                                <tr><td><strong>EMAIL</strong></td><td>${soaEsc(member.email)}</td></tr>
+                                                                                                                                                <tr><td><strong>CONTACT NO.</strong></td><td>${soaEsc(member.contact_no)}</td></tr>
+                                                                                                                                                <tr><td><strong>PRESENT ADDRESS</strong></td><td>${soaEsc(member.present_address)}</td></tr>
+                                                                                                                                                <tr><td><strong>MEMBER SINCE</strong></td><td>${memberSince}</td></tr>
+                                                                                                                                                <tr><td><strong>STATEMENT DATE</strong></td><td>${asOf}</td></tr>
+                                                                                                                                            </tbody>
+                                                                                                                                        </table>
 
-                                                                                                                <div class="section-label">Account Balances</div>
-                                                                                                                <table>
-                                                                                                                    <thead>
-                                                                                                                        <tr><th>Account</th><th>Details</th><th>Status</th><th>Amount</th></tr>
-                                                                                                                    </thead>
-                                                                                                                    <tbody>
-                                                                                                                        <tr>
-                                                                                                                            <td>Share Capital</td>
-                                                                                                                            <td>${Number(member.sc_total_shares) || 0} shares</td>
-                                                                                                                            <td>${soaEsc(member.sc_status || 'No Account')}</td>
-                                                                                                                            <td class="num">${fmt(scAmount)}</td>
-                                                                                                                        </tr>
-                                                                                                                        <tr>
-                                                                                                                            <td>Regular Savings</td>
-                                                                                                                            <td>Current balance</td>
-                                                                                                                            <td>${soaEsc(member.savings_status || 'No Account')}</td>
-                                                                                                                            <td class="num">${fmt(savingsBalance)}</td>
-                                                                                                                        </tr>
-                                                                                                                        <tr>
-                                                                                                                            <td>Savings Interest Accrued</td>
-                                                                                                                            <td>&mdash;</td>
-                                                                                                                            <td>&mdash;</td>
-                                                                                                                            <td class="num">${fmt(member.savings_interest)}</td>
-                                                                                                                        </tr>
-                                                                                                                        <tr class="totals-row">
-                                                                                                                            <td colspan="3">TOTAL EQUITY (Share Capital + Savings)</td>
-                                                                                                                            <td class="num">${fmt(scAmount + savingsBalance)}</td>
-                                                                                                                        </tr>
-                                                                                                                    </tbody>
-                                                                                                                </table>
+                                                                                                                                        <div class="section-label">Account Balances</div>
+                                                                                                                                        <table>
+                                                                                                                                            <thead>
+                                                                                                                                                <tr><th>Account</th><th>Details</th><th>Status</th><th>Amount</th></tr>
+                                                                                                                                            </thead>
+                                                                                                                                            <tbody>
+                                                                                                                                                <tr>
+                                                                                                                                                    <td>Share Capital</td>
+                                                                                                                                                    <td>${Number(member.sc_total_shares) || 0} shares</td>
+                                                                                                                                                    <td>${soaEsc(member.sc_status || 'No Account')}</td>
+                                                                                                                                                    <td class="num">${fmt(scAmount)}</td>
+                                                                                                                                                </tr>
+                                                                                                                                                <tr>
+                                                                                                                                                    <td>Regular Savings</td>
+                                                                                                                                                    <td>Current balance</td>
+                                                                                                                                                    <td>${soaEsc(member.savings_status || 'No Account')}</td>
+                                                                                                                                                    <td class="num">${fmt(savingsBalance)}</td>
+                                                                                                                                                </tr>
+                                                                                                                                                <tr>
+                                                                                                                                                    <td>Savings Interest Accrued</td>
+                                                                                                                                                    <td>&mdash;</td>
+                                                                                                                                                    <td>&mdash;</td>
+                                                                                                                                                    <td class="num">${fmt(member.savings_interest)}</td>
+                                                                                                                                                </tr>
+                                                                                                                                                <tr class="totals-row">
+                                                                                                                                                    <td colspan="3">TOTAL EQUITY (Share Capital + Savings)</td>
+                                                                                                                                                    <td class="num">${fmt(scAmount + savingsBalance)}</td>
+                                                                                                                                                </tr>
+                                                                                                                                            </tbody>
+                                                                                                                                        </table>
 
-                                                                                                                <div class="section-label">Active Loans</div>
-                                                                                                                <table>
-                                                                                                                    <thead>
-                                                                                                                        <tr><th>Reference</th><th>Type</th><th class="num">Loan Amount</th><th class="num">Monthly</th><th class="num">Total Payable</th></tr>
-                                                                                                                    </thead>
-                                                                                                                    <tbody>${loanRows}</tbody>
-                                                                                                                </table>
+                                                                                                                                        <div class="section-label">Active Loans</div>
+                                                                                                                                        <table>
+                                                                                                                                            <thead>
+                                                                                                                                                <tr><th>Reference</th><th>Type</th><th class="num">Loan Amount</th><th class="num">Monthly</th><th class="num">Total Payable</th></tr>
+                                                                                                                                            </thead>
+                                                                                                                                            <tbody>${loanRows}</tbody>
+                                                                                                                                        </table>
 
-                                                                                                                <div class="footer">
-                                                                                                                    <span>Generated on ${asOf}</span>
-                                                                                                                    <span>Kingsland Pala-Pala Multi-Purpose Cooperative</span>
-                                                                                                                </div>
+                                                                                                                                        <div class="footer">
+                                                                                                                                            <span>Generated on ${asOf}</span>
+                                                                                                                                            <span>Kingsland Pala-Pala Multi-Purpose Cooperative</span>
+                                                                                                                                        </div>
 
-                                                                                                                ${scrOpen}
-                                                                                                                    setTimeout(function () { window.print(); }, 300);
-                                                                                                                    document.addEventListener('click', function (e) {
-                                                                                                                        if (e.target.id === 'btn-print') window.print();
-                                                                                                                        if (e.target.id === 'btn-close') window.close();
-                                                                                                                    });
-                                                                                                                <\/script>
-                                                                                                            </body>
-                                                                                                            </html>`;
+                                                                                                                                        ${scrOpen}
+                                                                                                                                            setTimeout(function () { window.print(); }, 300);
+                                                                                                                                            document.addEventListener('click', function (e) {
+                                                                                                                                                if (e.target.id === 'btn-print') window.print();
+                                                                                                                                                if (e.target.id === 'btn-close') window.close();
+                                                                                                                                            });
+                                                                                                                                        <\/script>
+                                                                                                                                    </body>
+                                                                                                                                    </html>`;
 
             const w = window.open('', '_blank', 'width=900,height=760');
             if (!w) {
@@ -3351,15 +3455,15 @@
     </script>
 
     <!-- <script nonce="{{ csp_nonce() }}">
-                                                                                            fetch('/resignation/' + id + '/reject', {
-                                                                                                method: 'POST',
-                                                                                                headers: {
-                                                                                                    'Content-Type': 'application/json',
-                                                                                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content
-                                                                                                        ?? document.querySelector('input[name="_token"]')?.value,
-                                                                                                    'Accept': 'application/json',
-                                                                                                },
-                                                                                                body: JSON.stringify({ rejection_reason: reason }),
-                                                                                            })
-                                                                                        </script> -->
+                                                                                                                    fetch('/resignation/' + id + '/reject', {
+                                                                                                                        method: 'POST',
+                                                                                                                        headers: {
+                                                                                                                            'Content-Type': 'application/json',
+                                                                                                                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content
+                                                                                                                                ?? document.querySelector('input[name="_token"]')?.value,
+                                                                                                                            'Accept': 'application/json',
+                                                                                                                        },
+                                                                                                                        body: JSON.stringify({ rejection_reason: reason }),
+                                                                                                                    })
+                                                                                                                </script> -->
 @endsection

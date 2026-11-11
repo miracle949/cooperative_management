@@ -287,6 +287,9 @@ Route::get('/check-reference', [UsersHandle::class, 'checkReference'])
     ->name('reference.check')
     ->middleware('auth', 'member.active');
 
+Route::get('/member-documents/government-id', [UserController::class, 'viewGovernmentId'])
+    ->name('member.govid.view');
+
 Route::get('/savings/receipt/{referenceNo}', [SavingsController::class, 'downloadReceipt'])
     ->name('savings.receipt')->middleware('auth', 'member.active');
 
