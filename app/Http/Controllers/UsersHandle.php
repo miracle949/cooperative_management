@@ -1896,6 +1896,7 @@ class UsersHandle extends Controller
         // ═══════════════════════════════════════════════════════════════
         $ref = trim((string) $request->query('ref', ''));
         $date = $request->query('date', '');
+        $date = preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) $date) ? $date : '';
         $status = strtolower(trim((string) $request->query('status', 'all')));
         $growthYear = (int) $request->query('growth_year', Carbon::now()->year);
 
@@ -2014,6 +2015,7 @@ class UsersHandle extends Controller
             )
             ->when($ref !== '', fn($q) => $q->where('reference_no', 'like', '%' . $ref . '%'))
             ->when($status !== 'all', fn($q) => $q->where('status', $status))
+            ->when($date !== '', fn($q) => $q->whereDate('transaction_date', $date))   // ← add
             ->get();
 
         // ── Monthly interest releases (credited to the savings balance) ──
@@ -2033,6 +2035,7 @@ class UsersHandle extends Controller
             $interestReleases = DB::table('savings_interest_releases_tbls')
                 ->where('savings_account_id', $savingsAccount->id)
                 ->when($ref !== '', fn($q) => $q->where('reference_no', 'like', '%' . $ref . '%'))
+                ->when($date !== '', fn($q) => $q->whereDate('created_at', $date))   // ← add
                 ->get()
                 ->reject(fn($r) => $r->reference_no && in_array($r->reference_no, $existingInterestRefs, true))
                 ->map(fn($r) => (object) [
@@ -2593,7 +2596,7 @@ class UsersHandle extends Controller
             return [$type => $loansByTypeActual[$type] ?? ['balance' => 0, 'progress' => 0]];
         });
 
-        $savedMonthlyIncome = $otherinfo->monthly_income ?? DB::table('lending_program_tbls')
+        $savedMonthlyIncome = $otherinfo->monthly_income ?: DB::table('lending_program_tbls')
             ->where('user_id', $userId)
             ->whereNotNull('monthly_income')
             ->orderBy('created_at', 'desc')

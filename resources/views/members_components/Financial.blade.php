@@ -1806,8 +1806,7 @@
                                                     <input type="text" name="ref" value="{{ $ref }}"
                                                         placeholder="Search by reference no.">
                                                 </div>
-                                                <input type="date" class="sm-filter-select" name="date" value="{{ $date }}"
-                                                    data-action="sm-submit-tx-filter">
+                                                <input type="date" class="sm-filter-select" name="date" value="{{ $date }}">
 
                                                 <select name="status" class="sm-filter-select" data-submit-on-change>
                                                     <option value="all" {{ $status === 'all' ? 'selected' : '' }}>All
@@ -3732,7 +3731,9 @@
                 }
 
                 searchInp?.addEventListener('input', () => { currentPage = 1; applyFilter(); });
-                dateInp.addEventListener('change', () => { currentPage = 1; applyFilter(); });
+                ['change', 'input'].forEach(evt =>
+                    dateInp.addEventListener(evt, () => { currentPage = 1; applyFilter(); })
+                );
                 typeInp?.addEventListener('change', () => { currentPage = 1; applyFilter(); });
                 statusInp?.addEventListener('change', () => { currentPage = 1; applyFilter(); });
                 clearBtn.addEventListener('click', () => {
@@ -3771,6 +3772,10 @@
                     smRefInput.value = val;
                 }
             }
+
+            // ← add this
+            document.querySelector('#sm-tx-filter-form input[name="date"]')
+                ?.addEventListener('change', () => smFilterForm.submit());
 
             function changeGrowthYear(year) {
                 const url = new URL(window.location.href);

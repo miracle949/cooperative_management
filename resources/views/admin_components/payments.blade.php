@@ -103,7 +103,7 @@
                                         data-gcash-ref="{{ $pr->gcash_reference_no ?? '' }}"
                                         data-reference-no="{{ $pr->reference_no ?? '' }}"
                                         data-date="{{ $pr->created_at->format('M d, Y g:i A') }}"
-                                        data-proof="{{ $pr->payment_proof_path ? url('/proof/' . ltrim($pr->payment_proof_path, '/')) : '' }}"
+                                        data-proof="{{ $pr->payment_proof_path ? asset('storage/' . ltrim($pr->payment_proof_path, '/')) : '' }}"
                                         data-total="{{ number_format($grpTotal, 2) }}" data-items="{{ json_encode($grp->map(fn($p) => [
                                     'id' => $p->id,
                                     'number' => $p->payment_number,
